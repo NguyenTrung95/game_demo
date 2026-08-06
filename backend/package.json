@@ -1,0 +1,15 @@
+{
+  "name": "duckrace-quiz-server",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Prototype WebSocket backend for the Duck Race Quiz game (Kahoot-style) demo.",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "qrcode": "^1.5.4",
+    "ws": "^8.17.0"
+  }
+}

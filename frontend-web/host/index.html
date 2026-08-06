@@ -1,0 +1,1655 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1280">
+<title>Duck Tap Race — Host</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400..700&display=swap');
+  
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0; height: 100%; width: 100%;
+    font-family: 'Fredoka', -apple-system, sans-serif;
+    background: radial-gradient(circle at 50% 30%, #bae6fd, #e0f2fe);
+    color: #4b5563; overflow: hidden;
+    position: relative;
+  }
+  
+  /* Cloud background decorations */
+  .cloud-decor {
+    position: absolute;
+    background: white;
+    border-radius: 100px;
+    opacity: 0.8;
+    pointer-events: none;
+    z-index: 0;
+    box-shadow: 0 8px 24px rgba(255,255,255,0.4);
+  }
+  .cloud-1 {
+    width: 140px; height: 45px; top: 8%; left: 10%;
+    animation: drift 35s linear infinite alternate;
+  }
+  .cloud-2 {
+    width: 200px; height: 60px; top: 15%; right: 15%;
+    animation: drift 50s linear infinite alternate-reverse;
+  }
+  .cloud-3 {
+    width: 100px; height: 35px; top: 25%; left: 45%;
+    animation: drift 25s linear infinite alternate;
+  }
+  @keyframes drift {
+    0% { transform: translateX(-40px); }
+    100% { transform: translateX(40px); }
+  }
+  
+  .wrapper {
+    height: 100vh; width: 100vw;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    padding: 20px; text-align: center;
+    position: relative;
+    z-index: 1;
+  }
+  
+  .card {
+    width: 100%; max-width: 860px;
+    background: #fffdf0;
+    border: 6px solid #854d0e;
+    border-radius: 36px;
+    padding: 24px 32px;
+    box-shadow: 0 16px 0 #451a03, 0 24px 50px rgba(0,0,0,0.15);
+    position: relative;
+  }
+
+  .free-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: #dcfce7; color: #15803d;
+    border: 3px solid #16a34a;
+    font-size: 12px; font-weight: 700; letter-spacing: 0.02em;
+    padding: 4px 14px; border-radius: 999px; margin-bottom: 12px;
+    text-transform: uppercase;
+    box-shadow: 0 3px 0 #16a34a;
+  }
+  
+  h1 {
+    font-size: 40px; margin: 0 0 16px; font-weight: 800;
+    color: #b45309;
+    text-shadow: 0 3px 0 #fef08a, 0 4.5px 0 #b45309;
+    letter-spacing: -0.01em;
+    animation: titleBounce 1.5s ease-in-out infinite alternate;
+  }
+  @keyframes titleBounce {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(-4px); }
+  }
+
+  /* Split Lobby Grid Layout */
+  #lobby-grid {
+    display: flex;
+    gap: 24px;
+    align-items: stretch;
+    justify-content: center;
+    margin-bottom: 16px;
+    text-align: center;
+  }
+  .lobby-col-left {
+    flex: 1;
+    max-width: 320px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: rgba(133, 77, 14, 0.03);
+    border: 3.5px dashed #ca8a04;
+    border-radius: 24px;
+    padding: 16px;
+  }
+  .lobby-col-right {
+    flex: 1.3;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  #qr-image {
+    width: 170px; height: 170px; background: #fff; border-radius: 20px;
+    padding: 10px; margin-bottom: 12px;
+    border: 4px solid #854d0e;
+    box-shadow: 0 6px 0 #854d0e, 0 8px 16px rgba(0,0,0,0.08);
+  }
+  
+  #join-url-row { 
+    display: inline-flex; 
+    align-items: center; 
+    gap: 8px; 
+    margin-bottom: 8px; 
+    background: #fef9c3; 
+    padding: 6px 14px; 
+    border-radius: 999px; 
+    border: 2px solid #ca8a04;
+  }
+  
+  #join-url { 
+    font-size: 15px; 
+    color: #854d0e; 
+    font-weight: 700; 
+    max-width: 140px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: inline-block;
+  }
+  
+  #pin-fallback {
+    font-size: 14px; color: #854d0e; font-weight: 700; margin-bottom: 12px;
+    letter-spacing: 0.04em;
+    opacity: 0.8;
+  }
+
+  button.action-btn {
+    font-size: 15px; padding: 10px 22px; border-radius: 999px; border: none;
+    cursor: pointer; font-weight: 700; transition: transform 0.1s, box-shadow 0.1s;
+    font-family: 'Fredoka', sans-serif;
+  }
+  button.action-btn:active { transform: scale(0.96) translateY(2px); }
+  
+  #btn-copy-url {
+    background: #fef08a; color: #854d0e;
+    border: 2px solid #ca8a04;
+    box-shadow: 0 3px 0 #ca8a04;
+    font-size: 13px;
+    padding: 6px 12px;
+  }
+  #btn-copy-url:hover { background: #fef9c3; }
+  
+  /* ============================
+     START BUTTON — 2 States
+     ============================ */
+  #btn-force-start {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-size: 17px;
+    padding: 14px 28px;
+    width: 100%;
+    margin: 0;
+    border-radius: 14px;
+    font-family: 'Fredoka', sans-serif;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.2s, background 0.3s;
+    overflow: hidden;
+  }
+
+  /* DISABLED — No players joined yet */
+  #btn-force-start:disabled {
+    background: rgba(0,0,0,0.08);
+    border: 2.5px solid rgba(133,77,14,0.2);
+    color: rgba(133,77,14,0.35);
+    box-shadow: none;
+    cursor: not-allowed;
+    transform: none !important;
+    animation: none !important;
+  }
+
+  /* ENABLED — Players have joined */
+  #btn-force-start:not(:disabled) {
+    background: linear-gradient(135deg, #22c55e, #16a34a);
+    border: 2.5px solid #4ade80;
+    color: #fff;
+    box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7),
+                0 6px 0 #15803d,
+                0 10px 24px rgba(34, 197, 94, 0.3);
+    animation: startBtnGlow 2s ease-in-out infinite;
+  }
+  #btn-force-start:not(:disabled):hover {
+    background: linear-gradient(135deg, #4ade80, #22c55e);
+    transform: translateY(-2px) scale(1.03);
+  }
+  #btn-force-start:not(:disabled):active {
+    transform: translateY(1px) scale(0.97);
+    box-shadow: 0 2px 0 #15803d, 0 4px 12px rgba(34,197,94,0.2);
+  }
+
+  @keyframes startBtnGlow {
+    0%   { box-shadow: 0 0 0 0 rgba(34,197,94,0.7), 0 6px 0 #15803d, 0 10px 24px rgba(34,197,94,0.3); }
+    50%  { box-shadow: 0 0 0 10px rgba(34,197,94,0), 0 6px 0 #15803d, 0 12px 32px rgba(34,197,94,0.5); }
+    100% { box-shadow: 0 0 0 0 rgba(34,197,94,0),   0 6px 0 #15803d, 0 10px 24px rgba(34,197,94,0.3); }
+  }
+
+  /* Highlight ring around button container */
+  .start-btn-wrap {
+    position: relative;
+    width: 100%;
+    padding: 4px;
+    border-radius: 18px;
+    background: linear-gradient(135deg, rgba(133,77,14,0.08), rgba(133,77,14,0.02));
+    margin-top: 8px;
+  }
+  .start-btn-wrap::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 18px;
+    padding: 2px;
+    background: linear-gradient(135deg, rgba(180,83,9,0.35), rgba(180,83,9,0.1));
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask-composite: exclude;
+    pointer-events: none;
+  }
+
+  /* Hint text below button */
+  #start-btn-hint {
+    font-size: 11px;
+    color: rgba(133,77,14,0.5);
+    text-align: center;
+    margin-top: 6px;
+    letter-spacing: 0.03em;
+    transition: color 0.3s;
+  }
+  #start-btn-hint.ready {
+    color: #16a34a;
+    font-weight: 700;
+  }
+
+  @keyframes focusPulse {
+    0% {
+      outline-color: #b45309;
+      box-shadow: 0 0 12px rgba(180, 83, 9, 0.5);
+    }
+    50% {
+      outline-color: #eab308;
+      box-shadow: 0 0 24px rgba(234, 179, 8, 0.8);
+    }
+    100% {
+      outline-color: #e50914;
+      box-shadow: 0 0 12px rgba(229, 9, 20, 0.5);
+    }
+  }
+
+  button.action-btn:focus {
+    outline: 5px solid #b45309;
+    animation: focusPulse 2s infinite ease-in-out;
+    transform: scale(1.06) !important;
+    z-index: 10;
+  }
+  #btn-copy-url:focus {
+    background: #fef9c3;
+  }
+  #btn-force-start:not(:disabled):focus {
+    background: linear-gradient(135deg, #4ade80, #22c55e);
+  }
+
+  #stats-row {
+    display: flex; gap: 12px; margin-bottom: 0; justify-content: center;
+  }
+  .stat-box {
+    background: #fef9c3; border: 3px solid #ca8a04;
+    color: #854d0e; flex: 1;
+    border-radius: 16px; padding: 10px 18px; font-size: 12px;
+    font-weight: 700; letter-spacing: 0.05em;
+    box-shadow: 0 3px 0 #ca8a04;
+  }
+  .stat-box .stat-value {
+    display: block; font-weight: 800; font-size: 22px; letter-spacing: 0;
+    text-transform: none; color: #a16207; margin-top: 2px;
+  }
+
+  #status-line {
+    display: inline-block; font-size: 16px; font-weight: 700;
+    min-height: 20px; padding: 6px 20px; border-radius: 999px;
+    border: 2.5px solid transparent; margin-top: 12px;
+  }
+  #status-line.playing { color: #166534; background: #dcfce7; border-color: #16a34a; }
+  #status-line.lobby { color: #854d0e; background: #fef9c3; border-color: #ca8a04; }
+  #status-line.finished { color: #991b1b; background: #fee2e2; border-color: #ef4444; }
+
+  /* Lobby Pool Styles */
+  #lobby-pool-container {
+    margin: 0 0 16px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+  .pool-header {
+    font-size: 14px;
+    font-weight: 800;
+    color: #854d0e;
+    letter-spacing: 0.08em;
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    text-align: left;
+  }
+  #lobby-pool {
+    width: 100%;
+    flex: 1;
+    min-height: 160px;
+    background: radial-gradient(circle, #7dd3fc, #38bdf8);
+    border: 4px solid #854d0e;
+    border-radius: 20px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: inset 0 8px 16px rgba(0,0,0,0.1), 0 4px 10px rgba(0,0,0,0.05);
+  }
+  .pool-empty-text {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba(255,255,255,0.7);
+    font-weight: 700;
+    font-size: 14px;
+  }
+  .lobby-pool-duck {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    z-index: 5;
+    animation: splashIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+  }
+  @keyframes splashIn {
+    0% { transform: translate(-50%, -50%) scale(0); opacity: 0; }
+    50% { transform: translate(-50%, -50%) scale(1.4); }
+    100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+  }
+  .lobby-duck-wrapper {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .lobby-duck-tag {
+    background: white;
+    color: #333;
+    font-weight: 700;
+    font-size: 10px;
+    padding: 1px 6px;
+    border-radius: 999px;
+    border: 1.5px solid #854d0e;
+    margin-top: 3px;
+    white-space: nowrap;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+
+  /* Đường đua kiểu sông nước cartoon */
+  #race-content { 
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    background: linear-gradient(to bottom, #7dd3fc, #38bdf8);
+    display: flex;
+    flex-direction: column;
+    z-index: 10;
+    padding: 0;
+  }
+  
+  /* Scoreboard on top during race */
+  #race-scoreboard {
+    height: 70px;
+    background: #fffdf0;
+    border-bottom: 5px solid #854d0e;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 32px;
+    box-shadow: 0 6px 12px rgba(0,0,0,0.06);
+    z-index: 15;
+  }
+  .scoreboard-logo { font-size: 32px; animation: logoWaddle 0.5s ease infinite alternate; }
+  @keyframes logoWaddle {
+    0% { transform: rotate(-8deg); }
+    100% { transform: rotate(8deg); }
+  }
+  .scoreboard-title { font-size: 28px; font-weight: 800; color: #854d0e; text-shadow: 0 1px 0 #fff; }
+  .scoreboard-timer {
+    font-size: 22px; font-weight: 800; background: #ef4444; color: white;
+    padding: 6px 18px; border-radius: 999px; border: 3px solid #991b1b;
+    box-shadow: 0 4px 0 #991b1b;
+  }
+
+  #pond-view {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+  }
+  
+  .pond {
+    flex: 1;
+    position: relative;
+    background: linear-gradient(180deg, #0284c7 0%, #0369a1 100%);
+    border-top: 10px solid #15803d;
+    border-bottom: 10px solid #15803d;
+    overflow: hidden;
+    box-shadow: inset 0 10px 20px rgba(0,0,0,0.15), inset 0 -10px 20px rgba(0,0,0,0.15);
+  }
+  
+  /* River bank decorations */
+  .pond::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; height: 6px;
+    background: rgba(255,255,255,0.15);
+    z-index: 2;
+  }
+  
+  .pond-finish {
+    position: absolute; top: 0; bottom: 0; right: 80px; width: 24px;
+    background: 
+      repeating-conic-gradient(#1e293b 0% 25%, #ffffff 0% 50%) 
+      50% / 12px 12px;
+    border-left: 3px solid #64748b;
+    border-right: 3px solid #64748b;
+    box-shadow: 0 0 16px rgba(0,0,0,0.25);
+    z-index: 3;
+  }
+  
+  .pond-rows {
+    position: relative;
+    width: 100%;
+    height: 100%;
+  }
+  
+  /* Fully Responsive Row Scaling */
+  .race-row {
+    --row-h: 65px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 0 24px;
+    height: var(--row-h);
+    transition: top 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  
+  /* Lane divider */
+  .race-row::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 3px;
+    background: repeating-linear-gradient(90deg, rgba(255,255,255,0.15) 0 12px, transparent 12px 24px);
+  }
+  
+  .race-rank {
+    width: calc(var(--row-h) * 0.45); 
+    height: calc(var(--row-h) * 0.45); 
+    font-size: calc(var(--row-h) * 0.22);
+    border-radius: 50%;
+    color: #fff; font-weight: 800;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    border: 2px solid white;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  }
+  
+  .race-nickname {
+    width: 120px; text-align: left; 
+    font-size: calc(var(--row-h) * 0.26); 
+    font-weight: 800;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex-shrink: 0;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.4);
+  }
+  
+  .race-lane { flex: 1; height: 100%; position: relative; }
+  .race-lane::before {
+    content: ''; position: absolute; left: 2%; top: 0; bottom: 0; width: 4px;
+    background: rgba(255,255,255,0.25);
+  }
+  
+  .race-trail {
+    position: absolute; top: 0; bottom: 0; left: 2%;
+    transition: width 0.2s linear; width: 0%;
+  }
+  
+  .race-duck-container {
+    position: absolute; top: 50%;
+    transform: translate(-50%, -50%);
+    transition: left 0.2s linear; left: 2%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 5;
+    height: 100%;
+  }
+  
+  .duck-svg {
+    width: calc(var(--row-h) * 0.65);
+    height: calc(var(--row-h) * 0.65);
+    animation: waddle 0.5s ease-in-out infinite alternate;
+    transform-origin: center bottom;
+    filter: drop-shadow(0 4px 6px rgba(0,0,0,0.15));
+  }
+  
+  @keyframes waddle {
+    0% { transform: rotate(-8deg); }
+    100% { transform: rotate(8deg); }
+  }
+  
+  .duck-wake {
+    position: absolute;
+    right: 20px;
+    top: 60%;
+    width: calc(var(--row-h) * 0.35);
+    height: calc(var(--row-h) * 0.17);
+    border-radius: 50%;
+    border: 2px solid rgba(255, 255, 255, 0.4);
+    border-top-color: transparent;
+    opacity: 0;
+    transform: scale(0.5);
+    pointer-events: none;
+  }
+  .duck-wake.swimming {
+    animation: wakeRipple 0.8s linear infinite;
+  }
+  @keyframes wakeRipple {
+    0% { transform: scale(0.5); opacity: 0.8; }
+    100% { transform: scale(2.2); opacity: 0; }
+  }
+  
+  .race-taps { 
+    width: 60px; 
+    font-size: calc(var(--row-h) * 0.26); 
+    opacity: 0.9; font-weight: 800; 
+    color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+  }
+
+  /* Màn "xếp hàng chờ đua" */
+  #lineup-view {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.8);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 20;
+  }
+  .lineup-pond {
+    position: relative; height: 260px; width: 90%; max-width: 600px;
+    border-radius: 32px; overflow: hidden;
+    background: radial-gradient(circle, #7dd3fc, #0284c7);
+    border: 6px solid #854d0e;
+    box-shadow: 0 12px 0 #451a03, 0 20px 40px rgba(0,0,0,0.3);
+  }
+  .lineup-finish {
+    position: absolute; top: 0; bottom: 0; right: 60px; width: 16px;
+    background: repeating-linear-gradient(45deg, #1a1a1a 0 9px, #f2f2f2 9px 18px);
+    box-shadow: 0 0 12px rgba(0,0,0,0.4);
+  }
+  .lineup-duck {
+    position: absolute; display: flex; flex-direction: column; align-items: center; gap: 2px;
+    transition: opacity 0.3s;
+  }
+  .lineup-duck .duck-number {
+    width: 22px; height: 22px; border-radius: 50%; font-size: 11px; font-weight: 800;
+    color: #fff; display: flex; align-items: center; justify-content: center;
+    border: 2px solid white;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  }
+  .lineup-caption {
+    text-align: center; font-size: 38px; font-weight: 800; margin-top: 24px; 
+    color: #facc15; text-shadow: 0 3px 0 #b45309;
+    animation: titleBounce 0.4s ease-in-out infinite alternate;
+  }
+
+  /* Winner Celebration Podium Modal */
+  #winner-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(10px);
+    z-index: 100;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow-y: auto;
+    padding: 32px 24px;
+  }
+  .winner-card {
+    margin: auto; /* Centers the card inside the scroll view */
+    width: 100%;
+    max-width: 760px;
+    background: #fffdf0;
+    border: 6px solid #854d0e;
+    border-radius: 36px;
+    padding: 32px;
+    text-align: center;
+    box-shadow: 0 20px 0 #451a03, 0 30px 60px rgba(0,0,0,0.4);
+    position: relative;
+    animation: winnerPop 0.55s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+  }
+  @keyframes winnerPop {
+    0% { transform: scale(0.6); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+  .winner-title {
+    font-size: 38px;
+    color: #854d0e;
+    margin-top: 0;
+    margin-bottom: 24px;
+    text-shadow: 0 2px 0 #fff;
+  }
+  .podium-container {
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    gap: 16px;
+    margin-bottom: 32px;
+    height: 240px;
+  }
+  .podium-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 140px;
+    position: relative; /* Position context for children crown */
+  }
+  .podium-block {
+    width: 100%;
+    border-radius: 12px 12px 0 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32px;
+    font-weight: 800;
+    color: white;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  }
+  .step-1 .podium-block {
+    height: 120px;
+    background: linear-gradient(135deg, #fbbf24, #d97706);
+    border: 4px solid #b45309;
+    border-bottom: none;
+  }
+  .step-2 .podium-block {
+    height: 90px;
+    background: linear-gradient(135deg, #cbd5e1, #64748b);
+    border: 4px solid #475569;
+    border-bottom: none;
+  }
+  .step-3 .podium-block {
+    height: 60px;
+    background: linear-gradient(135deg, #fed7aa, #c2410c);
+    border: 4px solid #9a3412;
+    border-bottom: none;
+  }
+  .podium-duck-slot {
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+  .podium-name {
+    margin-top: 10px;
+    font-weight: 700;
+    font-size: 16px;
+    color: #854d0e;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 100%;
+  }
+  .podium-crown {
+    font-size: 32px;
+    position: absolute;
+    top: -26px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10;
+    animation: floatCrown 1.5s ease-in-out infinite alternate;
+  }
+  @keyframes floatCrown {
+    0% { transform: translateX(-50%) translateY(0) rotate(-5deg); }
+    100% { transform: translateX(-50%) translateY(-6px) rotate(5deg); }
+  }
+  #leaderboard-list {
+    max-height: 180px;
+    overflow-y: auto;
+    margin-bottom: 24px;
+    background: rgba(133, 77, 14, 0.05);
+    border-radius: 16px;
+    padding: 12px;
+  }
+  .lb-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-weight: 700;
+    color: #854d0e;
+  }
+  .lb-item:nth-child(even) {
+    background: rgba(255,255,255,0.5);
+  }
+  .restart-timer-line {
+    font-size: 16px;
+    font-weight: 700;
+    color: #ea580c;
+    animation: pulseText 1s infinite alternate;
+  }
+  @keyframes pulseText {
+    0% { opacity: 0.7; }
+    100% { opacity: 1; }
+  }
+  .confetti-particle {
+    position: absolute;
+    border-radius: 2px;
+    pointer-events: none;
+  }
+  .water-ripple-particle {
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 6px;
+    height: 3px;
+    border-radius: 50%;
+    border: 2px solid rgba(255, 255, 255, 0.45);
+    border-top-color: transparent;
+    pointer-events: none;
+    z-index: 2;
+    animation: waterRippleAnim 0.7s ease-out forwards;
+  }
+  @keyframes waterRippleAnim {
+    0% {
+      width: 6px;
+      height: 3px;
+      opacity: 0.8;
+    }
+    100% {
+      width: 46px;
+      height: 23px;
+      opacity: 0;
+    }
+  }
+  
+  /* Racetrack initialization loading screen styles */
+  #race-loading-view {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle, #7dd3fc, #0284c7);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 25;
+    color: #fff;
+  }
+  .loading-card {
+    background: #fffdf0;
+    border: 5px solid #854d0e;
+    border-radius: 28px;
+    padding: 32px;
+    width: 90%;
+    max-width: 450px;
+    text-align: center;
+    box-shadow: 0 12px 0 #451a03, 0 20px 40px rgba(0,0,0,0.25);
+  }
+  .loading-title {
+    font-size: 24px;
+    font-weight: 800;
+    color: #854d0e;
+    margin-bottom: 16px;
+    text-transform: uppercase;
+  }
+  .loading-bar-bg {
+    width: 100%;
+    height: 20px;
+    background: #e2e8f0;
+    border: 3.5px solid #854d0e;
+    border-radius: 999px;
+    overflow: hidden;
+    position: relative;
+  }
+  .loading-bar-fill {
+    width: 0%;
+    height: 100%;
+    background: linear-gradient(90deg, #facc15, #ea580c);
+    transition: width 1.5s linear;
+  }
+  .loading-duck-anim {
+    font-size: 40px;
+    animation: loadingDuckSwim 1s ease-in-out infinite alternate;
+    margin-bottom: 12px;
+    display: inline-block;
+  }
+  @keyframes loadingDuckSwim {
+    0% { transform: translateY(0) rotate(-10deg); }
+    100% { transform: translateY(-10px) rotate(10deg); }
+  }
+  #audio-toggle:focus {
+    outline: 4px solid #b45309;
+    box-shadow: 0 0 16px rgba(180, 83, 9, 0.6);
+    transform: scale(1.1) !important;
+  }
+</style>
+</head>
+<body>
+
+<!-- Interactive volume toggle for browser autoplay bypass & event audio control -->
+<div id="audio-toggle" tabindex="0" style="position: fixed; top: 16px; right: 16px; z-index: 1000; cursor: pointer; font-size: 20px; background: white; border: 2.5px solid #854d0e; padding: 4px; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1); font-weight: bold; outline: none;">🔊</div>
+
+<!-- Cloud decorations in background -->
+<div class="cloud-decor cloud-1"></div>
+<div class="cloud-decor cloud-2"></div>
+<div class="cloud-decor cloud-3"></div>
+
+<div class="wrapper">
+  <div class="card">
+    <span class="free-badge">🦆 Miễn phí tham gia</span>
+    <h1>Duck Tap Race</h1>
+
+    <div id="lobby-content">
+      <!-- Split layout to prevent vertical overflow -->
+      <div id="lobby-grid">
+        <div class="lobby-col-left">
+          <img id="qr-image" alt="QR tham gia">
+          <div id="join-url-row">
+            <div id="join-url"></div>
+            <button class="action-btn" id="btn-copy-url">📋 Copy URL</button>
+          </div>
+          <div id="pin-fallback"></div>
+          <div class="start-btn-wrap">
+            <button class="action-btn" id="btn-force-start" disabled>
+              <span id="start-btn-icon">🔒</span>
+              <span id="start-btn-label">▶️ Bắt đầu chơi ngay</span>
+            </button>
+          </div>
+          <div id="start-btn-hint">Chờ người chơi tham gia để bắt đầu...</div>
+        </div>
+        <div class="lobby-col-right">
+          <!-- Interactive lobby pool -->
+          <div id="lobby-pool-container">
+            <div class="pool-header">HỒ NƯỚC CHỜ ĐUA</div>
+            <div id="lobby-pool">
+              <div class="pool-empty-text">Đang chờ người chơi tham gia...</div>
+            </div>
+          </div>
+          <div id="stats-row">
+            <div class="stat-box">Đã kết nối<span class="stat-value" id="connected-count">0 / 100</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="race-content" style="display:none;">
+      <!-- Scoreboard at the top -->
+      <div id="race-scoreboard">
+        <span class="scoreboard-logo">🦆</span>
+        <span class="scoreboard-title">DUCK TAP RACE</span>
+        <span class="scoreboard-timer" id="race-timer-display">20s</span>
+      </div>
+      <div id="lineup-view"></div>
+      <div id="pond-view"></div>
+    </div>
+
+    <div id="status-line" class="lobby"></div>
+  </div>
+</div>
+
+<script>
+(function () {
+  var socket = null;
+  var lobbyDeadline = null;
+  var lobbyCountdownTimer = null;
+  var currentJoinUrl = '';
+  var targetTaps = 60;
+  var lobbyPlayers = [];
+
+  // Web Audio Sound Synth with Autoplay Bypass & Mute Controls
+  var audioCtx = null;
+  var audioEnabled = true;
+
+  function getAudioContext() {
+    if (!audioCtx) {
+      var AudioContext = window.AudioContext || window.webkitAudioContext;
+      if (AudioContext) audioCtx = new AudioContext();
+    }
+    return audioCtx;
+  }
+
+  function toggleAudio() {
+    var btn = document.getElementById('audio-toggle');
+    var ctx = getAudioContext();
+    if (!ctx) return;
+    
+    // Unlock if suspended
+    if (ctx.state === 'suspended') {
+      ctx.resume().then(updateAudioButtonState);
+    } else {
+      audioEnabled = !audioEnabled;
+      updateAudioButtonState();
+    }
+  }
+
+  function updateAudioButtonState() {
+    var btn = document.getElementById('audio-toggle');
+    if (!btn) return;
+    btn.textContent = audioEnabled ? '🔊' : '🔇';
+    btn.style.borderColor = audioEnabled ? '#854d0e' : '#991b1b';
+    btn.style.color = audioEnabled ? '#854d0e' : '#991b1b';
+  }
+
+  // Register audio unlock listener for any click gesture
+  document.addEventListener('click', function() {
+    var ctx = getAudioContext();
+    if (ctx && ctx.state === 'suspended') {
+      ctx.resume();
+    }
+  }, { once: false });
+
+  document.getElementById('audio-toggle').addEventListener('click', function(e) {
+    e.stopPropagation();
+    toggleAudio();
+  });
+
+  function playBeep(freq, duration, type) {
+    if (!audioEnabled) return;
+    try {
+      var ctx = getAudioContext();
+      if (!ctx) return;
+      if (ctx.state === 'suspended') ctx.resume();
+      var osc = ctx.createOscillator();
+      var gain = ctx.createGain();
+      osc.type = type || 'sine';
+      osc.frequency.setValueAtTime(freq, ctx.currentTime);
+      gain.gain.setValueAtTime(0.08, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start();
+      osc.stop(ctx.currentTime + duration);
+    } catch (e) {
+      console.warn("Sound play failed", e);
+    }
+  }
+
+  function playCountdownBeep() { playBeep(600, 0.15, 'sine'); }
+  function playGoBeep() { playBeep(900, 0.4, 'triangle'); }
+
+  function playFanfare() {
+    if (!audioEnabled) return;
+    try {
+      var ctx = getAudioContext();
+      if (!ctx) return;
+      if (ctx.state === 'suspended') ctx.resume();
+      var now = ctx.currentTime;
+      var notes = [261.63, 329.63, 392.00, 523.25]; // C4, E4, G4, C5
+      notes.forEach(function(freq, index) {
+        var osc = ctx.createOscillator();
+        var gain = ctx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(freq, now + index * 0.12);
+        gain.gain.setValueAtTime(0.0, now);
+        gain.gain.linearRampToValueAtTime(0.06, now + index * 0.12 + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + index * 0.12 + 0.6);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(now + index * 0.12);
+        osc.stop(now + index * 0.12 + 0.6);
+      });
+    } catch (e) {
+      console.warn("Fanfare failed", e);
+    }
+  }
+
+  function getDuckSvg(color) {
+    return '<svg class="duck-svg" viewBox="0 0 64 64">' +
+      '<path d="M48,22 C56,20 58,26 48,28 Z" fill="#ff9800" stroke="#e65100" stroke-width="1.5"></path>' +
+      '<path d="M16,42 C10,36 14,28 22,28 C28,28 32,24 38,24 C44,24 48,28 48,34 C48,42 42,48 32,48 C22,48 18,46 16,42 Z" fill="' + color + '"></path>' +
+      '<circle cx="38" cy="20" r="11" fill="' + color + '"></circle>' +
+      '<circle cx="41" cy="18" r="2.5" fill="#000000"></circle>' +
+      '<circle cx="42.5" cy="16.5" r="1" fill="#ffffff"></circle>' +
+      '<path d="M22,36 C26,32 34,32 36,36 C38,40 34,42 28,42 C24,42 20,40 22,36 Z" fill="rgba(0,0,0,0.15)"></path>' +
+      '</svg>';
+  }
+
+  function connect() {
+    var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
+    socket = new WebSocket(protocol + '://' + location.host);
+    socket.addEventListener('open', function () { send('create_room'); });
+    socket.addEventListener('message', function (event) {
+      var message = JSON.parse(event.data);
+      handleMessage(message.type, message.payload);
+    });
+    socket.addEventListener('close', function () {
+      document.getElementById('status-line').textContent = 'Mất kết nối server. Vui lòng tải lại trang.';
+    });
+  }
+
+  function send(type, payload) {
+    socket.send(JSON.stringify({ type: type, payload: payload || {} }));
+  }
+
+  function handleMessage(type, payload) {
+    switch (type) {
+      case 'room_created':
+        onRoomCreated(payload);
+        break;
+      case 'room_stats':
+        onRoomStats(payload);
+        break;
+      case 'player_joined':
+        onPlayerJoined(payload);
+        break;
+      case 'player_left':
+        onPlayerLeft(payload);
+        break;
+      case 'race_start':
+        onRaceStart(payload);
+        break;
+      case 'race_progress':
+        onRaceProgress(payload);
+        break;
+      case 'race_over':
+        onRaceOver(payload);
+        break;
+      default:
+        break;
+    }
+  }
+
+  function onRoomCreated(payload) {
+    lobbyPlayers = [];
+    currentJoinUrl = payload.joinUrl;
+    targetTaps = payload.targetTaps || targetTaps;
+    document.getElementById('qr-image').src = payload.qrDataUrl;
+    document.getElementById('join-url').textContent = payload.joinUrl;
+    document.getElementById('pin-fallback').textContent = 'Hoặc nhập mã PIN: ' + payload.pin;
+    lobbyDeadline = Date.now() + payload.lobbyDurationMs;
+
+    document.getElementById('lobby-content').style.display = 'block';
+    document.getElementById('race-content').style.display = 'none';
+    document.getElementById('lineup-view').innerHTML = '';
+    document.getElementById('lineup-view').style.display = 'none';
+    document.getElementById('pond-view').innerHTML = '';
+    document.getElementById('pond-view').style.display = 'none';
+    document.getElementById('btn-force-start').style.display = 'inline-block';
+    
+    // Hide winner overlay
+    var overlay = document.getElementById('winner-overlay');
+    if (overlay) overlay.style.display = 'none';
+
+    // Clear lobby pool
+    var pool = document.getElementById('lobby-pool');
+    if (pool) {
+      pool.innerHTML = '<div class="pool-empty-text">Đang chờ người chơi tham gia...</div>';
+    }
+
+    startLobbyCountdownLoop();
+  }
+
+  function onPlayerJoined(player) {
+    var exists = lobbyPlayers.some(function(p) { return p.playerId === player.playerId; });
+    if (!exists) {
+      lobbyPlayers.push(player);
+      addDuckToLobbyPool(player);
+    }
+  }
+
+  function onPlayerLeft(payload) {
+    lobbyPlayers = lobbyPlayers.filter(function(p) { return p.playerId !== payload.playerId; });
+    removeDuckFromLobbyPool(payload.playerId);
+  }
+
+  function addDuckToLobbyPool(player) {
+    var pool = document.getElementById('lobby-pool');
+    if (!pool) return;
+    var emptyText = pool.querySelector('.pool-empty-text');
+    if (emptyText) emptyText.remove();
+
+    var duckEl = document.createElement('div');
+    duckEl.className = 'lobby-pool-duck';
+    duckEl.setAttribute('id', 'lobby-duck-' + player.playerId);
+    duckEl.innerHTML = 
+      '<div class="lobby-duck-wrapper">' +
+        getDuckSvg(player.color) +
+        '<div class="lobby-duck-tag">' + player.nickname + '</div>' +
+      '</div>';
+    pool.appendChild(duckEl);
+
+    // Initial position
+    var posX = Math.random() * 70 + 15;
+    var posY = Math.random() * 45 + 20;
+    duckEl.style.left = posX + '%';
+    duckEl.style.top = posY + '%';
+
+    animateLobbyDuck(duckEl);
+  }
+
+  function removeDuckFromLobbyPool(playerId) {
+    var duckEl = document.getElementById('lobby-duck-' + playerId);
+    if (duckEl) duckEl.remove();
+
+    var pool = document.getElementById('lobby-pool');
+    if (pool && pool.querySelectorAll('.lobby-pool-duck').length === 0) {
+      pool.innerHTML = '<div class="pool-empty-text">Đang chờ người chơi tham gia...</div>';
+    }
+  }
+
+  function animateLobbyDuck(duckEl) {
+    function drift() {
+      if (!duckEl.parentNode) return;
+      var posX = Math.random() * 70 + 15;
+      var posY = Math.random() * 45 + 20;
+      var duration = Math.random() * 2000 + 2000;
+
+      var currentLeft = parseFloat(duckEl.style.left) || 50;
+      var scaleX = posX > currentLeft ? 1 : -1;
+
+      duckEl.style.transition = 'left ' + duration + 'ms ease-in-out, top ' + duration + 'ms ease-in-out';
+      duckEl.style.left = posX + '%';
+      duckEl.style.top = posY + '%';
+
+      var svg = duckEl.querySelector('.duck-svg');
+      if (svg) svg.style.transform = 'scaleX(' + scaleX + ')';
+
+      setTimeout(drift, duration);
+    }
+    setTimeout(drift, Math.random() * 500);
+  }
+
+  function onRoomStats(payload) {
+    document.getElementById('connected-count').textContent =
+      payload.connectedCount + ' / ' + payload.maxCapacity;
+
+    var startBtn = document.getElementById('btn-force-start');
+    var startHint = document.getElementById('start-btn-hint');
+    var startIcon = document.getElementById('start-btn-icon');
+    if (payload.phase !== 'lobby') {
+      startBtn.style.display = 'none';
+      return;
+    }
+    var canStart = payload.connectedCount > 0;
+    var justBecameEnabled = canStart && startBtn.disabled;
+    startBtn.disabled = !canStart;
+    if (canStart) {
+      startIcon.textContent = '▶';
+      startHint.textContent = payload.connectedCount + ' người chơi đã sẵn sàng — Nhấn để bắt đầu!';
+      startHint.className = 'ready';
+    } else {
+      startIcon.textContent = '🔒';
+      startHint.textContent = 'Chờ người chơi tham gia để bắt đầu...';
+      startHint.className = '';
+    }
+    if (justBecameEnabled) startBtn.focus();
+  }
+
+  var LINEUP_DISPLAY_MS = 2200;
+  var lineupTimer = null;
+
+  function onRaceStart(payload) {
+    clearInterval(lobbyCountdownTimer);
+    targetTaps = payload.targetTaps || targetTaps;
+    document.getElementById('lobby-content').style.display = 'none';
+    document.getElementById('race-content').style.display = 'flex';
+    document.getElementById('pond-view').style.display = 'none';
+    document.getElementById('lineup-view').style.display = 'none';
+
+    // Spawn and display racetrack preparation loading screen
+    var loadingView = document.getElementById('race-loading-view');
+    if (!loadingView) {
+      loadingView = document.createElement('div');
+      loadingView.id = 'race-loading-view';
+      document.getElementById('race-content').appendChild(loadingView);
+    }
+    loadingView.style.display = 'flex';
+    loadingView.innerHTML = 
+      '<div class="loading-card">' +
+        '<div class="loading-duck-anim">🦆</div>' +
+        '<div class="loading-title">Đang chuẩn bị đường đua...</div>' +
+        '<div class="loading-bar-bg"><div class="loading-bar-fill" id="loading-fill"></div></div>' +
+      '</div>';
+    
+    // Animate progress bar fill
+    setTimeout(function() {
+      var fill = document.getElementById('loading-fill');
+      if (fill) fill.style.width = '100%';
+    }, 50);
+
+    var statusEl = document.getElementById('status-line');
+    statusEl.className = 'playing';
+    statusEl.textContent = '🌊 Đang chuẩn bị phao bơi...';
+
+    clearTimeout(lineupTimer);
+    lineupTimer = setTimeout(function () {
+      // Hide loading screen and display lineup countdown
+      loadingView.style.display = 'none';
+      document.getElementById('lineup-view').style.display = 'flex';
+      renderLineup(payload.players || []);
+      
+      // Play start lineup cue sound
+      playCountdownBeep();
+      statusEl.textContent = '🦆 Sẵn sàng... Bơi!';
+      
+      setTimeout(function() {
+        document.getElementById('lineup-view').style.display = 'none';
+        document.getElementById('pond-view').style.display = 'flex';
+        playGoBeep();
+      }, LINEUP_DISPLAY_MS);
+    }, 1600); // 1.6 seconds loading duration
+  }
+
+  function renderLineup(players) {
+    var view = document.getElementById('lineup-view');
+    view.innerHTML =
+      '<div class="lineup-pond"><div class="lineup-finish"></div></div>' +
+      '<div class="lineup-caption">Sẵn sàng... Bơi!</div>';
+    var pond = view.querySelector('.lineup-pond');
+    
+    // Dynamically scale lineup spacing based on player count to prevent container overflow
+    var count = players.length;
+    var stepX = Math.max(12, Math.min(35, 450 / count));
+    var stepY = Math.max(10, Math.min(28, 180 / count));
+    
+    var startRight = 95, startBottom = 16;
+    players.forEach(function (player, index) {
+      var duck = document.createElement('div');
+      duck.className = 'lineup-duck';
+      duck.style.right = (startRight + index * stepX) + 'px';
+      duck.style.bottom = (startBottom + index * stepY) + 'px';
+      duck.innerHTML =
+        getDuckSvg(player.color) +
+        '<span class="duck-number" style="background:' + (player.color || '#333') + '">' + (index + 1) + '</span>';
+      pond.appendChild(duck);
+    });
+  }
+
+  function onRaceProgress(payload) {
+    renderRaceBars(payload.positions);
+    var remainingSec = Math.max(0, Math.ceil(payload.remainingMs / 1000));
+    var statusEl = document.getElementById('status-line');
+    statusEl.className = 'playing';
+    statusEl.textContent = '🎮 Đang đua! — còn ' + remainingSec + 's';
+    
+    var timerDisplay = document.getElementById('race-timer-display');
+    if (timerDisplay) {
+      timerDisplay.textContent = remainingSec + 's';
+    }
+  }
+
+  var prevTapsMap = {};
+
+  function spawnWaterRipple(laneEl, leftPercent) {
+    if (!laneEl) return;
+    var ripple = document.createElement('div');
+    ripple.className = 'water-ripple-particle';
+    ripple.style.left = leftPercent + '%';
+    laneEl.appendChild(ripple);
+    setTimeout(function() {
+      ripple.remove();
+    }, 700);
+  }
+
+  function renderRaceBars(positions) {
+    var container = document.getElementById('pond-view');
+    var rowsHolder = container.querySelector('.pond-rows');
+
+    if (!rowsHolder) {
+      container.innerHTML =
+        '<div class="pond-grass"></div>' +
+        '<div class="pond"><div class="pond-finish"></div><div class="pond-rows"></div></div>';
+      rowsHolder = container.querySelector('.pond-rows');
+    }
+
+    positions.forEach(function (entry) {
+      var row = rowsHolder.querySelector('[data-player-id="' + entry.playerId + '"]');
+      if (!row) {
+        row = document.createElement('div');
+        row.className = 'race-row';
+        row.setAttribute('data-player-id', entry.playerId);
+        row.innerHTML =
+          '<span class="race-rank"></span>' +
+          '<span class="race-nickname"></span>' +
+          '<div class="race-lane">' +
+            '<div class="race-trail"></div>' +
+            '<div class="race-duck-container">' +
+              getDuckSvg(entry.color) +
+              '<div class="duck-wake"></div>' +
+            '</div>' +
+          '</div>' +
+          '<span class="race-taps"></span>';
+        rowsHolder.appendChild(row);
+      }
+    });
+
+    var currentIds = positions.map(function(p) { return p.playerId; });
+    Array.from(rowsHolder.children).forEach(function(row) {
+      var id = row.getAttribute('data-player-id');
+      if (currentIds.indexOf(id) === -1) {
+        row.remove();
+      }
+    });
+
+    var sorted = positions.slice().sort(function (a, b) { return b.taps - a.taps; });
+    
+    // Dynamic height calculation of rows based on parent container size and player count
+    var pondElement = container.querySelector('.pond');
+    var pondHeight = pondElement ? pondElement.clientHeight : 450;
+    if (pondHeight < 100) pondHeight = 450; // fallback
+    
+    var rowHeight = Math.floor(pondHeight / Math.max(1, sorted.length));
+    rowHeight = Math.max(48, Math.min(80, rowHeight)); // boundary capping
+
+    rowsHolder.style.position = 'relative';
+    rowsHolder.style.height = (sorted.length * rowHeight) + 'px';
+
+    sorted.forEach(function (entry, index) {
+      var row = rowsHolder.querySelector('[data-player-id="' + entry.playerId + '"]');
+      if (!row) return;
+
+      // Update dynamic CSS variable on the row to scale children accordingly
+      row.style.setProperty('--row-h', rowHeight + 'px');
+
+      var rankEl = row.querySelector('.race-rank');
+      rankEl.textContent = index + 1;
+      rankEl.style.background = entry.color || 'rgba(255,255,255,0.9)';
+      
+      row.querySelector('.race-nickname').textContent = entry.nickname;
+      row.querySelector('.race-nickname').style.color = entry.color || '#fff';
+      row.querySelector('.race-taps').textContent = entry.taps;
+
+      var percent = Math.min(100, Math.floor((entry.taps / targetTaps) * 100));
+      var travel = percent * 0.82;
+      
+      var trailEl = row.querySelector('.race-trail');
+      trailEl.style.width = travel + '%';
+      trailEl.style.background = 'linear-gradient(90deg, transparent, ' + entry.color + '33)';
+
+      var duckContainer = row.querySelector('.race-duck-container');
+      duckContainer.style.left = (2 + travel) + '%';
+
+      // Check if taps increased to spawn wake water ripples dynamically
+      var oldTaps = prevTapsMap[entry.playerId] || 0;
+      if (entry.taps > oldTaps && oldTaps > 0) {
+        spawnWaterRipple(row.querySelector('.race-lane'), 2 + travel);
+      }
+      prevTapsMap[entry.playerId] = entry.taps;
+
+      var wakeEl = row.querySelector('.duck-wake');
+      if (entry.taps > 0) {
+        wakeEl.classList.add('swimming');
+      }
+
+      row.style.position = 'absolute';
+      row.style.width = '100%';
+      row.style.top = (index * rowHeight) + 'px';
+    });
+  }
+
+  function onRaceOver(payload) {
+    clearInterval(lobbyCountdownTimer);
+    playFanfare();
+    startConfetti();
+
+    var ranking = payload.ranking || [];
+    var overlay = document.getElementById('winner-overlay');
+    if (!overlay) {
+      var div = document.createElement('div');
+      div.id = 'winner-overlay';
+      document.body.appendChild(div);
+      overlay = div;
+    }
+    overlay.style.display = 'flex';
+    overlay.innerHTML = 
+      '<div class="winner-card">' +
+        '<h1 class="winner-title">🏁 BẢNG XẾP HẠNG CUỘC ĐUA 🏁</h1>' +
+        '<div class="podium-container">' +
+          '<!-- 2nd Place -->' +
+          '<div class="podium-step step-2" id="podium-2">' +
+            '<div class="podium-duck-slot" id="podium-2-duck"></div>' +
+            '<div class="podium-block">2</div>' +
+            '<div class="podium-name" id="podium-2-name">-</div>' +
+          '</div>' +
+          '<!-- 1st Place -->' +
+          '<div class="podium-step step-1" id="podium-1">' +
+            '<div class="podium-crown">👑</div>' +
+            '<div class="podium-duck-slot" id="podium-1-duck"></div>' +
+            '<div class="podium-block">1</div>' +
+            '<div class="podium-name" id="podium-1-name">-</div>' +
+          '</div>' +
+          '<!-- 3rd Place -->' +
+          '<div class="podium-step step-3" id="podium-3">' +
+            '<div class="podium-duck-slot" id="podium-3-duck"></div>' +
+            '<div class="podium-block">3</div>' +
+            '<div class="podium-name" id="podium-3-name">-</div>' +
+          '</div>' +
+        '</div>' +
+        '<div id="leaderboard-list"></div>' +
+        '<div class="restart-timer-line" id="restart-timer-line">Chuẩn bị mở phòng chơi mới...</div>' +
+      '</div>';
+
+    if (ranking[0]) {
+      document.getElementById('podium-1-duck').innerHTML = getDuckSvg(ranking[0].color);
+      document.getElementById('podium-1-name').textContent = ranking[0].nickname;
+    } else {
+      document.getElementById('podium-1').style.opacity = '0.3';
+    }
+
+    if (ranking[1]) {
+      document.getElementById('podium-2-duck').innerHTML = getDuckSvg(ranking[1].color);
+      document.getElementById('podium-2-name').textContent = ranking[1].nickname;
+    } else {
+      document.getElementById('podium-2').style.opacity = '0.3';
+    }
+
+    if (ranking[2]) {
+      document.getElementById('podium-3-duck').innerHTML = getDuckSvg(ranking[2].color);
+      document.getElementById('podium-3-name').textContent = ranking[2].nickname;
+    } else {
+      document.getElementById('podium-3').style.opacity = '0.3';
+    }
+
+    var lbList = document.getElementById('leaderboard-list');
+    var lbHtml = '';
+    for (var i = 3; i < ranking.length; i++) {
+      var item = ranking[i];
+      lbHtml += 
+        '<div class="lb-item">' +
+          '<span>#' + (i + 1) + ' ' + item.nickname + '</span>' +
+          '<span style="color:' + item.color + '">' + item.taps + ' taps</span>' +
+        '</div>';
+    }
+    lbList.innerHTML = lbHtml || '<div style="color:#854d0e; font-weight:700; opacity:0.6; padding: 12px 0;">Không có thứ hạng nào khác</div>';
+
+    document.getElementById('race-content').style.display = 'none';
+
+    var statusEl = document.getElementById('status-line');
+    statusEl.className = 'finished';
+    statusEl.textContent = '🏁 Trò chơi đã kết thúc! Phòng mới sắp mở...';
+    document.getElementById('lobby-content').style.display = 'none';
+  }
+
+  function startConfetti() {
+    var duration = 5000;
+    var animationEnd = Date.now() + duration;
+    var container = document.createElement('div');
+    container.style.position = 'fixed';
+    container.style.inset = '0';
+    container.style.pointerEvents = 'none';
+    container.style.zIndex = '999';
+    document.body.appendChild(container);
+    
+    function randomInRange(min, max) { return Math.random() * (max - min) + min; }
+    
+    var interval = setInterval(function() {
+      var timeLeft = animationEnd - Date.now();
+      if (timeLeft <= 0) {
+        clearInterval(interval);
+        container.remove();
+        return;
+      }
+      for (var i = 0; i < 6; i++) {
+        var particle = document.createElement('div');
+        particle.className = 'confetti-particle';
+        particle.style.background = ['#ff007f', '#ffaa00', '#00ffaa', '#00aaff', '#cc00ff'][Math.floor(Math.random() * 5)];
+        particle.style.left = randomInRange(0, 100) + '%';
+        particle.style.top = '-10px';
+        particle.style.width = randomInRange(8, 14) + 'px';
+        particle.style.height = randomInRange(8, 14) + 'px';
+        particle.style.opacity = randomInRange(0.6, 1);
+        particle.style.transform = 'rotate(' + randomInRange(0, 360) + 'deg)';
+        container.appendChild(particle);
+        animateParticle(particle);
+      }
+    }, 100);
+
+    function animateParticle(el) {
+      var speedY = randomInRange(3, 7);
+      var speedX = randomInRange(-1.5, 1.5);
+      var spin = randomInRange(-8, 8);
+      var top = -10;
+      var left = parseFloat(el.style.left);
+      var rotate = 0;
+      // Random phase offset for swaying so not all particles drift in sync
+      var phaseOffset = Math.random() * 10;
+      function step() {
+        if (!el.parentNode) return;
+        top += speedY;
+        // Apply sine wave wind sway
+        left += speedX + Math.sin((top / 25) + phaseOffset) * 0.45;
+        rotate += spin;
+        el.style.top = top + 'px';
+        el.style.left = left + '%';
+        el.style.transform = 'rotate(' + rotate + 'deg)';
+        if (top < window.innerHeight) {
+          requestAnimationFrame(step);
+        } else {
+          el.remove();
+        }
+      }
+      requestAnimationFrame(step);
+    }
+  }
+
+  var lastBeepSec = -1;
+  function startLobbyCountdownLoop() {
+    clearInterval(lobbyCountdownTimer);
+    lobbyCountdownTimer = setInterval(renderLobbyStatusLine, 200);
+    renderLobbyStatusLine();
+  }
+
+  function renderLobbyStatusLine() {
+    if (lobbyDeadline === null) return;
+    var remainingLobbySec = Math.max(0, Math.ceil((lobbyDeadline - Date.now()) / 1000));
+    
+    if (remainingLobbySec <= 3 && remainingLobbySec > 0 && remainingLobbySec !== lastBeepSec) {
+      playCountdownBeep();
+      lastBeepSec = remainingLobbySec;
+    }
+
+    var statusEl = document.getElementById('status-line');
+    statusEl.className = 'lobby';
+    statusEl.textContent = '⏳ Bắt đầu sau: ' + remainingLobbySec + 's';
+  }
+
+  document.getElementById('btn-force-start').addEventListener('click', function () {
+    send('force_start');
+  });
+
+  function copyJoinUrlViaExecCommand() {
+    var tempInput = document.createElement('textarea');
+    tempInput.value = currentJoinUrl;
+    tempInput.style.position = 'fixed';
+    tempInput.style.opacity = '0';
+    document.body.appendChild(tempInput);
+    tempInput.select();
+    document.execCommand('copy');
+    document.body.removeChild(tempInput);
+  }
+
+  function copyJoinUrlToClipboard() {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      return navigator.clipboard.writeText(currentJoinUrl).catch(copyJoinUrlViaExecCommand);
+    }
+    copyJoinUrlViaExecCommand();
+    return Promise.resolve();
+  }
+
+  document.getElementById('btn-copy-url').addEventListener('click', function () {
+    var btn = document.getElementById('btn-copy-url');
+    copyJoinUrlToClipboard().then(function () {
+      var originalText = btn.textContent;
+      btn.textContent = '✅ Đã copy!';
+      setTimeout(function () { btn.textContent = originalText; }, 2000);
+    });
+  });
+
+  // Custom JS D-Pad navigation for Android TV remote D-Pad support
+  var focusableIds = ['audio-toggle', 'btn-copy-url', 'btn-force-start'];
+  
+  window.addEventListener('keydown', function (e) {
+    var active = document.activeElement;
+    var activeId = active ? active.id : '';
+    
+    // If nothing is focused, start by focusing the copy button
+    if (!active || focusableIds.indexOf(activeId) === -1) {
+      var copyBtn = document.getElementById('btn-copy-url');
+      if (copyBtn) copyBtn.focus();
+      return;
+    }
+    
+    var nextId = null;
+    var forceStartBtn = document.getElementById('btn-force-start');
+    var canFocusStart = forceStartBtn && !forceStartBtn.disabled;
+    
+    switch (e.key) {
+      case 'ArrowDown':
+      case 'Down':
+        if (activeId === 'audio-toggle') {
+          nextId = 'btn-copy-url';
+        }
+        break;
+      case 'ArrowUp':
+      case 'Up':
+        if (activeId === 'btn-copy-url' || activeId === 'btn-force-start') {
+          nextId = 'audio-toggle';
+        }
+        break;
+      case 'ArrowRight':
+      case 'Right':
+        if (activeId === 'btn-copy-url' && canFocusStart) {
+          nextId = 'btn-force-start';
+        }
+        break;
+      case 'ArrowLeft':
+      case 'Left':
+        if (activeId === 'btn-force-start') {
+          nextId = 'btn-copy-url';
+        }
+        break;
+    }
+    
+    if (nextId) {
+      var nextEl = document.getElementById(nextId);
+      if (nextEl) {
+        e.preventDefault();
+        nextEl.focus();
+      }
+    }
+  });
+
+  // Tự động gửi thông điệp báo cáo vị trí focus hiện tại về server qua WebSocket
+  document.addEventListener('focus', function (e) {
+    if (e.target && e.target.id && socket && socket.readyState === WebSocket.OPEN) {
+      send('dpad_focus', { activeId: e.target.id });
+    }
+  }, true);
+
+  connect();
+
+  // Auto-focus the Copy URL button on page load so D-pad remote navigation can start immediately
+  setTimeout(function () {
+    var btn = document.getElementById('btn-copy-url');
+    if (btn) btn.focus();
+  }, 1000);
+}());
+</script>
+</body>
+</html>

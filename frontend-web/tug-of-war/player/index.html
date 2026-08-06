@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>Sumo Kéo Co — Controller</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400..700&display=swap');
+  
+  :root { 
+    color-scheme: light; 
+    --primary-red: #ef4444;
+    --primary-blue: #3b82f6;
+    --bg-red: radial-gradient(circle at 50% 30%, #fee2e2, #fecaca);
+    --bg-blue: radial-gradient(circle at 50% 30%, #dbeafe, #bfdbfe);
+    --bg-lobby: radial-gradient(circle at 50% 30%, #bae6fd, #e0f2fe);
+  }
+  
+  * { 
+    box-sizing: border-box; 
+    -webkit-tap-highlight-color: transparent; 
+    -webkit-user-select: none; 
+    user-select: none; 
+  }
+  
+  html, body {
+    margin: 0; padding: 0; height: 100%;
+    font-family: 'Fredoka', -apple-system, sans-serif;
+    background: var(--bg-lobby);
+    color: #4b5563; overflow: hidden;
+    transition: background 0.5s ease;
+  }
+  
+  .screen {
+    display: none;
+    height: 100vh; width: 100vw;
+    flex-direction: column; align-items: center; justify-content: center;
+    padding: 24px; text-align: center;
+    position: relative;
+  }
+  .screen.active { display: flex; }
+
+  .card {
+    width: 100%; max-width: 340px;
+    background: #fffdf0;
+    border: 5px solid #854d0e;
+    border-radius: 28px;
+    padding: 28px 24px;
+    box-shadow: 0 12px 0 #451a03, 0 20px 40px rgba(0,0,0,0.15);
+    position: relative;
+    z-index: 10;
+  }
+
+  .game-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: #fef08a; color: #854d0e;
+    border: 2px solid #ca8a04;
+    font-size: 11px; font-weight: 700; letter-spacing: 0.02em;
+    padding: 4px 12px; border-radius: 999px; margin-bottom: 14px;
+    text-transform: uppercase;
+    box-shadow: 0 2px 0 #ca8a04;
+  }
+
+  h1 { font-size: 32px; margin: 0 0 8px; font-weight: 800; color: #b45309; text-shadow: 0 2px 0 #fef08a; }
+  p.subtitle { color: #854d0e; opacity: 0.8; margin-top: 0; margin-bottom: 22px; font-size: 15px; font-weight: 700; }
+
+  input {
+    width: 100%; font-size: 18px; padding: 13px 16px;
+    border-radius: 16px; border: 3px solid #854d0e;
+    margin-bottom: 14px; text-align: center;
+    background: #fff; color: #854d0e;
+    font-weight: 700;
+    font-family: 'Fredoka', sans-serif;
+  }
+  input:focus { outline: none; border-color: #eab308; box-shadow: 0 0 0 4px #fef08a; }
+  
+  button.primary {
+    width: 100%; font-size: 18px; padding: 14px 16px;
+    border-radius: 999px; border: none;
+    background: linear-gradient(135deg, #facc15, #eab308); color: #854d0e;
+    font-weight: 800; cursor: pointer;
+    font-family: 'Fredoka', sans-serif;
+    border: 3px solid #b45309;
+    box-shadow: 0 5px 0 #b45309, 0 8px 15px rgba(0,0,0,0.1);
+    transition: transform 0.1s, box-shadow 0.1s;
+  }
+  button.primary:active { transform: scale(0.96) translateY(3px); box-shadow: none; }
+  button.primary:disabled { opacity: 0.5; box-shadow: none; transform: none; }
+  
+  .error { color: #dc2626; min-height: 20px; margin-top: 10px; font-size: 14px; font-weight: 700; }
+
+  /* Waiting Screen */
+  .team-announcement {
+    font-size: 26px;
+    font-weight: 800;
+    margin-bottom: 16px;
+    padding: 10px 20px;
+    border-radius: 16px;
+    border: 3px solid #854d0e;
+    box-shadow: 0 4px 0 #854d0e;
+  }
+  .team-announcement.red {
+    background-color: #fee2e2;
+    color: var(--primary-red);
+  }
+  .team-announcement.blue {
+    background-color: #dbeafe;
+    color: var(--primary-blue);
+  }
+
+  /* Game Screen */
+  #screen-race { padding: 0; position: relative; }
+
+  /* Mini Tug of War status bar */
+  #rope-status-wrap {
+    position: absolute;
+    top: env(safe-area-inset-top, 0px);
+    left: 0; right: 0;
+    padding: 12px 16px;
+    z-index: 5;
+    background: rgba(255, 255, 255, 0.9);
+    border-bottom: 3.5px solid #854d0e;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .team-score-bar {
+    display: flex;
+    justify-content: space-between;
+    font-size: 15px;
+    font-weight: 800;
+  }
+  .score-red { color: var(--primary-red); }
+  .score-blue { color: var(--primary-blue); }
+
+  .mini-rope-container {
+    height: 18px;
+    position: relative;
+    background: #e2e8f0;
+    border-radius: 9px;
+    border: 2px solid #854d0e;
+    overflow: hidden;
+  }
+  .mini-rope-center-line {
+    position: absolute;
+    left: 50%; top: 0; bottom: 0;
+    width: 2.5px; background: #64748b;
+    z-index: 2;
+  }
+  .mini-rope {
+    position: absolute;
+    top: 50%; left: 0; right: 0;
+    height: 6px;
+    transform: translateY(-50%);
+    background: repeating-linear-gradient(
+      -45deg,
+      #d97706,
+      #d97706 6px,
+      #b45309 6px,
+      #b45309 12px
+    );
+  }
+  .mini-rope-ribbon {
+    position: absolute;
+    top: 50%; left: 50%;
+    width: 14px; height: 14px;
+    border-radius: 50%;
+    background: #facc15;
+    border: 2.5px solid #854d0e;
+    transform: translate(-50%, -50%);
+    transition: left 0.15s ease-out;
+    z-index: 3;
+    box-shadow: 0 0 6px rgba(0,0,0,0.2);
+  }
+
+  /* Info bars on controller */
+  .stats-row {
+    position: absolute;
+    top: calc(env(safe-area-inset-top, 0px) + 72px);
+    left: 14px; right: 14px;
+    display: flex;
+    justify-content: space-between;
+    z-index: 4;
+  }
+  .info-badge {
+    font-size: 14px; font-weight: 800;
+    padding: 6px 12px; border-radius: 999px;
+    border: 2.5px solid #854d0e;
+    box-shadow: 0 3px 0 #854d0e;
+  }
+  #race-tap-count { background: #fffdf0; color: #854d0e; }
+  #race-timer { background: #ef4444; color: #fff; border-color: #991b1b; box-shadow: 0 3px 0 #991b1b; }
+
+  /* Giant Tap Button */
+  #tap-button {
+    position: absolute; inset: 0; width: 100%; height: 100%;
+    border: none; color: #fff;
+    font-size: 48px; font-weight: 900; letter-spacing: 0.05em; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Fredoka', sans-serif;
+    padding-top: calc(env(safe-area-inset-top, 0px) + 120px);
+    box-shadow: inset 0 -12px 0 rgba(0,0,0,0.25);
+    transition: background 0.1s, transform 0.05s;
+  }
+  #tap-button.red-team-btn {
+    background: radial-gradient(circle at 50% 45%, #fca5a5, #ef4444 75%);
+    text-shadow: 0 4px 0 #991b1b;
+  }
+  #tap-button.red-team-btn.pressed {
+    background: radial-gradient(circle at 50% 45%, #fecaca, #dc2626 75%);
+  }
+  #tap-button.blue-team-btn {
+    background: radial-gradient(circle at 50% 45%, #93c5fd, #3b82f6 75%);
+    text-shadow: 0 4px 0 #1e40af;
+  }
+  #tap-button.blue-team-btn.pressed {
+    background: radial-gradient(circle at 50% 45%, #bfdbfe, #2563eb 75%);
+  }
+  #tap-button:active {
+    box-shadow: inset 0 -4px 0 rgba(0,0,0,0.2);
+    font-size: 44px;
+  }
+  #tap-button:disabled { background: #6b7280; text-shadow: none; box-shadow: none; }
+
+  /* Floating tap bubble animation */
+  .tap-bubble {
+    position: absolute;
+    pointer-events: none;
+    font-size: 32px;
+    font-weight: 900;
+    z-index: 100;
+    animation: bubbleUp 0.6s cubic-bezier(0.18, 0.89, 0.32, 1.28) forwards;
+  }
+  @keyframes bubbleUp {
+    0% { transform: translate(-50%, -50%) scale(0.5); opacity: 0; }
+    30% { opacity: 1; transform: translate(-50%, -100px) scale(1.2); }
+    100% { transform: translate(-50%, -200px) scale(0.9); opacity: 0; }
+  }
+
+  /* Results Screen */
+  .result-icon { 
+    font-size: 64px; 
+    margin-bottom: 10px; 
+    animation: resultBounce 0.5s ease-in-out infinite alternate; 
+  }
+  @keyframes resultBounce {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(-8px); }
+  }
+  .score-line { font-size: 17px; font-weight: 700; color: #854d0e; margin: 4px 0; }
+  
+  #player-top10-list {
+    margin-top: 14px;
+    max-height: 180px;
+    overflow-y: auto;
+    background: rgba(133, 77, 14, 0.05);
+    border-radius: 16px;
+    padding: 8px;
+    border: 2px solid rgba(133, 77, 14, 0.15);
+  }
+  
+  .team-tag {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 800;
+    padding: 2px 6px;
+    border-radius: 6px;
+    color: #fff;
+    margin-left: 6px;
+    text-transform: uppercase;
+  }
+  .team-tag.red { background-color: var(--primary-red); }
+  .team-tag.blue { background-color: var(--primary-blue); }
+
+  .sumo-head-slot {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    margin-bottom: 12px;
+    border: 4px solid #854d0e;
+    box-shadow: 0 4px 0 #854d0e, 0 8px 16px rgba(0,0,0,0.1);
+  }
+  .sumo-head-slot svg { width: 50px; height: 50px; }
+
+  /* Team Selection Styling */
+  .team-selector-wrap {
+    margin: 16px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .team-choice-btn {
+    position: relative;
+    font-size: 16px !important;
+    padding: 12px 14px !important;
+    border-radius: 16px !important;
+    color: #fff !important;
+    font-weight: 800;
+    transition: transform 0.15s, outline 0.15s;
+  }
+  .team-choice-btn.red-btn {
+    background: radial-gradient(circle, #fca5a5, var(--primary-red) 90%);
+    border: 3px solid #991b1b;
+    box-shadow: 0 4px 0 #991b1b;
+  }
+  .team-choice-btn.blue-btn {
+    background: radial-gradient(circle, #93c5fd, var(--primary-blue) 90%);
+    border: 3px solid #1e40af;
+    box-shadow: 0 4px 0 #1e40af;
+  }
+  .recommend-badge {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background: #22c55e;
+    color: white;
+    font-size: 10px;
+    font-weight: 800;
+    padding: 2px 8px;
+    border-radius: 999px;
+    border: 2px solid white;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+    animation: bounceRec 0.6s ease-in-out infinite alternate;
+  }
+  @keyframes bounceRec {
+    from { transform: translateY(0); }
+    to { transform: translateY(-3px); }
+  }
+</style>
+</head>
+<body>
+
+<div id="screen-join" class="screen active">
+  <div class="card">
+    <span class="game-badge">💪 Sumo Kéo Co Sức Mạnh</span>
+    <h1>Sumo Kéo Co</h1>
+    <p class="subtitle">Nhập mã PIN và tên của bạn để kéo co</p>
+    <input id="input-pin" type="tel" inputmode="numeric" maxlength="4" placeholder="Mã PIN (4 số)">
+    <input id="input-nickname" type="text" maxlength="20" placeholder="Tên hiển thị">
+    <button class="primary" id="btn-join">Tham gia</button>
+    <div class="error" id="join-error"></div>
+  </div>
+</div>
+
+<div id="screen-waiting" class="screen">
+  <div class="card">
+    <div class="team-announcement" id="waiting-team-announcement"></div>
+    <h1>Đã sẵn sàng!</h1>
+    <p class="subtitle" id="waiting-nickname"></p>
+    
+    <!-- Team Manual Selector -->
+    <div class="team-selector-wrap">
+      <p style="font-size: 13px; font-weight: 800; color: #854d0e; margin: 0 0 4px;">CHỌN HOẶC ĐỔI ĐỘI:</p>
+      <button class="primary team-choice-btn red-btn" id="btn-select-red">
+        Đội Đỏ (<span id="btn-red-count">0 người</span>)
+        <span class="recommend-badge" id="badge-rec-red" style="display:none;">Gợi Ý</span>
+      </button>
+      <button class="primary team-choice-btn blue-btn" id="btn-select-blue">
+        Đội Xanh (<span id="btn-blue-count">0 người</span>)
+        <span class="recommend-badge" id="badge-rec-blue" style="display:none;">Gợi Ý</span>
+      </button>
+    </div>
+    
+    <p class="score-line" style="font-size: 12px; opacity: 0.8; margin-top: 8px;">Hãy chuẩn bị chạm nút thật nhanh để kéo dây khi trận đấu bắt đầu!</p>
+  </div>
+</div>
+
+<div id="screen-race" class="screen">
+  <div id="rope-status-wrap">
+    <div class="team-score-bar">
+      <span class="score-red">Đỏ: <span id="rope-score-red">0</span></span>
+      <span class="score-blue">Xanh: <span id="rope-score-blue">0</span></span>
+    </div>
+    <div class="mini-rope-container">
+      <div class="mini-rope-center-line"></div>
+      <div class="mini-rope"></div>
+      <div id="mini-rope-ribbon" class="mini-rope-ribbon"></div>
+    </div>
+  </div>
+
+  <div class="stats-row">
+    <div class="info-badge" id="race-tap-count">Bạn: 0</div>
+    <div class="info-badge" id="race-timer">--s</div>
+  </div>
+  
+  <button id="tap-button">KÉO!!!</button>
+</div>
+
+<div id="screen-result" class="screen">
+  <div class="card">
+    <div class="sumo-head-slot" id="result-sumo-slot"></div>
+    <h1 id="result-title">KẾT QUẢ</h1>
+    <p class="score-line">Đóng góp của bạn: <span id="result-taps" style="font-weight: 800; color: #b45309;">0</span> lần chạm</p>
+    
+    <button class="primary" id="btn-play-again" style="margin-top: 24px;">Chơi lại</button>
+  </div>
+</div>
+
+<script>
+(function () {
+  var socket = null;
+  var myPlayerId = '';
+  var myNickname = '';
+  var myTeam = ''; 
+  var myColor = '';
+  var targetNetTaps = 50;
+  
+  var cumulativeTaps = 0;
+  var reportInterval = null;
+  var raceTimerInterval = null;
+
+  var audioCtx = null;
+  function getAudioCtx() {
+    if (!audioCtx) {
+      var AudioContext = window.AudioContext || window.webkitAudioContext;
+      if (AudioContext) audioCtx = new AudioContext();
+    }
+    return audioCtx;
+  }
+
+  // Synthesize Sumo Effort Grunt and Foot Stomp
+  function playSumoGrunt() {
+    try {
+      var ctx = getAudioCtx();
+      if (!ctx) return;
+      if (ctx.state === 'suspended') ctx.resume();
+      var now = ctx.currentTime;
+      var osc = ctx.createOscillator();
+      var gain = ctx.createGain();
+      osc.type = 'sawtooth'; 
+      
+      osc.frequency.setValueAtTime(170, now);
+      osc.frequency.exponentialRampToValueAtTime(70, now + 0.18);
+      
+      var filter = ctx.createBiquadFilter();
+      filter.type = 'bandpass';
+      filter.frequency.value = 240; 
+      filter.Q.value = 1.6;
+      
+      gain.gain.setValueAtTime(0.08, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.18);
+      
+      osc.connect(filter);
+      filter.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(now);
+      osc.stop(now + 0.18);
+    } catch (e) {}
+  }
+
+  function triggerHaptic() {
+    if (navigator.vibrate) {
+      try {
+        navigator.vibrate(35);
+      } catch (e) {}
+    }
+  }
+
+  function showScreen(id) {
+    var screens = document.querySelectorAll('.screen');
+    screens.forEach(function (s) { s.classList.remove('active'); });
+    var activeScreen = document.getElementById(id);
+    if (activeScreen) activeScreen.classList.add('active');
+  }
+
+  function getSumoSvg(color, faceLeft) {
+    var transform = faceLeft ? 'transform="scale(-1, 1) translate(-80, 0)"' : '';
+    return '<svg class="sumo-svg" viewBox="0 0 80 80" ' + transform + '>' +
+      '<path d="M 40,5 C 38,1 32,1 32,5 C 32,9 38,9 40,5 Z" fill="#1e293b"></path>' +
+      '<circle cx="36" cy="11" r="9" fill="#1e293b"></circle>' +
+      '<circle cx="36" cy="38" r="24" fill="#fed7aa" stroke="#f97316" stroke-width="1.5"></circle>' + 
+      '<circle cx="36" cy="20" r="11" fill="#fed7aa" stroke="#f97316" stroke-width="1.5"></circle>' + 
+      '<path d="M 31,19 C 32,18 34,18 35,19" stroke="#1e293b" stroke-width="2" fill="none" stroke-linecap="round"></path>' +
+      '<path d="M 41,19 C 42,18 44,18 45,19" stroke="#1e293b" stroke-width="2" fill="none" stroke-linecap="round"></path>' +
+      '<circle cx="29" cy="22" r="2.5" fill="#fca5a5" opacity="0.6"></circle>' +
+      '<circle cx="43" cy="22" r="2.5" fill="#fca5a5" opacity="0.6"></circle>' +
+      '<path d="M 34,24 Q 36,28 38,24 Z" fill="#991b1b" stroke="#1e293b" stroke-width="1"></path>' +
+      '<path d="M 14,44 Q 36,54 58,44 Q 50,56 22,56 Z" fill="' + color + '" stroke="#1e293b" stroke-width="1.5"></path>' +
+      '<rect x="31" y="47" width="10" height="15" fill="' + color + '" stroke="#1e293b" stroke-width="1.5" rx="2"></rect>' +
+      '<path d="M 42,28 C 50,28 58,34 56,38 C 54,42 46,36 42,32 Z" fill="#fed7aa" stroke="#f97316" stroke-width="1.5"></path>' +
+      '<path d="M 28,28 C 20,28 12,34 14,38 C 16,42 24,36 28,32 Z" fill="#fed7aa" stroke="#f97316" stroke-width="1.5"></path>' +
+      '<path d="M 18,54 C 14,56 12,62 16,66 C 20,68 22,62 22,56 Z" fill="#fed7aa" stroke="#f97316" stroke-width="1.5"></path>' +
+      '<path d="M 54,54 C 58,56 60,62 56,66 C 52,68 50,62 50,56 Z" fill="#fed7aa" stroke="#f97316" stroke-width="1.5"></path>' +
+      '</svg>';
+  }
+
+  function connect() {
+    var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
+    socket = new WebSocket(protocol + '://' + location.host + '/tug-of-war-ws');
+    
+    socket.addEventListener('message', function (event) {
+      var message = JSON.parse(event.data);
+      handleMessage(message.type, message.payload);
+    });
+    
+    socket.addEventListener('close', function () {
+      document.getElementById('join-error').textContent = 'Mất kết nối server. Vui lòng tải lại trang.';
+    });
+  }
+
+  function send(type, payload) {
+    if (socket && socket.readyState === WebSocket.OPEN) {
+      socket.send(JSON.stringify({ type: type, payload: payload || {} }));
+    }
+  }
+
+  function handleMessage(type, payload) {
+    switch (type) {
+      case 'join_ack':
+        onJoinAck(payload);
+        break;
+      case 'lobby_update':
+        onLobbyUpdate(payload);
+        break;
+      case 'race_start':
+        onRaceStart(payload);
+        break;
+      case 'race_progress':
+        onRaceProgress(payload);
+        break;
+      case 'race_over':
+        onRaceOver(payload);
+        break;
+      case 'room_closed':
+        alert('Phòng chơi đã đóng.');
+        location.reload();
+        break;
+      default:
+        break;
+    }
+  }
+
+  function onJoinAck(payload) {
+    if (payload.success) {
+      myPlayerId = payload.playerId;
+      targetNetTaps = payload.targetNetTaps || targetNetTaps;
+      myTeam = payload.team;
+      myColor = payload.color;
+      
+      if (myTeam === 'red') {
+        document.body.style.background = 'var(--bg-red)';
+      } else {
+        document.body.style.background = 'var(--bg-blue)';
+      }
+
+      var announceEl = document.getElementById('waiting-team-announcement');
+      announceEl.className = 'team-announcement ' + myTeam;
+      announceEl.innerHTML = myTeam === 'red' ? '🔴 ĐỘI ĐỎ 🔴' : '🔵 ĐỘI XANH 🔵';
+
+      document.getElementById('waiting-nickname').textContent = myNickname;
+      showScreen('screen-waiting');
+    } else {
+      var err = 'Lỗi không xác định.';
+      if (payload.error === 'invalid_pin_or_started') {
+        err = 'Mã PIN không đúng hoặc trận đấu đã bắt đầu.';
+      } else if (payload.error === 'room_full') {
+        err = 'Phòng đã đầy người chơi.';
+      } else if (payload.error === 'nickname_required') {
+        err = 'Vui lòng điền tên.';
+      }
+      document.getElementById('join-error').textContent = err;
+    }
+  }
+
+  function onLobbyUpdate(payload) {
+    var redCount = payload.redCount || 0;
+    var blueCount = payload.blueCount || 0;
+
+    // Display suggestion badge for team with fewer players
+    var recRed = document.getElementById('badge-rec-red');
+    var recBlue = document.getElementById('badge-rec-blue');
+    
+    recRed.style.display = 'none';
+    recBlue.style.display = 'none';
+    
+    if (redCount < blueCount) {
+      recRed.style.display = 'inline-block';
+    } else if (blueCount < redCount) {
+      recBlue.style.display = 'inline-block';
+    }
+    
+    var btnRed = document.getElementById('btn-select-red');
+    var btnBlue = document.getElementById('btn-select-blue');
+    
+    // Update button elements contents and selection visual states
+    if (myTeam === 'red') {
+      btnRed.innerHTML = '👉 Đội Đỏ (<span id="btn-red-count">' + redCount + ' người</span>) 👈' +
+        '<span class="recommend-badge" id="badge-rec-red" style="display:' + recRed.style.display + ';">Gợi Ý</span>';
+      btnBlue.innerHTML = 'Đội Xanh (<span id="btn-blue-count">' + blueCount + ' người</span>)' +
+        '<span class="recommend-badge" id="badge-rec-blue" style="display:' + recBlue.style.display + ';">Gợi Ý</span>';
+      
+      btnRed.style.transform = 'scale(1.05)';
+      btnRed.style.outline = '3px solid #854d0e';
+      btnBlue.style.transform = 'scale(1)';
+      btnBlue.style.outline = 'none';
+    } else {
+      btnRed.innerHTML = 'Đội Đỏ (<span id="btn-red-count">' + redCount + ' người</span>)' +
+        '<span class="recommend-badge" id="badge-rec-red" style="display:' + recRed.style.display + ';">Gợi Ý</span>';
+      btnBlue.innerHTML = '👉 Đội Xanh (<span id="btn-blue-count">' + blueCount + ' người</span>) 👈' +
+        '<span class="recommend-badge" id="badge-rec-blue" style="display:' + recBlue.style.display + ';">Gợi Ý</span>';
+      
+      btnBlue.style.transform = 'scale(1.05)';
+      btnBlue.style.outline = '3px solid #854d0e';
+      btnRed.style.transform = 'scale(1)';
+      btnRed.style.outline = 'none';
+    }
+  }
+
+  function onRaceStart(payload) {
+    cumulativeTaps = 0;
+    targetNetTaps = payload.targetNetTaps || targetNetTaps;
+    
+    var tapBtn = document.getElementById('tap-button');
+    tapBtn.disabled = false;
+    tapBtn.textContent = 'KÉO!!!';
+    tapBtn.className = myTeam === 'red' ? 'red-team-btn' : 'blue-team-btn';
+    
+    showScreen('screen-race');
+    updateRaceUi();
+
+    document.getElementById('rope-score-red').textContent = '0';
+    document.getElementById('rope-score-blue').textContent = '0';
+    document.getElementById('mini-rope-ribbon').style.left = '50%';
+
+    var durationMs = payload.durationMs || 30000;
+    var remainingMs = durationMs;
+    document.getElementById('race-timer').textContent = Math.ceil(remainingMs / 1000) + 's';
+
+    clearInterval(raceTimerInterval);
+    raceTimerInterval = setInterval(function () {
+      remainingMs -= 200;
+      var remainingSec = Math.max(0, Math.ceil(remainingMs / 1000));
+      document.getElementById('race-timer').textContent = remainingSec + 's';
+      if (remainingSec <= 0) clearInterval(raceTimerInterval);
+    }, 200);
+
+    clearInterval(reportInterval);
+    reportInterval = setInterval(function () {
+      send('report_taps', { cumulativeTaps: cumulativeTaps });
+    }, 150);
+  }
+
+  function onRaceProgress(payload) {
+    document.getElementById('rope-score-red').textContent = payload.redTaps || 0;
+    document.getElementById('rope-score-blue').textContent = payload.blueTaps || 0;
+    
+    var delta = payload.delta || 0;
+    var rawPercentage = 50 + (delta / targetNetTaps) * 50;
+    var boundedPercentage = Math.max(5, Math.min(95, rawPercentage));
+    document.getElementById('mini-rope-ribbon').style.left = boundedPercentage + '%';
+  }
+
+  function createTapBubble(clientX, clientY) {
+    var bubble = document.createElement('div');
+    bubble.className = 'tap-bubble';
+    
+    var grunts = ['ỰA!', 'DÔ!', 'LÊN!', 'KÉO!', 'ỰC!', '+1', 'CỐ LÊN!'];
+    bubble.textContent = grunts[Math.floor(Math.random() * grunts.length)];
+    
+    bubble.style.color = myTeam === 'red' ? '#fee2e2' : '#dbeafe';
+    bubble.style.textShadow = myTeam === 'red' 
+      ? '0 2px 4px #991b1b, 0 0 10px #f87171' 
+      : '0 2px 4px #1e40af, 0 0 10px #60a5fa';
+    
+    var posX = clientX || window.innerWidth / 2;
+    var posY = clientY || window.innerHeight / 2;
+    bubble.style.left = posX + 'px';
+    bubble.style.top = posY + 'px';
+    
+    document.body.appendChild(bubble);
+    setTimeout(function() {
+      bubble.remove();
+    }, 600);
+  }
+
+  function onTapDown(e) {
+    if (e) {
+      if (e.type === 'touchstart' && typeof e.preventDefault === 'function') {
+        e.preventDefault();
+      }
+    }
+    
+    playSumoGrunt();
+    triggerHaptic();
+    cumulativeTaps += 1;
+    updateRaceUi();
+    
+    var touchX, touchY;
+    if (e && e.touches && e.touches[0]) {
+      touchX = e.touches[0].clientX;
+      touchY = e.touches[0].clientY;
+    } else if (e) {
+      touchX = e.clientX;
+      touchY = e.clientY;
+    }
+    createTapBubble(touchX, touchY);
+    
+    var tapButton = document.getElementById('tap-button');
+    tapButton.classList.add('pressed');
+    setTimeout(function () { tapButton.classList.remove('pressed'); }, 80);
+  }
+
+  function updateRaceUi() {
+    document.getElementById('race-tap-count').textContent = 'Bạn: ' + cumulativeTaps;
+  }
+
+  function onRaceOver(payload) {
+    clearInterval(raceTimerInterval);
+    clearInterval(reportInterval);
+    document.getElementById('tap-button').disabled = true;
+    send('report_taps', { cumulativeTaps: cumulativeTaps });
+
+    document.getElementById('result-sumo-slot').innerHTML = getSumoSvg(myColor, myTeam === 'blue');
+
+    var winnerTeam = payload.winnerTeam; 
+    var titleEl = document.getElementById('result-title');
+    
+    if (winnerTeam === 'tie') {
+      titleEl.innerHTML = 'HÒA NHAU!';
+      titleEl.style.color = '#854d0e';
+    } else if (winnerTeam === myTeam) {
+      titleEl.innerHTML = '👑 CHIẾN THẮNG! 👑';
+      titleEl.style.color = '#15803d';
+    } else {
+      titleEl.innerHTML = 'THẤT BẠI!';
+      titleEl.style.color = '#dc2626';
+    }
+    
+    document.getElementById('result-taps').textContent = cumulativeTaps;
+    showScreen('screen-result');
+  }
+
+  document.getElementById('btn-join').addEventListener('click', function () {
+    var pin = document.getElementById('input-pin').value.trim();
+    var nickname = document.getElementById('input-nickname').value.trim();
+    document.getElementById('join-error').textContent = '';
+    if (!pin || !nickname) {
+      document.getElementById('join-error').textContent = 'Vui lòng nhập đủ mã PIN và tên hiển thị.';
+      return;
+    }
+    myNickname = nickname;
+    send('join_room', { pin: pin, nickname: nickname });
+  });
+
+  document.getElementById('btn-select-red').addEventListener('click', function () {
+    if (myTeam !== 'red') {
+      send('switch_team', { team: 'red' });
+    }
+  });
+
+  document.getElementById('btn-select-blue').addEventListener('click', function () {
+    if (myTeam !== 'blue') {
+      send('switch_team', { team: 'blue' });
+    }
+  });
+
+  document.getElementById('btn-play-again').addEventListener('click', function () {
+    location.reload();
+  });
+
+  document.getElementById('tap-button').addEventListener('touchstart', onTapDown);
+  document.getElementById('tap-button').addEventListener('mousedown', onTapDown);
+
+  function prefillPinFromQrScan() {
+    var pinFromUrl = new URLSearchParams(location.search).get('pin');
+    if (pinFromUrl) {
+      document.getElementById('input-pin').value = pinFromUrl;
+      document.getElementById('input-nickname').focus();
+    }
+  }
+
+  prefillPinFromQrScan();
+  connect();
+}());
+</script>
+</body>
+</html>
