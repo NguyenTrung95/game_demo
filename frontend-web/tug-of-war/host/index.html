@@ -772,10 +772,7 @@
         <div class="lobby-col-left">
           <img id="qr-image" src="" alt="QR Code">
           <div id="join-url-row">
-            <span id="join-url">Đang tải...</span>
-          </div>
           <div id="pin-fallback">Mã PIN: ----</div>
-          <button class="action-btn" id="btn-copy-url">📋 Copy URL</button>
         </div>
         
         <div class="lobby-col-right">
@@ -1033,12 +1030,16 @@
     targetNetTaps = payload.targetNetTaps || targetNetTaps;
     
     document.getElementById('qr-image').src = payload.qrDataUrl;
-    document.getElementById('join-url').textContent = payload.joinUrl;
-    document.getElementById('pin-fallback').textContent = 'Hoặc nhập mã PIN: ' + payload.pin;
+    document.getElementById('pin-fallback').textContent = 'Mã PIN: ' + payload.pin;
 
     document.getElementById('lobby-content').style.display = 'block';
     document.getElementById('race-content').style.display = 'none';
-    document.getElementById('btn-force-start').style.display = 'inline-block';
+    document.getElementById('btn-force-start').style.display = 'flex';
+
+    // Always focus the start button so it has highlight ring from the start
+    setTimeout(function() {
+      document.getElementById('btn-force-start').focus();
+    }, 300);
     
     // Hide winner overlay
     var overlay = document.getElementById('winner-overlay');

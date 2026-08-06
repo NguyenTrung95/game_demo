@@ -32,7 +32,7 @@ wss.on('connection', (ws, req) => {
     if (isTugOfWar) {
       switch (message.type) {
         case 'create_room':
-          tugOfWarRoomManager.createRoom(ws).catch((error) => {
+          tugOfWarRoomManager.createRoom(ws, req).catch((error) => {
             console.error('Failed to create room:', error);
           });
           break;
@@ -54,7 +54,7 @@ wss.on('connection', (ws, req) => {
     } else {
       switch (message.type) {
         case 'create_room':
-          roomManager.createRoom(ws).catch((error) => {
+          roomManager.createRoom(ws, req).catch((error) => {
             console.error('Failed to create room:', error);
           });
           break;

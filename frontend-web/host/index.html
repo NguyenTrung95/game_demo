@@ -850,10 +850,6 @@
       <div id="lobby-grid">
         <div class="lobby-col-left">
           <img id="qr-image" alt="QR tham gia">
-          <div id="join-url-row">
-            <div id="join-url"></div>
-            <button class="action-btn" id="btn-copy-url">📋 Copy URL</button>
-          </div>
           <div id="pin-fallback"></div>
           <div class="start-btn-wrap">
             <button class="action-btn" id="btn-force-start" disabled>
@@ -1060,8 +1056,7 @@
     currentJoinUrl = payload.joinUrl;
     targetTaps = payload.targetTaps || targetTaps;
     document.getElementById('qr-image').src = payload.qrDataUrl;
-    document.getElementById('join-url').textContent = payload.joinUrl;
-    document.getElementById('pin-fallback').textContent = 'Hoặc nhập mã PIN: ' + payload.pin;
+    document.getElementById('pin-fallback').textContent = 'Mã PIN: ' + payload.pin;
     lobbyDeadline = Date.now() + payload.lobbyDurationMs;
 
     document.getElementById('lobby-content').style.display = 'block';
@@ -1070,8 +1065,13 @@
     document.getElementById('lineup-view').style.display = 'none';
     document.getElementById('pond-view').innerHTML = '';
     document.getElementById('pond-view').style.display = 'none';
-    document.getElementById('btn-force-start').style.display = 'inline-block';
+    document.getElementById('btn-force-start').style.display = 'flex';
     
+    // Always focus the start button so it has highlight ring from the start
+    setTimeout(function() {
+      document.getElementById('btn-force-start').focus();
+    }, 300);
+
     // Hide winner overlay
     var overlay = document.getElementById('winner-overlay');
     if (overlay) overlay.style.display = 'none';

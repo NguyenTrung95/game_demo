@@ -1,5 +1,4 @@
 const crypto = require('crypto');
-const { buildTugOfWarJoinUrl } = require('./serverInfo');
 const { generateQrDataUrl } = require('./qr');
 
 const LOBBY_DURATION_MS = 30_000;
@@ -118,7 +117,7 @@ function destroyRoom(pin) {
   rooms.delete(pin);
 }
 
-async function createRoom(hostWs) {
+async function createRoom(hostWs, req) {
   const pin = generateUniquePin();
   const room = {
     pin,
@@ -137,7 +136,11 @@ async function createRoom(hostWs) {
   hostWs.roomPin = pin;
   hostWs.role = 'host';
 
-  const joinUrl = buildTugOfWarJoinUrl(pin);
+  // Auto-detect protocol + host from the incoming HTTP request
+  // Works on Railway (https), localhost, or any custom domain
+  const proto = (req.headers['x-forwarded-proto'] || 'http').split(',')[0].trim();
+  const host = req.headers['x-forwarded-host'] || req.headers.host;
+  const joinUrl = `${proto}://${host}/tug-of-war/?pin=${pin}`;
   const qrDataUrl = await generateQrDataUrl(joinUrl);
 
   sendJson(hostWs, 'room_created', {
