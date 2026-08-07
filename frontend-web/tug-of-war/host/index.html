@@ -168,16 +168,7 @@
     font-family: 'Fredoka', sans-serif;
   }
   button.action-btn:active { transform: scale(0.96) translateY(2px); }
-  
-  #btn-copy-url {
-    background: #fef08a; color: #854d0e;
-    border: 2px solid #ca8a04;
-    box-shadow: 0 3px 0 #ca8a04;
-    font-size: 13px;
-    padding: 6px 12px;
-  }
-  #btn-copy-url:hover { background: #fef9c3; }
-  
+
   /* ============================
      START BUTTON — 2 States
      ============================ */
@@ -281,8 +272,6 @@
     transform: scale(1.06) !important;
     z-index: 10;
   }
-  #btn-copy-url:focus { background: #fef9c3; }
-
   /* Audio Control */
   .header-actions {
     position: absolute; top: 24px; right: 32px;
@@ -864,7 +853,6 @@
   var socket = null;
   var lobbyDeadline = null;
   var lobbyCountdownTimer = null;
-  var currentJoinUrl = '';
   var targetNetTaps = 50;
   var lobbyPlayers = [];
 
@@ -1026,7 +1014,6 @@
 
   function onRoomCreated(payload) {
     lobbyPlayers = [];
-    currentJoinUrl = payload.joinUrl;
     targetNetTaps = payload.targetNetTaps || targetNetTaps;
     
     document.getElementById('qr-image').src = payload.qrDataUrl;
@@ -1423,77 +1410,37 @@
     send('force_start');
   });
 
-  function copyJoinUrlViaExecCommand() {
-    var tempInput = document.createElement('textarea');
-    tempInput.value = currentJoinUrl;
-    tempInput.style.position = 'fixed';
-    tempInput.style.opacity = '0';
-    document.body.appendChild(tempInput);
-    tempInput.select();
-    document.execCommand('copy');
-    document.body.removeChild(tempInput);
-  }
-
-  function copyJoinUrlToClipboard() {
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-      return navigator.clipboard.writeText(currentJoinUrl).catch(copyJoinUrlViaExecCommand);
-    }
-    copyJoinUrlViaExecCommand();
-    return Promise.resolve();
-  }
-
-  document.getElementById('btn-copy-url').addEventListener('click', function () {
-    var btn = document.getElementById('btn-copy-url');
-    copyJoinUrlToClipboard().then(function () {
-      var originalText = btn.textContent;
-      btn.textContent = '✅ Đã copy!';
-      setTimeout(function () { btn.textContent = originalText; }, 2000);
-    });
-  });
-
   // D-Pad navigation
-  var focusableIds = ['audio-toggle', 'btn-copy-url', 'btn-force-start'];
+  var focusableIds = ['audio-toggle', 'btn-force-start'];
   window.addEventListener('keydown', function (e) {
     var active = document.activeElement;
     var activeId = active ? active.id : '';
-    
+
     if (!active || focusableIds.indexOf(activeId) === -1) {
-      var copyBtn = document.getElementById('btn-copy-url');
-      if (copyBtn) copyBtn.focus();
+      var audioBtn = document.getElementById('audio-toggle');
+      if (audioBtn) audioBtn.focus();
       return;
     }
-    
+
     var nextId = null;
     var forceStartBtn = document.getElementById('btn-force-start');
     var canFocusStart = forceStartBtn && !forceStartBtn.disabled;
-    
+
     switch (e.key) {
       case 'ArrowDown':
       case 'Down':
-        if (activeId === 'audio-toggle') {
-          nextId = 'btn-copy-url';
+        if (activeId === 'audio-toggle' && canFocusStart) {
+          nextId = 'btn-force-start';
         }
         break;
       case 'ArrowUp':
       case 'Up':
-        if (activeId === 'btn-copy-url' || activeId === 'btn-force-start') {
+        if (activeId === 'btn-force-start') {
           nextId = 'audio-toggle';
         }
         break;
-      case 'ArrowRight':
-      case 'Right':
-        if (activeId === 'btn-copy-url' && canFocusStart) {
-          nextId = 'btn-force-start';
-        }
-        break;
-      case 'ArrowLeft':
-      case 'Left':
-        if (activeId === 'btn-force-start') {
-          nextId = 'btn-copy-url';
-        }
-        break;
     }
-    
+
     if (nextId) {
       var nextEl = document.getElementById(nextId);
       if (nextEl) {
@@ -1506,7 +1453,7 @@
   connect();
 
   setTimeout(function () {
-    var btn = document.getElementById('btn-copy-url');
+    var btn = document.getElementById('audio-toggle');
     if (btn) btn.focus();
   }, 1000);
 }());
