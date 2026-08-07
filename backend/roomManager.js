@@ -1,4 +1,5 @@
 const crypto = require('crypto');
+const { buildJoinUrl } = require('./serverInfo');
 const { generateQrDataUrl } = require('./qr');
 
 const LOBBY_DURATION_MS = 30_000;
@@ -107,11 +108,9 @@ async function createRoom(hostWs, req) {
   hostWs.roomPin = pin;
   hostWs.role = 'host';
 
-  // Auto-detect protocol + host from the incoming HTTP request
-  // Works on Railway (https), localhost, or any custom domain
-  const proto = (req.headers['x-forwarded-proto'] || 'http').split(',')[0].trim();
-  const host = req.headers['x-forwarded-host'] || req.headers.host;
-  const joinUrl = `${proto}://${host}/?pin=${pin}`;
+  // Use APP_URL env var (for cloud deploy) or fallback to LAN IP (local dev)
+  const joinUrl = buildJoinUrl(pin);
+  console.log('[Duck Race] Room created pin=' + pin + ' joinUrl=' + joinUrl);
   const qrDataUrl = await generateQrDataUrl(joinUrl);
 
   sendJson(hostWs, 'room_created', {
