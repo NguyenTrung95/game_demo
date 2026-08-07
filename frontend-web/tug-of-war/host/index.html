@@ -134,28 +134,6 @@
     box-shadow: 0 6px 0 #854d0e, 0 8px 16px rgba(0,0,0,0.08);
   }
   
-  #join-url-row { 
-    display: inline-flex; 
-    align-items: center; 
-    gap: 8px; 
-    margin-bottom: 8px; 
-    background: #fef9c3; 
-    padding: 6px 14px; 
-    border-radius: 999px; 
-    border: 2px solid #ca8a04;
-  }
-  
-  #join-url { 
-    font-size: 15px; 
-    color: #854d0e; 
-    font-weight: 700; 
-    max-width: 160px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    display: inline-block;
-  }
-  
   #pin-fallback {
     font-size: 14px; color: #854d0e; font-weight: 700; margin-bottom: 12px;
     letter-spacing: 0.04em;
@@ -760,10 +738,9 @@
       <div id="lobby-grid">
         <div class="lobby-col-left">
           <img id="qr-image" src="" alt="QR Code">
-          <div id="join-url-row">
           <div id="pin-fallback">Mã PIN: ----</div>
         </div>
-        
+
         <div class="lobby-col-right">
           <div class="lobby-pool-container">
             <div class="lobby-team-col red">
