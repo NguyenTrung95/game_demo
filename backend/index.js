@@ -13,11 +13,14 @@ app.use('/', express.static(path.join(__dirname, '..', 'frontend-web', 'player')
 
 const server = app.listen(PORT, () => {
   console.log(`Game Server listening on http://0.0.0.0:${PORT}`);
+  console.log(`APP_URL = ${process.env.APP_URL || '(not set, using LAN IP)'}`);
+  console.log(`NODE_ENV = ${process.env.NODE_ENV || '(not set)'}`);
 });
 
 const wss = new WebSocketServer({ server });
 
 wss.on('connection', (ws, req) => {
+  console.log(`[WS] New connection from ${req.headers.host} path=${req.url}`);
   const url = req.url || '';
   const isTugOfWar = url.includes('/tug-of-war-ws');
 
