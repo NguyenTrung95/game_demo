@@ -1,3 +1,16 @@
+// Catch any uncaught errors and print them
+process.on('uncaughtException', (err) => {
+  console.error('[FATAL] Uncaught exception:', err);
+});
+process.on('unhandledRejection', (err) => {
+  console.error('[FATAL] Unhandled rejection:', err);
+});
+
+console.log('[BOOT] Starting game server...');
+console.log('[BOOT] __dirname =', __dirname);
+console.log('[BOOT] PORT =', process.env.PORT || 8787);
+console.log('[BOOT] APP_URL =', process.env.APP_URL || '(not set)');
+
 const path = require('path');
 const express = require('express');
 const { WebSocketServer } = require('ws');
@@ -6,15 +19,19 @@ const tugOfWarRoomManager = require('./tugOfWarRoomManager');
 const { PORT } = require('./serverInfo');
 
 const app = express();
+
+// Health check route for debugging
+app.get('/health', (req, res) => {
+  res.json({ status: 'ok', port: PORT, appUrl: process.env.APP_URL || 'not set' });
+});
+
 app.use('/host', express.static(path.join(__dirname, '..', 'frontend-web', 'host')));
 app.use('/tug-of-war/host', express.static(path.join(__dirname, '..', 'frontend-web', 'tug-of-war', 'host')));
 app.use('/tug-of-war', express.static(path.join(__dirname, '..', 'frontend-web', 'tug-of-war', 'player')));
 app.use('/', express.static(path.join(__dirname, '..', 'frontend-web', 'player')));
 
 const server = app.listen(PORT, () => {
-  console.log(`Game Server listening on http://0.0.0.0:${PORT}`);
-  console.log(`APP_URL = ${process.env.APP_URL || '(not set, using LAN IP)'}`);
-  console.log(`NODE_ENV = ${process.env.NODE_ENV || '(not set)'}`);
+  console.log(`[BOOT] Game Server listening on http://0.0.0.0:${PORT}`);
 });
 
 const wss = new WebSocketServer({ server });
