@@ -130,8 +130,8 @@ data class MetroGame(
 
 val METRO_GAMES = listOf(
     // Row 1
-    MetroGame("Duck Race",       R.drawable.ic_game_duck,        Color(0xFF1B5E20), tileGradients = listOf(Color(0xFF00E676), Color(0xFF00B0FF)), iconTint = Color(0xFFFFD54F), vectorIcon = Icons.Default.Pets, keyType = "duck", isActive = true, playerCount = "12.5K Playing", url = "https://game-demo-production-4101.up.railway.app/host/"),
-    MetroGame("Tug of War",         R.drawable.ic_game_tug_of_war, Color(0xFF0D47A1), tileGradients = listOf(Color(0xFFFF1744), Color(0xFF2979FF)), iconTint = Color(0xFFFFF176), vectorIcon = Icons.Default.Sports, keyType = "tug_of_war", isActive = true, playerCount = "9.8K Playing",  url = "https://game-demo-production-4101.up.railway.app/tug-of-war/host/"),
+    MetroGame("Duck Race",       R.drawable.ic_game_duck_real,   Color(0xFF1B5E20), tileGradients = listOf(Color(0xFF00E676), Color(0xFF00B0FF)), keyType = "duck_image", isActive = true, playerCount = "12.5K Playing", url = "https://game-demo-production-4101.up.railway.app/host/"),
+    MetroGame("Tug of War",         R.drawable.ic_game_sumo_real,   Color(0xFF0D47A1), tileGradients = listOf(Color(0xFFFF1744), Color(0xFF2979FF)), keyType = "sumo_image", isActive = true, playerCount = "9.8K Playing",  url = "https://game-demo-production-4101.up.railway.app/tug-of-war/host/"),
     MetroGame("Speed Trivia",      R.drawable.ic_game_timer,      Color(0xFF263238), tileGradients = listOf(Color(0xFFFFEA00), Color(0xFFFF6D00)), iconTint = Color(0xFF212121), vectorIcon = Icons.Default.Speed, keyType = "trivia"),
     MetroGame("Obstacle Run", R.drawable.ic_game_rocket,     Color(0xFF004D40), tileGradients = listOf(Color(0xFF00B0FF), Color(0xFF00E676)), iconTint = Color.White, vectorIcon = Icons.Default.RocketLaunch, keyType = "rocket"),
     // Row 2
@@ -696,7 +696,16 @@ fun RenderGameIcon(game: MetroGame, isFocused: Boolean) {
             ),
         contentAlignment = Alignment.Center
     ) {
-        if (game.keyType == "more") {
+        if (game.keyType == "duck_image" || game.keyType == "sumo_image") {
+            Image(
+                painter = painterResource(id = game.iconRes),
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .clip(CircleShape)
+            )
+        } else if (game.keyType == "more") {
             // Kahoot 4 answer shapes in 2x2 grid
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
