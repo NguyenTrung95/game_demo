@@ -141,9 +141,39 @@
   }
   
   #pin-fallback {
-    font-size: 14px; color: #854d0e; font-weight: 700; margin-bottom: 12px;
-    letter-spacing: 0.04em;
-    opacity: 0.8;
+    font-size: 15px; color: #b45309; font-weight: 900; margin-bottom: 0;
+    letter-spacing: 0.06em;
+  }
+
+  .shortlink-card {
+    width: 100%;
+    background: #fef9c3;
+    border: 2.5px solid #ca8a04;
+    border-radius: 16px;
+    padding: 8px 12px;
+    margin-bottom: 12px;
+    box-shadow: 0 3px 0 #ca8a04;
+    text-align: center;
+  }
+  .shortlink-label {
+    font-size: 10px;
+    font-weight: 800;
+    color: #854d0e;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+  .shortlink-url {
+    font-size: 13.5px;
+    font-weight: 800;
+    color: #0284c7;
+    word-break: break-all;
+    line-height: 1.2;
+    margin-bottom: 5px;
+    background: rgba(2, 132, 199, 0.08);
+    padding: 4px 8px;
+    border-radius: 8px;
+    border: 1px solid rgba(2, 132, 199, 0.2);
   }
 
   button.action-btn {
@@ -838,7 +868,11 @@
       <div id="lobby-grid">
         <div class="lobby-col-left">
           <img id="qr-image" alt="Join QR">
-          <div id="pin-fallback"></div>
+          <div class="shortlink-card">
+            <div class="shortlink-label">🌐 SCAN QR OR OPEN WEB / SHORT LINK:</div>
+            <div class="shortlink-url" id="shortlink-url">game-demo-production-4101.up.railway.app</div>
+            <div id="pin-fallback">PIN CODE: ----</div>
+          </div>
           <div class="start-btn-wrap">
             <button class="action-btn" id="btn-force-start" disabled>
               <span id="start-btn-icon">🔒</span>
@@ -1042,7 +1076,13 @@
     lobbyPlayers = [];
     targetTaps = payload.targetTaps || targetTaps;
     document.getElementById('qr-image').src = payload.qrDataUrl;
-    document.getElementById('pin-fallback').textContent = 'PIN Code: ' + payload.pin;
+    
+    var rawUrl = payload.joinUrl || (location.origin + '/player/?pin=' + payload.pin);
+    var cleanUrl = rawUrl.replace(/^https?:\/\//, '').replace(/\/$/, '');
+    var shortUrlEl = document.getElementById('shortlink-url');
+    if (shortUrlEl) shortUrlEl.textContent = cleanUrl;
+
+    document.getElementById('pin-fallback').textContent = 'PIN CODE: ' + payload.pin;
     lobbyDeadline = Date.now() + payload.lobbyDurationMs;
 
     document.getElementById('lobby-content').style.display = 'block';
