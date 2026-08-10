@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -212,15 +213,38 @@ fun KahootSidebarV2(
             .background(Color(0xFF191333)) // Darker blueish purple for metro sidebar
             .padding(vertical = 32.dp, horizontal = 20.dp)
     ) {
-        // Logo
-        Text(
-            text = "Kaopiz",
-            color = Color.White,
-            fontSize = 32.sp,
-            fontWeight = FontWeight.Black,
-            letterSpacing = (-1).sp,
-            modifier = Modifier.padding(start = 12.dp, bottom = 48.dp)
-        )
+        // Logo with TV Icon Accent
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.padding(start = 12.dp, bottom = 44.dp)
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(36.dp)
+                    .background(
+                        Brush.linearGradient(
+                            colors = listOf(Color(0xFF8052D1), Color(0xFFE21B3C))
+                        ),
+                        CircleShape
+                    ),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Tv,
+                    contentDescription = null,
+                    tint = Color.White,
+                    modifier = Modifier.size(20.dp)
+                )
+            }
+            Spacer(modifier = Modifier.width(10.dp))
+            Text(
+                text = "Kaopiz",
+                color = Color.White,
+                fontSize = 32.sp,
+                fontWeight = FontWeight.ExtraBold,
+                letterSpacing = (-0.5).sp
+            )
+        }
 
         // Menu Items
         val scrollState = rememberScrollState()
@@ -265,16 +289,22 @@ fun SidebarMenuItemV2(title: String, icon: ImageVector, isSelected: Boolean, onC
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .height(40.dp) // Fixed height for exact match
-            .background(bgColor, RoundedCornerShape(8.dp))
+            .height(44.dp)
+            .background(bgColor, RoundedCornerShape(10.dp))
             .clickable(interactionSource = interactionSource, indication = null, onClick = onClick)
             .focusable(interactionSource = interactionSource)
-            .padding(horizontal = 12.dp),
+            .padding(horizontal = 14.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Icon(imageVector = icon, contentDescription = null, tint = contentColor, modifier = Modifier.size(20.dp))
-        Spacer(modifier = Modifier.width(12.dp))
-        Text(text = title, color = contentColor, fontSize = 14.sp, fontWeight = if (isSelected || isFocused) FontWeight.Bold else FontWeight.Medium)
+        Icon(imageVector = icon, contentDescription = null, tint = contentColor, modifier = Modifier.size(22.dp))
+        Spacer(modifier = Modifier.width(14.dp))
+        Text(
+            text = title, 
+            color = contentColor, 
+            fontSize = 15.sp, 
+            fontWeight = if (isSelected || isFocused) FontWeight.ExtraBold else FontWeight.SemiBold,
+            letterSpacing = 0.2.sp
+        )
     }
 }
 
@@ -302,9 +332,9 @@ fun TopBarV2(modifier: Modifier = Modifier, onJoinClicked: () -> Unit = {}, side
                 .padding(horizontal = 16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Icon(imageVector = Icons.Default.Search, contentDescription = null, tint = Color.White.copy(alpha = 0.7f), modifier = Modifier.size(18.dp))
+            Icon(imageVector = Icons.Default.Search, contentDescription = null, tint = Color.White.copy(alpha = 0.85f), modifier = Modifier.size(20.dp))
             Spacer(modifier = Modifier.width(10.dp))
-            Text("Search games...", color = Color.White.copy(alpha = 0.7f), fontSize = 13.sp)
+            Text("Search games, quizzes, topics...", color = Color.White.copy(alpha = 0.75f), fontSize = 14.sp, fontWeight = FontWeight.Medium)
         }
         
         Spacer(modifier = Modifier.width(24.dp))
@@ -642,129 +672,179 @@ fun MetroGameCard(game: MetroGame, modifier: Modifier = Modifier, onClick: () ->
     val interactionSource = remember { MutableInteractionSource() }
     val isFocused by interactionSource.collectIsFocusedAsState()
 
-    val bgColor = if (!game.isActive) game.color.copy(alpha = 0.72f) else game.color
-    val iconTint = if (!game.isActive) Color.White.copy(alpha = 0.60f) else Color.White
-    val borderWidthDp = 4.dp
+    val cardShape = RoundedCornerShape(16.dp)
+    val cardGradient = if (game.isActive) {
+        Brush.verticalGradient(
+            colors = listOf(
+                game.color,
+                game.color.copy(alpha = 0.85f)
+            )
+        )
+    } else {
+        Brush.verticalGradient(
+            colors = listOf(
+                game.color.copy(alpha = 0.65f),
+                game.color.copy(alpha = 0.50f)
+            )
+        )
+    }
+    
+    val iconTint = if (!game.isActive) Color.White.copy(alpha = 0.55f) else Color.White
+    val borderWidthDp = 3.5.dp
     val density = androidx.compose.ui.platform.LocalDensity.current
     val borderPx = with(density) { borderWidthDp.toPx() }
+
     Box(
         modifier = modifier
             .fillMaxWidth()
             .zIndex(if (isFocused) 10f else 0f)
+            .clip(cardShape)
             .drawWithContent {
-                // 1. Draw background + all children first
                 drawContent()
-                // 2. Draw white focus border ON TOP — always inside own bounds, never clipped by parent
                 if (isFocused) {
                     val inset = borderPx / 2f
-                    drawRect(
+                    drawRoundRect(
                         color = androidx.compose.ui.graphics.Color.White,
                         topLeft = androidx.compose.ui.geometry.Offset(inset, inset),
                         size = androidx.compose.ui.geometry.Size(
                             width = size.width - borderPx,
                             height = size.height - borderPx
                         ),
+                        cornerRadius = androidx.compose.ui.geometry.CornerRadius(16.dp.toPx()),
                         style = androidx.compose.ui.graphics.drawscope.Stroke(width = borderPx)
                     )
                 }
             }
-            .background(bgColor)
+            .background(cardGradient)
             .clickable(interactionSource = interactionSource, indication = null, onClick = onClick)
             .focusable(interactionSource = interactionSource)
     ) {
-        // Subtle brightness overlay when focused
+        // Highlight layer on focus
         if (isFocused) {
-            Box(modifier = Modifier.fillMaxSize().background(Color.White.copy(alpha = 0.10f)))
-        }
-
-        // Lock badge – top right corner
-        if (!game.isActive) {
-            Icon(
-                imageVector = Icons.Default.Lock,
-                contentDescription = null,
-                tint = Color.White.copy(alpha = 0.65f),
-                modifier = Modifier.align(Alignment.TopEnd).padding(8.dp).size(16.dp)
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.White.copy(alpha = 0.12f))
             )
         }
 
-        // ── Proportional column layout ──────────────────────────────
+        // Lock / Active badge in top-right corner
+        if (!game.isActive) {
+            Box(
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .padding(10.dp)
+                    .background(Color.Black.copy(alpha = 0.35f), CircleShape)
+                    .padding(horizontal = 8.dp, vertical = 4.dp)
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(
+                        imageVector = Icons.Default.Lock,
+                        contentDescription = null,
+                        tint = Color.White.copy(alpha = 0.8f),
+                        modifier = Modifier.size(12.dp)
+                    )
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text(
+                        text = "LOCKED",
+                        color = Color.White.copy(alpha = 0.8f),
+                        fontSize = 9.sp,
+                        fontWeight = FontWeight.Bold,
+                        letterSpacing = 0.5.sp
+                    )
+                }
+            }
+        }
+
+        // Proportional column layout for Icon + Labels
         Column(modifier = Modifier.fillMaxSize()) {
 
-            // Upper zone (60%): icon centered
+            // Upper zone (58%): Centered icon inside elevated tile
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .weight(0.60f),
+                    .weight(0.58f),
                 contentAlignment = Alignment.Center
             ) {
-                Icon(
-                    painter = painterResource(id = game.iconRes),
-                    contentDescription = null,
-                    tint = iconTint,
-                    modifier = Modifier.fillMaxHeight(0.65f) // icon = 65% of upper-zone height
-                )
+                // Glassmorphic icon backdrop tile
+                Box(
+                    modifier = Modifier
+                        .fillMaxHeight(0.72f)
+                        .aspectRatio(1f)
+                        .background(Color.White.copy(alpha = 0.14f), CircleShape)
+                        .border(1.dp, Color.White.copy(alpha = 0.25f), CircleShape),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        painter = painterResource(id = game.iconRes),
+                        contentDescription = null,
+                        tint = iconTint,
+                        modifier = Modifier.fillMaxHeight(0.55f)
+                    )
+                }
             }
 
-            // Lower zone (40%): title + status
+            // Lower zone (42%): Title + Player stats
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .weight(0.40f)
-                    .padding(start = 12.dp, end = 40.dp, bottom = 10.dp), // end leaves room for play-btn
+                    .weight(0.42f)
+                    .padding(start = 14.dp, end = 44.dp, bottom = 12.dp),
                 verticalArrangement = Arrangement.Center
             ) {
                 Text(
                     text = game.title,
                     color = Color.White,
-                    fontSize = 13.sp,
-                    fontWeight = FontWeight.Bold,
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.ExtraBold,
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis,
-                    lineHeight = 16.sp
+                    lineHeight = 18.sp,
+                    letterSpacing = 0.15.sp
                 )
-                Spacer(modifier = Modifier.height(3.dp))
+                Spacer(modifier = Modifier.height(4.dp))
                 if (game.isActive) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(
-                            imageVector = Icons.Default.Group,
-                            contentDescription = null,
-                            tint = Color.White.copy(alpha = 0.85f),
-                            modifier = Modifier.size(11.dp)
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier
+                            .background(Color.Black.copy(alpha = 0.25f), RoundedCornerShape(10.dp))
+                            .padding(horizontal = 6.dp, vertical = 2.dp)
+                    ) {
+                        // Pulsing Live Dot Indicator
+                        Box(
+                            modifier = Modifier
+                                .size(6.dp)
+                                .background(Color(0xFF4ADE80), CircleShape)
                         )
-                        Spacer(modifier = Modifier.width(3.dp))
+                        Spacer(modifier = Modifier.width(5.dp))
                         Text(
                             text = game.playerCount,
-                            color = Color.White.copy(alpha = 0.85f),
-                            fontSize = 10.sp
+                            color = Color.White.copy(alpha = 0.9f),
+                            fontSize = 10.sp,
+                            fontWeight = FontWeight.Bold,
+                            letterSpacing = 0.2.sp
                         )
                     }
                 } else {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(
-                            imageVector = Icons.Default.Lock,
-                            contentDescription = null,
-                            tint = Color.White.copy(alpha = 0.60f),
-                            modifier = Modifier.size(10.dp)
-                        )
-                        Spacer(modifier = Modifier.width(3.dp))
-                        Text(
-                            text = "Locked",
-                            color = Color.White.copy(alpha = 0.60f),
-                            fontSize = 10.sp
-                        )
-                    }
+                    Text(
+                        text = "Coming Soon",
+                        color = Color.White.copy(alpha = 0.5f),
+                        fontSize = 10.sp,
+                        fontWeight = FontWeight.SemiBold
+                    )
                 }
             }
         }
 
-        // Play button – bottom right, inside lower zone
+        // Play Action Button – bottom right
         if (game.isActive) {
             Box(
                 modifier = Modifier
                     .align(Alignment.BottomEnd)
-                    .padding(8.dp)
-                    .size(28.dp)
-                    .background(Color.White.copy(alpha = 0.28f), RoundedCornerShape(50)),
+                    .padding(10.dp)
+                    .size(30.dp)
+                    .background(Color.White.copy(alpha = 0.30f), CircleShape)
+                    .border(1.dp, Color.White.copy(alpha = 0.5f), CircleShape),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
