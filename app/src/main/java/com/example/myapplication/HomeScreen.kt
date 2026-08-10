@@ -130,20 +130,20 @@ data class MetroGame(
 
 val METRO_GAMES = listOf(
     // Row 1
-    MetroGame("Duck Race",       R.drawable.ic_game_duck_real,   Color(0xFF1B5E20), tileGradients = listOf(Color(0xFF00E676), Color(0xFF00B0FF)), keyType = "duck_image", isActive = true, playerCount = "12.5K Playing", url = "https://game-demo-production-4101.up.railway.app/host/"),
-    MetroGame("Tug of War",         R.drawable.ic_game_sumo_real,   Color(0xFF0D47A1), tileGradients = listOf(Color(0xFFFF1744), Color(0xFF2979FF)), keyType = "sumo_image", isActive = true, playerCount = "9.8K Playing",  url = "https://game-demo-production-4101.up.railway.app/tug-of-war/host/"),
-    MetroGame("Speed Trivia",      R.drawable.ic_game_timer,      Color(0xFF263238), tileGradients = listOf(Color(0xFFFFEA00), Color(0xFFFF6D00)), iconTint = Color(0xFF212121), vectorIcon = Icons.Default.Speed, keyType = "trivia"),
-    MetroGame("Obstacle Run", R.drawable.ic_game_rocket,     Color(0xFF004D40), tileGradients = listOf(Color(0xFF00B0FF), Color(0xFF00E676)), iconTint = Color.White, vectorIcon = Icons.Default.RocketLaunch, keyType = "rocket"),
+    MetroGame("Duck Race",       R.drawable.ic_game_duck_real,   Color(0xFF1B5E20), tileGradients = listOf(Color(0xFF00E676), Color(0xFF00B0FF)), keyType = "real_image", isActive = true, playerCount = "12.5K Playing", url = "https://game-demo-production-4101.up.railway.app/host/"),
+    MetroGame("Tug of War",         R.drawable.ic_game_sumo_real,   Color(0xFF0D47A1), tileGradients = listOf(Color(0xFFFF1744), Color(0xFF2979FF)), keyType = "real_image", isActive = true, playerCount = "9.8K Playing",  url = "https://game-demo-production-4101.up.railway.app/tug-of-war/host/"),
+    MetroGame("Speed Trivia",      R.drawable.ic_game_trivia_real, Color(0xFF263238), tileGradients = listOf(Color(0xFFFFEA00), Color(0xFFFF6D00)), keyType = "real_image"),
+    MetroGame("Obstacle Run", R.drawable.ic_game_rocket_real, Color(0xFF004D40), tileGradients = listOf(Color(0xFF00B0FF), Color(0xFF00E676)), keyType = "real_image"),
     // Row 2
-    MetroGame("Treasure Hunt",        R.drawable.ic_game_treasure,   Color(0xFF3E2723), tileGradients = listOf(Color(0xFFFFD700), Color(0xFFFF6D00)), iconTint = Color.White, vectorIcon = Icons.Default.Diamond, keyType = "treasure"),
-    MetroGame("Tower Stacker",     R.drawable.ic_game_blocks,     Color(0xFF4A148C), tileGradients = listOf(Color(0xFFD500F9), Color(0xFF651FFF)), iconTint = Color.White, vectorIcon = Icons.Default.Extension, keyType = "blocks"),
-    MetroGame("Math Dash",       R.drawable.ic_game_math,       Color(0xFF1B5E20), tileGradients = listOf(Color(0xFF00E676), Color(0xFF1DE9B6)), iconTint = Color.White, vectorIcon = Icons.Default.Functions, keyType = "math"),
-    MetroGame("Memory Rush",  R.drawable.ic_game_memory,    Color(0xFF004D40), tileGradients = listOf(Color(0xFF00B0FF), Color(0xFF651FFF)), iconTint = Color.White, vectorIcon = Icons.Default.Psychology, keyType = "memory"),
+    MetroGame("Treasure Hunt",        R.drawable.ic_game_treasure_real, Color(0xFF3E2723), tileGradients = listOf(Color(0xFFFFD700), Color(0xFFFF6D00)), keyType = "real_image"),
+    MetroGame("Tower Stacker",     R.drawable.ic_game_blocks_real, Color(0xFF4A148C), tileGradients = listOf(Color(0xFFD500F9), Color(0xFF651FFF)), keyType = "real_image"),
+    MetroGame("Math Dash",       R.drawable.ic_game_math_real, Color(0xFF1B5E20), tileGradients = listOf(Color(0xFF00E676), Color(0xFF1DE9B6)), keyType = "real_image"),
+    MetroGame("Memory Rush",  R.drawable.ic_game_memory_real, Color(0xFF004D40), tileGradients = listOf(Color(0xFF00B0FF), Color(0xFF651FFF)), keyType = "real_image"),
     // Row 3
-    MetroGame("Snowball Fight",          R.drawable.ic_game_target,     Color(0xFF0D1B2A), tileGradients = listOf(Color(0xFF40C4FF), Color(0xFF0091EA)), iconTint = Color.White, vectorIcon = Icons.Default.AcUnit, keyType = "snow"),
-    MetroGame("Maze Escape",       R.drawable.ic_game_maze,       Color(0xFF004D40), tileGradients = listOf(Color(0xFF00E5FF), Color(0xFF00838F)), iconTint = Color.White, vectorIcon = Icons.Default.Explore, keyType = "maze"),
-    MetroGame("Knowledge Arena", R.drawable.ic_game_podium,    Color(0xFF4A0E0E), tileGradients = listOf(Color(0xFFFFD700), Color(0xFFD50000)), iconTint = Color(0xFFFFF8E1), vectorIcon = Icons.Default.EmojiEvents, keyType = "podium"),
-    MetroGame("See More",           R.drawable.ic_game_more,       Color(0xFF1A1A2E), tileGradients = listOf(Color(0xFF651FFF), Color(0xFF311B92)), iconTint = Color.White, vectorIcon = Icons.Default.Apps, keyType = "more")
+    MetroGame("Snowball Fight",          R.drawable.ic_game_target_real, Color(0xFF0D1B2A), tileGradients = listOf(Color(0xFF40C4FF), Color(0xFF0091EA)), keyType = "real_image"),
+    MetroGame("Maze Escape",       R.drawable.ic_game_maze_real, Color(0xFF004D40), tileGradients = listOf(Color(0xFF00E5FF), Color(0xFF00838F)), keyType = "real_image"),
+    MetroGame("Knowledge Arena", R.drawable.ic_game_podium_real, Color(0xFF4A0E0E), tileGradients = listOf(Color(0xFFFFD700), Color(0xFFD50000)), keyType = "real_image"),
+    MetroGame("See More",           R.drawable.ic_game_more_real, Color(0xFF1A1A2E), tileGradients = listOf(Color(0xFF651FFF), Color(0xFF311B92)), keyType = "real_image")
 )
 
 // --- UI COMPONENTS ---
@@ -696,7 +696,7 @@ fun RenderGameIcon(game: MetroGame, isFocused: Boolean) {
             ),
         contentAlignment = Alignment.Center
     ) {
-        if (game.keyType == "duck_image" || game.keyType == "sumo_image") {
+        if (game.keyType == "real_image") {
             Image(
                 painter = painterResource(id = game.iconRes),
                 contentDescription = null,
