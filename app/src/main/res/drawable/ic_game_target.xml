@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="100dp" android:height="100dp"
+    android:viewportWidth="100" android:viewportHeight="100">
+    <!-- Outer ring -->
+    <path android:fillColor="#00000000" android:pathData="M50,8 C73.2,8 92,26.8 92,50 C92,73.2 73.2,92 50,92 C26.8,92 8,73.2 8,50 C8,26.8 26.8,8 50,8 Z" android:strokeColor="#FFFFFF" android:strokeWidth="5.5"/>
+    <!-- Middle ring -->
+    <path android:fillColor="#00000000" android:pathData="M50,24 C64.9,24 77,36.1 77,51 C77,65.9 64.9,78 50,78 C35.1,78 23,65.9 23,51 C23,36.1 35.1,24 50,24 Z" android:strokeColor="#FFFFFF" android:strokeWidth="5.5"/>
+    <!-- Inner ring -->
+    <path android:fillColor="#00000000" android:pathData="M50,40 C56.6,40 62,45.4 62,52 C62,58.6 56.6,64 50,64 C43.4,64 38,58.6 38,52 C38,45.4 43.4,40 50,40 Z" android:strokeColor="#FFFFFF" android:strokeWidth="5.5"/>
+    <!-- Center dot -->
+    <path android:fillColor="#FFFFFF" android:pathData="M50,47 C52.8,47 55,49.2 55,52 C55,54.8 52.8,57 50,57 C47.2,57 45,54.8 45,52 C45,49.2 47.2,47 50,47 Z"/>
+    <!-- Arrow shaft (top-right to center) -->
+    <path android:fillColor="#00000000" android:pathData="M82,18 L53,47" android:strokeColor="#FFFFFF" android:strokeWidth="5" android:strokeLineCap="round"/>
+    <!-- Arrow head -->
+    <path android:fillColor="#FFFFFF" android:pathData="M50,50 L58,34 L66,42 Z"/>
+</vector>

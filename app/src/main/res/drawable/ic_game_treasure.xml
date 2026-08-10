@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="100dp" android:height="100dp"
+    android:viewportWidth="100" android:viewportHeight="100">
+    <!-- Chest base body -->
+    <path android:fillColor="#FFFFFF" android:pathData="M8,52 L8,88 C8,91 11,93 14,93 L86,93 C89,93 92,91 92,88 L92,52 Z"/>
+    <!-- Chest lid (arched) -->
+    <path android:fillColor="#FFFFFF" android:pathData="M8,52 C8,35 20,28 50,26 C80,28 92,35 92,52 Z"/>
+    <!-- Metal band on lid -->
+    <path android:fillColor="#795548" android:pathData="M8,50 L92,50 L92,56 L8,56 Z"/>
+    <!-- Vertical latch bar -->
+    <path android:fillColor="#795548" android:pathData="M45,50 L55,50 L55,68 L45,68 Z"/>
+    <!-- Latch clasp (circle/oval) -->
+    <path android:fillColor="#FFB300" android:pathData="M44,58 C44,52 46.5,49 50,49 C53.5,49 56,52 56,58 L56,65 C56,70 53.5,72 50,72 C46.5,72 44,70 44,65 Z"/>
+    <!-- Inner clasp dot -->
+    <path android:fillColor="#795548" android:pathData="M46,63 C46,60.8 47.8,59 50,59 C52.2,59 54,60.8 54,63 C54,65.2 52.2,67 50,67 C47.8,67 46,65.2 46,63 Z"/>
+    <!-- Metal band on body -->
+    <path android:fillColor="#795548" android:pathData="M8,56 L92,56 L92,62 L8,62 Z"/>
+    <!-- Corner rivets (circles as paths) -->
+    <path android:fillColor="#FFB300" android:pathData="M17,59 C17,56.8 18.8,55 21,55 C23.2,55 25,56.8 25,59 C25,61.2 23.2,63 21,63 C18.8,63 17,61.2 17,59 Z"/>
+    <path android:fillColor="#FFB300" android:pathData="M75,59 C75,56.8 76.8,55 79,55 C81.2,55 83,56.8 83,59 C83,61.2 81.2,63 79,63 C76.8,63 75,61.2 75,59 Z"/>
+    <!-- Chest content lines (gold) -->
+    <path android:fillColor="#00000000" android:pathData="M16,72 L84,72" android:strokeColor="#FFB300" android:strokeWidth="2.5" android:strokeLineCap="round"/>
+    <path android:fillColor="#00000000" android:pathData="M16,80 L84,80" android:strokeColor="#FFB300" android:strokeWidth="2.5" android:strokeLineCap="round"/>
+    <path android:fillColor="#00000000" android:pathData="M16,88 L84,88" android:strokeColor="#FFB300" android:strokeWidth="2.5" android:strokeLineCap="round"/>
+</vector>

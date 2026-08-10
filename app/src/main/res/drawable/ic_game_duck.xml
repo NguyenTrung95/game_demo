@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="100dp" android:height="100dp"
+    android:viewportWidth="100" android:viewportHeight="100">
+    <!-- 3 speed lines -->
+    <path android:fillColor="#00000000" android:pathData="M3,33 L21,33" android:strokeColor="#FFFFFF" android:strokeWidth="5" android:strokeLineCap="round"/>
+    <path android:fillColor="#00000000" android:pathData="M1,47 L25,47" android:strokeColor="#FFFFFF" android:strokeWidth="5" android:strokeLineCap="round"/>
+    <path android:fillColor="#00000000" android:pathData="M3,61 L18,61" android:strokeColor="#FFFFFF" android:strokeWidth="5" android:strokeLineCap="round"/>
+    <!-- Duck body -->
+    <path android:fillColor="#FFFFFF" android:pathData="M29,72 C27,57 36,41 56,37 C76,33 93,44 93,58 C93,73 80,83 60,83 C40,83 29,79 29,72 Z"/>
+    <!-- Duck head -->
+    <path android:fillColor="#FFFFFF" android:pathData="M72,20 C81,10 98,13 99,26 C100,39 88,47 78,43 C67,39 67,28 72,20 Z"/>
+    <!-- Eye (dark circle) -->
+    <path android:fillColor="#2E7D32" android:pathData="M87,23 C87,20.2 89.2,18 92,18 C94.8,18 97,20.2 97,23 C97,25.8 94.8,28 92,28 C89.2,28 87,25.8 87,23 Z"/>
+    <!-- Beak (orange triangle) -->
+    <path android:fillColor="#FF8F00" android:pathData="M98,23 L113,28 L98,33 Z"/>
+    <!-- Tail -->
+    <path android:fillColor="#FFFFFF" android:pathData="M31,68 C16,63 12,50 16,40 C22,51 28,62 32,68 Z"/>
+    <!-- Wing highlight -->
+    <path android:fillColor="#E0E0E0" android:pathData="M42,53 C55,44 73,48 74,60 C62,66 43,64 42,53 Z"/>
+    <!-- Leg 1 -->
+    <path android:fillColor="#00000000" android:pathData="M52,83 L47,95" android:strokeColor="#FF8F00" android:strokeWidth="4" android:strokeLineCap="round"/>
+    <!-- Foot 1 -->
+    <path android:fillColor="#00000000" android:pathData="M40,95 L51,95" android:strokeColor="#FF8F00" android:strokeWidth="3" android:strokeLineCap="round"/>
+    <!-- Leg 2 -->
+    <path android:fillColor="#00000000" android:pathData="M63,83 L68,95" android:strokeColor="#FF8F00" android:strokeWidth="4" android:strokeLineCap="round"/>
+    <!-- Foot 2 -->
+    <path android:fillColor="#00000000" android:pathData="M62,95 L74,95" android:strokeColor="#FF8F00" android:strokeWidth="3" android:strokeLineCap="round"/>
+</vector>

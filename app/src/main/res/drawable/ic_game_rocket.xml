@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="100dp" android:height="100dp"
+    android:viewportWidth="100" android:viewportHeight="100">
+    <!-- Rocket nose cone -->
+    <path android:fillColor="#FFFFFF" android:pathData="M50,5 C50,5 68,25 72,50 L72,75 L50,82 L28,75 L28,50 C32,25 50,5 50,5 Z"/>
+    <!-- Porthole window -->
+    <path android:fillColor="#006064" android:pathData="M50,38 C55.5,38 60,42.5 60,48 C60,53.5 55.5,58 50,58 C44.5,58 40,53.5 40,48 C40,42.5 44.5,38 50,38 Z"/>
+    <path android:fillColor="#FFFFFF" android:pathData="M50,42 C53.3,42 56,44.7 56,48 C56,51.3 53.3,54 50,54 C46.7,54 44,51.3 44,48 C44,44.7 46.7,42 50,42 Z"/>
+    <!-- Left fin -->
+    <path android:fillColor="#CCCCCC" android:pathData="M28,62 L12,82 L28,76 Z"/>
+    <!-- Right fin -->
+    <path android:fillColor="#CCCCCC" android:pathData="M72,62 L88,82 L72,76 Z"/>
+    <!-- Flame (orange) -->
+    <path android:fillColor="#FF8F00" android:pathData="M40,82 C40,82 44,100 50,96 C56,100 60,82 60,82 L50,88 Z"/>
+    <!-- Flame inner (yellow) -->
+    <path android:fillColor="#FFD600" android:pathData="M44,84 C44,84 47,96 50,93 C53,96 56,84 56,84 L50,90 Z"/>
+</vector>

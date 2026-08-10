@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="100dp" android:height="100dp"
+    android:viewportWidth="100" android:viewportHeight="100">
+    <!-- Head silhouette (side profile, facing right) -->
+    <!-- Skull/cranium -->
+    <path android:fillColor="#FFFFFF" android:pathData="M20,42 C20,18 40,8 58,8 C76,8 86,22 86,38 C86,50 80,58 72,63 L72,72 L50,72 L50,62 C35,58 20,52 20,42 Z"/>
+    <!-- Neck -->
+    <path android:fillColor="#FFFFFF" android:pathData="M42,72 L60,72 L60,82 L42,82 Z"/>
+    <!-- Shoulders -->
+    <path android:fillColor="#FFFFFF" android:pathData="M16,82 C16,82 28,85 50,85 C72,85 84,82 84,82 C88,92 84,98 80,98 L20,98 C16,98 12,92 16,82 Z"/>
+    <!-- Eye (dark circle - on the right/front of face) -->
+    <path android:fillColor="#01579B" android:pathData="M68,30 C68,26.7 70.7,24 74,24 C77.3,24 80,26.7 80,30 C80,33.3 77.3,36 74,36 C70.7,36 68,33.3 68,30 Z"/>
+    <!-- Ear -->
+    <path android:fillColor="#CCCCCC" android:pathData="M20,40 C15,40 12,44 12,48 C12,52 15,56 20,56 Z"/>
+    <!-- Lightning bolt inside head -->
+    <path android:fillColor="#FFD600" android:pathData="M44,14 L34,38 L44,38 L36,62 L58,32 L47,32 Z"/>
+</vector>

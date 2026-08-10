@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="100dp" android:height="100dp"
+    android:viewportWidth="100" android:viewportHeight="100">
+    <!-- Stopwatch body (circle) -->
+    <path android:fillColor="#00000000" android:pathData="M50,28 C68,28 84,42 84,62 C84,82 68,94 50,94 C32,94 16,82 16,62 C16,42 32,28 50,28 Z" android:strokeColor="#FFFFFF" android:strokeWidth="6"/>
+    <!-- Button top center -->
+    <path android:fillColor="#FFFFFF" android:pathData="M42,22 L58,22 L58,30 L42,30 Z"/>
+    <!-- Button left -->
+    <path android:fillColor="#FFFFFF" android:pathData="M26,23 L34,28 L30,35 L22,30 Z"/>
+    <!-- Button right -->
+    <path android:fillColor="#FFFFFF" android:pathData="M74,23 L66,28 L70,35 L78,30 Z"/>
+    <!-- Minute hand (long, pointing to ~12:05) -->
+    <path android:fillColor="#00000000" android:pathData="M50,62 L50,40" android:strokeColor="#FFFFFF" android:strokeWidth="4" android:strokeLineCap="round"/>
+    <!-- Hour hand (short, pointing to ~3) -->
+    <path android:fillColor="#00000000" android:pathData="M50,62 L66,62" android:strokeColor="#FFFFFF" android:strokeWidth="4" android:strokeLineCap="round"/>
+    <!-- Center dot -->
+    <path android:fillColor="#FFFFFF" android:pathData="M50,58 C52.2,58 54,59.8 54,62 C54,64.2 52.2,66 50,66 C47.8,66 46,64.2 46,62 C46,59.8 47.8,58 50,58 Z"/>
+</vector>

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="100dp" android:height="100dp"
+    android:viewportWidth="100" android:viewportHeight="100">
+    <!-- Top-left box: + -->
+    <path android:fillColor="#00000000" android:pathData="M5,5 L48,5 L48,48 L5,48 Z" android:strokeColor="#FFFFFF" android:strokeWidth="4"/>
+    <!-- Plus sign -->
+    <path android:fillColor="#00000000" android:pathData="M26,14 L26,39 M14,26 L38,26" android:strokeColor="#FFFFFF" android:strokeWidth="5" android:strokeLineCap="round"/>
+    <!-- Top-right box: - -->
+    <path android:fillColor="#00000000" android:pathData="M52,5 L95,5 L95,48 L52,48 Z" android:strokeColor="#FFFFFF" android:strokeWidth="4"/>
+    <!-- Minus sign -->
+    <path android:fillColor="#00000000" android:pathData="M62,26 L85,26" android:strokeColor="#FFFFFF" android:strokeWidth="5" android:strokeLineCap="round"/>
+    <!-- Bottom-left box: × -->
+    <path android:fillColor="#00000000" android:pathData="M5,52 L48,52 L48,95 L5,95 Z" android:strokeColor="#FFFFFF" android:strokeWidth="4"/>
+    <!-- Multiply X -->
+    <path android:fillColor="#00000000" android:pathData="M15,62 L38,85 M38,62 L15,85" android:strokeColor="#FFFFFF" android:strokeWidth="5" android:strokeLineCap="round"/>
+    <!-- Bottom-right box: ÷ -->
+    <path android:fillColor="#00000000" android:pathData="M52,52 L95,52 L95,95 L52,95 Z" android:strokeColor="#FFFFFF" android:strokeWidth="4"/>
+    <!-- Divide sign -->
+    <!-- Top dot -->
+    <path android:fillColor="#FFFFFF" android:pathData="M73.5,62 C73.5,59.8 75.3,58 77.5,58 C79.7,58 81.5,59.8 81.5,62 C81.5,64.2 79.7,66 77.5,66 C75.3,66 73.5,64.2 73.5,62 Z"/>
+    <!-- Line -->
+    <path android:fillColor="#00000000" android:pathData="M62,73 L93,73" android:strokeColor="#FFFFFF" android:strokeWidth="5" android:strokeLineCap="round"/>
+    <!-- Bottom dot -->
+    <path android:fillColor="#FFFFFF" android:pathData="M73.5,82 C73.5,79.8 75.3,78 77.5,78 C79.7,78 81.5,79.8 81.5,82 C81.5,84.2 79.7,86 77.5,86 C75.3,86 73.5,84.2 73.5,82 Z"/>
+</vector>

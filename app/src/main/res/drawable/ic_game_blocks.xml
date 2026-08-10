@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="100dp" android:height="100dp"
+    android:viewportWidth="100" android:viewportHeight="100">
+    <!-- Top single block -->
+    <path android:fillColor="#FFFFFF" android:pathData="M30,10 L70,10 L70,28 L30,28 Z"/>
+    <!-- Slight 3D top face -->
+    <path android:fillColor="#CCCCCC" android:pathData="M70,10 L78,5 L78,23 L70,28 Z"/>
+    <path android:fillColor="#E0E0E0" android:pathData="M30,10 L38,5 L78,5 L70,10 Z"/>
+    <!-- Middle two blocks -->
+    <path android:fillColor="#FFFFFF" android:pathData="M15,35 L85,35 L85,53 L15,53 Z"/>
+    <!-- Divider -->
+    <path android:fillColor="#00000000" android:pathData="M50,35 L50,53" android:strokeColor="#880E4F" android:strokeWidth="2"/>
+    <!-- 3D top and side -->
+    <path android:fillColor="#CCCCCC" android:pathData="M85,35 L93,30 L93,48 L85,53 Z"/>
+    <path android:fillColor="#E0E0E0" android:pathData="M15,35 L23,30 L93,30 L85,35 Z"/>
+    <!-- Bottom three blocks -->
+    <path android:fillColor="#FFFFFF" android:pathData="M5,60 L95,60 L95,80 L5,80 Z"/>
+    <!-- Dividers -->
+    <path android:fillColor="#00000000" android:pathData="M35,60 L35,80 M65,60 L65,80" android:strokeColor="#880E4F" android:strokeWidth="2"/>
+    <!-- 3D top and side -->
+    <path android:fillColor="#CCCCCC" android:pathData="M95,60 L100,56 L100,76 L95,80 Z"/>
+    <path android:fillColor="#E0E0E0" android:pathData="M5,60 L10,56 L100,56 L95,60 Z"/>
+</vector>

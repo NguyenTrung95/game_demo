@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="100dp" android:height="100dp"
+    android:viewportWidth="100" android:viewportHeight="100">
+    <!-- 1st place person (center, on tallest step) -->
+    <!-- Head -->
+    <path android:fillColor="#FFFFFF" android:pathData="M50,5 C50,5 58,5 58,13 C58,21 50,21 50,21 C50,21 42,21 42,13 C42,5 50,5 50,5 Z"/>
+    <!-- Body -->
+    <path android:fillColor="#00000000" android:pathData="M50,21 L50,42" android:strokeColor="#FFFFFF" android:strokeWidth="4" android:strokeLineCap="round"/>
+    <!-- Arms -->
+    <path android:fillColor="#00000000" android:pathData="M36,28 L50,28 L64,28" android:strokeColor="#FFFFFF" android:strokeWidth="4" android:strokeLineCap="round"/>
+    <!-- Legs -->
+    <path android:fillColor="#00000000" android:pathData="M50,42 L42,56 M50,42 L58,56" android:strokeColor="#FFFFFF" android:strokeWidth="4" android:strokeLineCap="round"/>
+    <!-- 2nd place person (left) -->
+    <path android:fillColor="#FFFFFF" android:pathData="M24,18 C24,13.6 27.6,10 32,10 C36.4,10 40,13.6 40,18 C40,22.4 36.4,26 32,26 C27.6,26 24,22.4 24,18 Z"/>
+    <path android:fillColor="#00000000" android:pathData="M32,26 L32,44" android:strokeColor="#FFFFFF" android:strokeWidth="3.5" android:strokeLineCap="round"/>
+    <path android:fillColor="#00000000" android:pathData="M20,33 L32,33 L44,33" android:strokeColor="#FFFFFF" android:strokeWidth="3.5" android:strokeLineCap="round"/>
+    <path android:fillColor="#00000000" android:pathData="M32,44 L25,56 M32,44 L39,56" android:strokeColor="#FFFFFF" android:strokeWidth="3.5" android:strokeLineCap="round"/>
+    <!-- 3rd place person (right) -->
+    <path android:fillColor="#FFFFFF" android:pathData="M60,22 C60,17.6 63.6,14 68,14 C72.4,14 76,17.6 76,22 C76,26.4 72.4,30 68,30 C63.6,30 60,26.4 60,22 Z"/>
+    <path android:fillColor="#00000000" android:pathData="M68,30 L68,48" android:strokeColor="#FFFFFF" android:strokeWidth="3.5" android:strokeLineCap="round"/>
+    <path android:fillColor="#00000000" android:pathData="M56,38 L68,38 L80,38" android:strokeColor="#FFFFFF" android:strokeWidth="3.5" android:strokeLineCap="round"/>
+    <path android:fillColor="#00000000" android:pathData="M68,48 L61,60 M68,48 L75,60" android:strokeColor="#FFFFFF" android:strokeWidth="3.5" android:strokeLineCap="round"/>
+    <!-- Podium step 1 (center, tallest) -->
+    <path android:fillColor="#FFFFFF" android:pathData="M36,58 L64,58 L64,95 L36,95 Z"/>
+    <!-- Podium step 2 (left) -->
+    <path android:fillColor="#FFFFFF" android:pathData="M6,70 L36,70 L36,95 L6,95 Z"/>
+    <!-- Podium step 3 (right) -->
+    <path android:fillColor="#FFFFFF" android:pathData="M64,78 L94,78 L94,95 L64,95 Z"/>
+    <!-- Step numbers (1,2,3 implied by heights) -->
+    <!-- Divider lines on steps (optional decorative) -->
+    <path android:fillColor="#00000000" android:pathData="M36,58 L36,95" android:strokeColor="#7B2114" android:strokeWidth="1.5"/>
+    <path android:fillColor="#00000000" android:pathData="M64,58 L64,95" android:strokeColor="#7B2114" android:strokeWidth="1.5"/>
+    <path android:fillColor="#00000000" android:pathData="M6,70 L36,70" android:strokeColor="#7B2114" android:strokeWidth="1.5"/>
+    <path android:fillColor="#00000000" android:pathData="M64,78 L94,78" android:strokeColor="#7B2114" android:strokeWidth="1.5"/>
+</vector>
