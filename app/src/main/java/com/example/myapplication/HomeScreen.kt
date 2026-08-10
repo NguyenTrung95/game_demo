@@ -49,6 +49,7 @@ import androidx.compose.ui.draw.drawWithContent
  import androidx.compose.foundation.layout.BoxWithConstraints
  import com.example.myapplication.ui.theme.KahootAnswerShape
  import com.example.myapplication.ui.theme.KahootShapeIcon
+ import com.example.myapplication.ui.theme.KahootPalette
 
 val ColorBgMain = Color(0xFF13092A) // Main background color for TV
 val ColorSidebarBg = Color(0xFF13092A)
@@ -118,6 +119,10 @@ data class MetroGame(
     val title: String,
     val iconRes: Int,         // @DrawableRes
     val color: Color,
+    val tileGradients: List<Color> = listOf(color, color.copy(alpha = 0.8f)),
+    val iconTint: Color = Color.White,
+    val vectorIcon: ImageVector? = null,
+    val keyType: String = "",
     val isActive: Boolean = false,
     val playerCount: String = "",
     val url: String = ""
@@ -125,20 +130,20 @@ data class MetroGame(
 
 val METRO_GAMES = listOf(
     // Row 1
-    MetroGame("Duck Race",       R.drawable.ic_game_duck,        Color(0xFF43A047), isActive = true, playerCount = "12.5K Playing", url = "https://game-demo-production-4101.up.railway.app/host/"),
-    MetroGame("Tug of War",         R.drawable.ic_game_tug_of_war, Color(0xFF1565C0), isActive = true, playerCount = "9.8K Playing",  url = "https://game-demo-production-4101.up.railway.app/tug-of-war/host/"),
-    MetroGame("Speed Trivia",      R.drawable.ic_game_timer,      Color(0xFF37474F)),
-    MetroGame("Obstacle Run", R.drawable.ic_game_rocket,     Color(0xFF00695C)),
+    MetroGame("Duck Race",       R.drawable.ic_game_duck,        Color(0xFF1B5E20), tileGradients = listOf(Color(0xFF00E676), Color(0xFF00B0FF)), iconTint = Color(0xFFFFD54F), vectorIcon = Icons.Default.Pets, keyType = "duck", isActive = true, playerCount = "12.5K Playing", url = "https://game-demo-production-4101.up.railway.app/host/"),
+    MetroGame("Tug of War",         R.drawable.ic_game_tug_of_war, Color(0xFF0D47A1), tileGradients = listOf(Color(0xFFFF1744), Color(0xFF2979FF)), iconTint = Color(0xFFFFF176), vectorIcon = Icons.Default.Sports, keyType = "tug_of_war", isActive = true, playerCount = "9.8K Playing",  url = "https://game-demo-production-4101.up.railway.app/tug-of-war/host/"),
+    MetroGame("Speed Trivia",      R.drawable.ic_game_timer,      Color(0xFF263238), tileGradients = listOf(Color(0xFFFFEA00), Color(0xFFFF6D00)), iconTint = Color(0xFF212121), vectorIcon = Icons.Default.Speed, keyType = "trivia"),
+    MetroGame("Obstacle Run", R.drawable.ic_game_rocket,     Color(0xFF004D40), tileGradients = listOf(Color(0xFF00B0FF), Color(0xFF00E676)), iconTint = Color.White, vectorIcon = Icons.Default.RocketLaunch, keyType = "rocket"),
     // Row 2
-    MetroGame("Treasure Hunt",        R.drawable.ic_game_treasure,   Color(0xFF6D4C41)),
-    MetroGame("Tower Stacker",     R.drawable.ic_game_blocks,     Color(0xFF6A1B4D)),
-    MetroGame("Math Dash",       R.drawable.ic_game_math,       Color(0xFF2E7D32)),
-    MetroGame("Memory Rush",  R.drawable.ic_game_memory,    Color(0xFF01579B)),
+    MetroGame("Treasure Hunt",        R.drawable.ic_game_treasure,   Color(0xFF3E2723), tileGradients = listOf(Color(0xFFFFD700), Color(0xFFFF6D00)), iconTint = Color.White, vectorIcon = Icons.Default.Diamond, keyType = "treasure"),
+    MetroGame("Tower Stacker",     R.drawable.ic_game_blocks,     Color(0xFF4A148C), tileGradients = listOf(Color(0xFFD500F9), Color(0xFF651FFF)), iconTint = Color.White, vectorIcon = Icons.Default.Extension, keyType = "blocks"),
+    MetroGame("Math Dash",       R.drawable.ic_game_math,       Color(0xFF1B5E20), tileGradients = listOf(Color(0xFF00E676), Color(0xFF1DE9B6)), iconTint = Color.White, vectorIcon = Icons.Default.Functions, keyType = "math"),
+    MetroGame("Memory Rush",  R.drawable.ic_game_memory,    Color(0xFF004D40), tileGradients = listOf(Color(0xFF00B0FF), Color(0xFF651FFF)), iconTint = Color.White, vectorIcon = Icons.Default.Psychology, keyType = "memory"),
     // Row 3
-    MetroGame("Snowball Fight",          R.drawable.ic_game_target,     Color(0xFF1A2D55)),
-    MetroGame("Maze Escape",       R.drawable.ic_game_maze,       Color(0xFF006064)),
-    MetroGame("Knowledge Arena", R.drawable.ic_game_podium,    Color(0xFF7B2114)),
-    MetroGame("See More",           R.drawable.ic_game_more,       Color(0xFF1A1A2E))
+    MetroGame("Snowball Fight",          R.drawable.ic_game_target,     Color(0xFF0D1B2A), tileGradients = listOf(Color(0xFF40C4FF), Color(0xFF0091EA)), iconTint = Color.White, vectorIcon = Icons.Default.AcUnit, keyType = "snow"),
+    MetroGame("Maze Escape",       R.drawable.ic_game_maze,       Color(0xFF004D40), tileGradients = listOf(Color(0xFF00E5FF), Color(0xFF00838F)), iconTint = Color.White, vectorIcon = Icons.Default.Explore, keyType = "maze"),
+    MetroGame("Knowledge Arena", R.drawable.ic_game_podium,    Color(0xFF4A0E0E), tileGradients = listOf(Color(0xFFFFD700), Color(0xFFD50000)), iconTint = Color(0xFFFFF8E1), vectorIcon = Icons.Default.EmojiEvents, keyType = "podium"),
+    MetroGame("See More",           R.drawable.ic_game_more,       Color(0xFF1A1A2E), tileGradients = listOf(Color(0xFF651FFF), Color(0xFF311B92)), iconTint = Color.White, vectorIcon = Icons.Default.Apps, keyType = "more")
 )
 
 // --- UI COMPONENTS ---
@@ -668,6 +673,63 @@ fun JoinGameContentV2(modifier: Modifier = Modifier, onGameSelected: (String, St
 }
 
 @Composable
+fun RenderGameIcon(game: MetroGame, isFocused: Boolean) {
+    val tileShape = CircleShape
+    val alphaModifier = if (game.isActive) 1.0f else 0.75f
+
+    Box(
+        modifier = Modifier
+            .fillMaxHeight(0.76f)
+            .aspectRatio(1f)
+            .graphicsLayer { alpha = alphaModifier }
+            .shadow(if (isFocused) 14.dp else 6.dp, tileShape, spotColor = game.tileGradients.first())
+            .background(
+                Brush.linearGradient(colors = game.tileGradients),
+                tileShape
+            )
+            .border(
+                1.5.dp,
+                Brush.linearGradient(
+                    colors = listOf(Color.White.copy(alpha = 0.6f), Color.White.copy(alpha = 0.15f))
+                ),
+                tileShape
+            ),
+        contentAlignment = Alignment.Center
+    ) {
+        if (game.keyType == "more") {
+            // Kahoot 4 answer shapes in 2x2 grid
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(3.dp)
+            ) {
+                Row(horizontalArrangement = Arrangement.spacedBy(3.dp)) {
+                    KahootShapeIcon(KahootAnswerShape.Triangle, KahootPalette.Red, 11.dp)
+                    KahootShapeIcon(KahootAnswerShape.Diamond, KahootPalette.Blue, 11.dp)
+                }
+                Row(horizontalArrangement = Arrangement.spacedBy(3.dp)) {
+                    KahootShapeIcon(KahootAnswerShape.Circle, KahootPalette.Yellow, 11.dp)
+                    KahootShapeIcon(KahootAnswerShape.Square, KahootPalette.Green, 11.dp)
+                }
+            }
+        } else if (game.vectorIcon != null) {
+            Icon(
+                imageVector = game.vectorIcon,
+                contentDescription = null,
+                tint = game.iconTint,
+                modifier = Modifier.fillMaxHeight(0.56f)
+            )
+        } else {
+            Icon(
+                painter = painterResource(id = game.iconRes),
+                contentDescription = null,
+                tint = game.iconTint,
+                modifier = Modifier.fillMaxHeight(0.56f)
+            )
+        }
+    }
+}
+
+@Composable
 fun MetroGameCard(game: MetroGame, modifier: Modifier = Modifier, onClick: () -> Unit) {
     val interactionSource = remember { MutableInteractionSource() }
     val isFocused by interactionSource.collectIsFocusedAsState()
@@ -689,7 +751,6 @@ fun MetroGameCard(game: MetroGame, modifier: Modifier = Modifier, onClick: () ->
         )
     }
     
-    val iconTint = if (!game.isActive) Color.White.copy(alpha = 0.55f) else Color.White
     val borderWidthDp = 3.5.dp
     val density = androidx.compose.ui.platform.LocalDensity.current
     val borderPx = with(density) { borderWidthDp.toPx() }
@@ -766,22 +827,7 @@ fun MetroGameCard(game: MetroGame, modifier: Modifier = Modifier, onClick: () ->
                     .weight(0.58f),
                 contentAlignment = Alignment.Center
             ) {
-                // Glassmorphic icon backdrop tile
-                Box(
-                    modifier = Modifier
-                        .fillMaxHeight(0.72f)
-                        .aspectRatio(1f)
-                        .background(Color.White.copy(alpha = 0.14f), CircleShape)
-                        .border(1.dp, Color.White.copy(alpha = 0.25f), CircleShape),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        painter = painterResource(id = game.iconRes),
-                        contentDescription = null,
-                        tint = iconTint,
-                        modifier = Modifier.fillMaxHeight(0.55f)
-                    )
-                }
+                RenderGameIcon(game = game, isFocused = isFocused)
             }
 
             // Lower zone (42%): Title + Player stats
