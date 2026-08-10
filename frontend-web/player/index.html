@@ -296,7 +296,7 @@
   var raceTimerInterval = null;
   var reportInterval = null;
   var cumulativeTaps = 0;
-  var targetTaps = 60;
+  var targetTaps = 100;
 
   // Web Audio Synth for Player Quack Sound
   var audioCtx = null;
@@ -581,8 +581,9 @@
   function updateRaceUi() {
     document.getElementById('race-tap-count').textContent = cumulativeTaps;
     var percent = Math.min(100, Math.floor((cumulativeTaps / targetTaps) * 100));
-    var travel = percent * 0.82;
-    document.getElementById('own-trail').style.width = travel + '%';
+    var maxTravel = 86;
+    var travel = (percent / 100) * maxTravel;
+    document.getElementById('own-trail').style.width = (travel + 2) + '%';
     document.getElementById('own-duck').style.left = (2 + travel) + '%';
   }
 

@@ -867,7 +867,7 @@
       <div id="race-scoreboard">
         <span class="scoreboard-logo">🦆</span>
         <span class="scoreboard-title">DUCK TAP RACE</span>
-        <span class="scoreboard-timer" id="race-timer-display">20s</span>
+        <span class="scoreboard-timer" id="race-timer-display">35s</span>
       </div>
       <div id="lineup-view"></div>
       <div id="pond-view"></div>
@@ -882,7 +882,7 @@
   var socket = null;
   var lobbyDeadline = null;
   var lobbyCountdownTimer = null;
-  var targetTaps = 60;
+  var targetTaps = 100;
   var lobbyPlayers = [];
 
   // Web Audio Sound Synth with Autoplay Bypass & Mute Controls
@@ -1342,10 +1342,11 @@
       row.querySelector('.race-taps').textContent = entry.taps;
 
       var percent = Math.min(100, Math.floor((entry.taps / targetTaps) * 100));
-      var travel = percent * 0.82;
+      var maxTravel = 91;
+      var travel = (percent / 100) * maxTravel;
       
       var trailEl = row.querySelector('.race-trail');
-      trailEl.style.width = travel + '%';
+      trailEl.style.width = (travel + 2) + '%';
       trailEl.style.background = 'linear-gradient(90deg, transparent, ' + entry.color + '33)';
 
       var duckContainer = row.querySelector('.race-duck-container');

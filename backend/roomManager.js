@@ -7,8 +7,8 @@ const KIOSK_RESTART_DELAY_MS = 8_000;
 const MAX_PLAYERS_PER_ROOM = 100;
 
 // Tap Race: người chơi chạm càng nhanh, vịt tiến càng xa. Đích = RACE_TARGET_TAPS lần chạm.
-const RACE_TARGET_TAPS = 60;
-const RACE_DURATION_MS = 20_000;
+const RACE_TARGET_TAPS = 100;
+const RACE_DURATION_MS = 35_000;
 const RACE_TICK_MS = 200;
 // Chống cheat (macro/multi-touch bất thường) — giới hạn ngầm, không báo lỗi cho người chơi
 // (theo đúng nguyên tắc "rate limiting is invisible" — báo lỗi sẽ giống như bị phạt).
