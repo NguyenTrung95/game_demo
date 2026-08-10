@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-<title>Sumo Kéo Co — Controller</title>
+<title>Sumo Tug of War — Controller</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400..700&display=swap');
   
@@ -335,12 +335,12 @@
 
 <div id="screen-join" class="screen active">
   <div class="card">
-    <span class="game-badge">💪 Sumo Kéo Co Sức Mạnh</span>
-    <h1>Sumo Kéo Co</h1>
-    <p class="subtitle">Nhập mã PIN và tên của bạn để kéo co</p>
-    <input id="input-pin" type="tel" inputmode="numeric" maxlength="4" placeholder="Mã PIN (4 số)">
-    <input id="input-nickname" type="text" maxlength="20" placeholder="Tên hiển thị">
-    <button class="primary" id="btn-join">Tham gia</button>
+    <span class="game-badge">💪 Sumo Tug of War</span>
+    <h1>Sumo Tug of War</h1>
+    <p class="subtitle">Enter PIN and name to join the battle</p>
+    <input id="input-pin" type="tel" inputmode="numeric" maxlength="4" placeholder="PIN Code (4 digits)">
+    <input id="input-nickname" type="text" maxlength="20" placeholder="Display Name">
+    <button class="primary" id="btn-join">Join Game</button>
     <div class="error" id="join-error"></div>
   </div>
 </div>
@@ -348,31 +348,31 @@
 <div id="screen-waiting" class="screen">
   <div class="card">
     <div class="team-announcement" id="waiting-team-announcement"></div>
-    <h1>Đã sẵn sàng!</h1>
+    <h1>Ready to Fight!</h1>
     <p class="subtitle" id="waiting-nickname"></p>
     
     <!-- Team Manual Selector -->
     <div class="team-selector-wrap">
-      <p style="font-size: 13px; font-weight: 800; color: #854d0e; margin: 0 0 4px;">CHỌN HOẶC ĐỔI ĐỘI:</p>
+      <p style="font-size: 13px; font-weight: 800; color: #854d0e; margin: 0 0 4px;">CHOOSE OR SWITCH TEAM:</p>
       <button class="primary team-choice-btn red-btn" id="btn-select-red">
-        Đội Đỏ (<span id="btn-red-count">0 người</span>)
-        <span class="recommend-badge" id="badge-rec-red" style="display:none;">Gợi Ý</span>
+        Red Team (<span id="btn-red-count">0 players</span>)
+        <span class="recommend-badge" id="badge-rec-red" style="display:none;">RECOMMENDED</span>
       </button>
       <button class="primary team-choice-btn blue-btn" id="btn-select-blue">
-        Đội Xanh (<span id="btn-blue-count">0 người</span>)
-        <span class="recommend-badge" id="badge-rec-blue" style="display:none;">Gợi Ý</span>
+        Blue Team (<span id="btn-blue-count">0 players</span>)
+        <span class="recommend-badge" id="badge-rec-blue" style="display:none;">RECOMMENDED</span>
       </button>
     </div>
     
-    <p class="score-line" style="font-size: 12px; opacity: 0.8; margin-top: 8px;">Hãy chuẩn bị chạm nút thật nhanh để kéo dây khi trận đấu bắt đầu!</p>
+    <p class="score-line" style="font-size: 12px; opacity: 0.8; margin-top: 8px;">Get ready to tap as fast as you can when the match begins!</p>
   </div>
 </div>
 
 <div id="screen-race" class="screen">
   <div id="rope-status-wrap">
     <div class="team-score-bar">
-      <span class="score-red">Đỏ: <span id="rope-score-red">0</span></span>
-      <span class="score-blue">Xanh: <span id="rope-score-blue">0</span></span>
+      <span class="score-red">Red: <span id="rope-score-red">0</span></span>
+      <span class="score-blue">Blue: <span id="rope-score-blue">0</span></span>
     </div>
     <div class="mini-rope-container">
       <div class="mini-rope-center-line"></div>
@@ -382,20 +382,20 @@
   </div>
 
   <div class="stats-row">
-    <div class="info-badge" id="race-tap-count">Bạn: 0</div>
+    <div class="info-badge" id="race-tap-count">You: 0</div>
     <div class="info-badge" id="race-timer">--s</div>
   </div>
   
-  <button id="tap-button">KÉO!!!</button>
+  <button id="tap-button">PULL!!!</button>
 </div>
 
 <div id="screen-result" class="screen">
   <div class="card">
     <div class="sumo-head-slot" id="result-sumo-slot"></div>
-    <h1 id="result-title">KẾT QUẢ</h1>
-    <p class="score-line">Đóng góp của bạn: <span id="result-taps" style="font-weight: 800; color: #b45309;">0</span> lần chạm</p>
+    <h1 id="result-title">RESULTS</h1>
+    <p class="score-line">Your contribution: <span id="result-taps" style="font-weight: 800; color: #b45309;">0</span> taps</p>
     
-    <button class="primary" id="btn-play-again" style="margin-top: 24px;">Chơi lại</button>
+    <button class="primary" id="btn-play-again" style="margin-top: 24px;">Play Again</button>
   </div>
 </div>
 
@@ -497,7 +497,7 @@
     });
     
     socket.addEventListener('close', function () {
-      document.getElementById('join-error').textContent = 'Mất kết nối server. Vui lòng tải lại trang.';
+      document.getElementById('join-error').textContent = 'Server disconnected. Please reload page.';
     });
   }
 
@@ -525,7 +525,7 @@
         onRaceOver(payload);
         break;
       case 'room_closed':
-        alert('Phòng chơi đã đóng.');
+        alert('Room closed.');
         location.reload();
         break;
       default:
@@ -548,18 +548,18 @@
 
       var announceEl = document.getElementById('waiting-team-announcement');
       announceEl.className = 'team-announcement ' + myTeam;
-      announceEl.innerHTML = myTeam === 'red' ? '🔴 ĐỘI ĐỎ 🔴' : '🔵 ĐỘI XANH 🔵';
+      announceEl.innerHTML = myTeam === 'red' ? '🔴 RED TEAM 🔴' : '🔵 BLUE TEAM 🔵';
 
       document.getElementById('waiting-nickname').textContent = myNickname;
       showScreen('screen-waiting');
     } else {
-      var err = 'Lỗi không xác định.';
+      var err = 'Unknown error.';
       if (payload.error === 'invalid_pin_or_started') {
-        err = 'Mã PIN không đúng hoặc trận đấu đã bắt đầu.';
+        err = 'Invalid PIN or match has already started.';
       } else if (payload.error === 'room_full') {
-        err = 'Phòng đã đầy người chơi.';
+        err = 'Room is full.';
       } else if (payload.error === 'nickname_required') {
-        err = 'Vui lòng điền tên.';
+        err = 'Please enter your name.';
       }
       document.getElementById('join-error').textContent = err;
     }
@@ -587,20 +587,20 @@
     
     // Update button elements contents and selection visual states
     if (myTeam === 'red') {
-      btnRed.innerHTML = '👉 Đội Đỏ (<span id="btn-red-count">' + redCount + ' người</span>) 👈' +
-        '<span class="recommend-badge" id="badge-rec-red" style="display:' + recRed.style.display + ';">Gợi Ý</span>';
-      btnBlue.innerHTML = 'Đội Xanh (<span id="btn-blue-count">' + blueCount + ' người</span>)' +
-        '<span class="recommend-badge" id="badge-rec-blue" style="display:' + recBlue.style.display + ';">Gợi Ý</span>';
+      btnRed.innerHTML = '👉 Red Team (<span id="btn-red-count">' + redCount + ' players</span>) 👈' +
+        '<span class="recommend-badge" id="badge-rec-red" style="display:' + recRed.style.display + ';">RECOMMENDED</span>';
+      btnBlue.innerHTML = 'Blue Team (<span id="btn-blue-count">' + blueCount + ' players</span>)' +
+        '<span class="recommend-badge" id="badge-rec-blue" style="display:' + recBlue.style.display + ';">RECOMMENDED</span>';
       
       btnRed.style.transform = 'scale(1.05)';
       btnRed.style.outline = '3px solid #854d0e';
       btnBlue.style.transform = 'scale(1)';
       btnBlue.style.outline = 'none';
     } else {
-      btnRed.innerHTML = 'Đội Đỏ (<span id="btn-red-count">' + redCount + ' người</span>)' +
-        '<span class="recommend-badge" id="badge-rec-red" style="display:' + recRed.style.display + ';">Gợi Ý</span>';
-      btnBlue.innerHTML = '👉 Đội Xanh (<span id="btn-blue-count">' + blueCount + ' người</span>) 👈' +
-        '<span class="recommend-badge" id="badge-rec-blue" style="display:' + recBlue.style.display + ';">Gợi Ý</span>';
+      btnRed.innerHTML = 'Red Team (<span id="btn-red-count">' + redCount + ' players</span>)' +
+        '<span class="recommend-badge" id="badge-rec-red" style="display:' + recRed.style.display + ';">RECOMMENDED</span>';
+      btnBlue.innerHTML = '👉 Blue Team (<span id="btn-blue-count">' + blueCount + ' players</span>) 👈' +
+        '<span class="recommend-badge" id="badge-rec-blue" style="display:' + recBlue.style.display + ';">RECOMMENDED</span>';
       
       btnBlue.style.transform = 'scale(1.05)';
       btnBlue.style.outline = '3px solid #854d0e';
@@ -615,7 +615,7 @@
     
     var tapBtn = document.getElementById('tap-button');
     tapBtn.disabled = false;
-    tapBtn.textContent = 'KÉO!!!';
+    tapBtn.textContent = 'PULL!!!';
     tapBtn.className = myTeam === 'red' ? 'red-team-btn' : 'blue-team-btn';
     
     showScreen('screen-race');
@@ -657,7 +657,7 @@
     var bubble = document.createElement('div');
     bubble.className = 'tap-bubble';
     
-    var grunts = ['ỰA!', 'DÔ!', 'LÊN!', 'KÉO!', 'ỰC!', '+1', 'CỐ LÊN!'];
+    var grunts = ['PULL!', 'GO!', 'POWER!', 'HAVE AT IT!', 'PUSH!', '+1', 'COME ON!'];
     bubble.textContent = grunts[Math.floor(Math.random() * grunts.length)];
     
     bubble.style.color = myTeam === 'red' ? '#fee2e2' : '#dbeafe';
@@ -704,7 +704,7 @@
   }
 
   function updateRaceUi() {
-    document.getElementById('race-tap-count').textContent = 'Bạn: ' + cumulativeTaps;
+    document.getElementById('race-tap-count').textContent = 'You: ' + cumulativeTaps;
   }
 
   function onRaceOver(payload) {
@@ -719,13 +719,13 @@
     var titleEl = document.getElementById('result-title');
     
     if (winnerTeam === 'tie') {
-      titleEl.innerHTML = 'HÒA NHAU!';
+      titleEl.innerHTML = 'IT\'S A TIE!';
       titleEl.style.color = '#854d0e';
     } else if (winnerTeam === myTeam) {
-      titleEl.innerHTML = '👑 CHIẾN THẮNG! 👑';
+      titleEl.innerHTML = '👑 VICTORY! 👑';
       titleEl.style.color = '#15803d';
     } else {
-      titleEl.innerHTML = 'THẤT BẠI!';
+      titleEl.innerHTML = 'DEFEAT!';
       titleEl.style.color = '#dc2626';
     }
     
@@ -738,7 +738,7 @@
     var nickname = document.getElementById('input-nickname').value.trim();
     document.getElementById('join-error').textContent = '';
     if (!pin || !nickname) {
-      document.getElementById('join-error').textContent = 'Vui lòng nhập đủ mã PIN và tên hiển thị.';
+      document.getElementById('join-error').textContent = 'Please enter both PIN and display name.';
       return;
     }
     myNickname = nickname;

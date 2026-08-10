@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=1280">
-<title>Sumo Kéo Co — Host</title>
+<title>Sumo Tug of War — Host</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400..700&display=swap');
   
@@ -725,33 +725,33 @@
 <div class="camera-flashes" id="camera-flashes"></div>
 
 <div class="header-actions">
-  <button id="audio-toggle" title="Bật/Tắt âm thanh">🔊</button>
+  <button id="audio-toggle" title="Toggle Audio">🔊</button>
 </div>
 
 <div class="wrapper">
   <div class="card">
-    <span class="game-badge">💪 Trận Chiến Sức Mạnh Sumo</span>
-    <h1 id="game-title">SUMO KÉO CO</h1>
+    <span class="game-badge">💪 Sumo Power Battle</span>
+    <h1 id="game-title">SUMO TUG OF WAR</h1>
     
     <!-- Lobby View Content -->
     <div id="lobby-content">
       <div id="lobby-grid">
         <div class="lobby-col-left">
           <img id="qr-image" src="" alt="QR Code">
-          <div id="pin-fallback">Mã PIN: ----</div>
+          <div id="pin-fallback">PIN Code: ----</div>
         </div>
 
         <div class="lobby-col-right">
           <div class="lobby-pool-container">
             <div class="lobby-team-col red">
-              <div class="lobby-team-title red">🔴 ĐỘI ĐỎ</div>
+              <div class="lobby-team-title red">🔴 RED TEAM</div>
               <div id="lobby-team-list-red" class="lobby-team-list">
                 <!-- Players will pop in here -->
               </div>
             </div>
             
             <div class="lobby-team-col blue">
-              <div class="lobby-team-title blue">🔵 ĐỘI XANH</div>
+              <div class="lobby-team-title blue">🔵 BLUE TEAM</div>
               <div id="lobby-team-list-blue" class="lobby-team-list">
                 <!-- Players will pop in here -->
               </div>
@@ -761,10 +761,10 @@
           <div class="start-btn-wrap">
             <button class="action-btn" id="btn-force-start" disabled>
               <span id="start-btn-icon">🔒</span>
-              <span id="start-btn-label">Bắt đầu chơi ngay</span>
+              <span id="start-btn-label">Start Game Now</span>
             </button>
           </div>
-          <div id="start-btn-hint">Chờ người chơi tham gia để bắt đầu...</div>
+          <div id="start-btn-hint">Waiting for players to join...</div>
         </div>
       </div>
     </div>
@@ -773,15 +773,15 @@
     <div id="race-content">
       <div class="arena-scoreboard">
         <div class="scoreboard-team">
-          <span class="scoreboard-team-name red">ĐỘI ĐỎ</span>
+          <span class="scoreboard-team-name red">RED TEAM</span>
           <span id="scoreboard-taps-red" class="scoreboard-taps-count red">0</span>
         </div>
         <div class="scoreboard-center-wrap">
-          <span class="scoreboard-timer-title">Thời gian còn lại</span>
+          <span class="scoreboard-timer-title">Time Remaining</span>
           <span id="race-timer-display" class="scoreboard-timer">30s</span>
         </div>
         <div class="scoreboard-team">
-          <span class="scoreboard-team-name blue">ĐỘI XANH</span>
+          <span class="scoreboard-team-name blue">BLUE TEAM</span>
           <span id="scoreboard-taps-blue" class="scoreboard-taps-count blue">0</span>
         </div>
       </div>
@@ -810,18 +810,18 @@
       <div class="arena-teams-breakdown">
         <!-- Red team lists -->
         <div class="arena-team-card" style="border-color: #fca5a5;">
-          <div class="arena-team-card-title red">🔴 ĐỘI ĐỎ PLAYERS:</div>
+          <div class="arena-team-card-title red">🔴 RED TEAM PLAYERS:</div>
           <div id="arena-team-list-red" class="arena-team-scroll-list"></div>
         </div>
         <!-- Blue team lists -->
         <div class="arena-team-card" style="border-color: #93c5fd;">
-          <div class="arena-team-card-title blue">🔵 ĐỘI XANH PLAYERS:</div>
+          <div class="arena-team-card-title blue">🔵 BLUE TEAM PLAYERS:</div>
           <div id="arena-team-list-blue" class="arena-team-scroll-list"></div>
         </div>
       </div>
     </div>
 
-    <div id="status-line" class="lobby">⏳ Khởi tạo phòng chơi...</div>
+    <div id="status-line" class="lobby">⏳ Initializing room...</div>
   </div>
 </div>
 
@@ -956,7 +956,7 @@
       handleMessage(message.type, message.payload);
     });
     socket.addEventListener('close', function () {
-      document.getElementById('status-line').textContent = 'Mất kết nối server. Vui lòng tải lại trang.';
+      document.getElementById('status-line').textContent = 'Server disconnected. Please reload page.';
     });
   }
 
@@ -994,7 +994,7 @@
     targetNetTaps = payload.targetNetTaps || targetNetTaps;
     
     document.getElementById('qr-image').src = payload.qrDataUrl;
-    document.getElementById('pin-fallback').textContent = 'Mã PIN: ' + payload.pin;
+    document.getElementById('pin-fallback').textContent = 'PIN Code: ' + payload.pin;
 
     document.getElementById('lobby-content').style.display = 'block';
     document.getElementById('race-content').style.display = 'none';
@@ -1035,11 +1035,11 @@
     // Update icon, hint text based on state
     if (canStart) {
       startIcon.textContent = '▶';
-      startHint.textContent = payload.connectedCount + ' người chơi đã sẵn sàng — Nhấn để bắt đầu!';
+      startHint.textContent = payload.connectedCount + ' players ready — Press to start!';
       startHint.className = 'ready';
     } else {
       startIcon.textContent = '🔒';
-      startHint.textContent = 'Chờ người chơi tham gia để bắt đầu...';
+      startHint.textContent = 'Waiting for players to join...';
       startHint.className = '';
     }
     if (justBecameEnabled) startBtn.focus();
@@ -1096,7 +1096,7 @@
     playGoBeep();
     var statusEl = document.getElementById('status-line');
     statusEl.className = 'playing';
-    statusEl.textContent = '🎮 ĐANG KÉO CO! HÃY BẤM THẬT NHANH!';
+    statusEl.textContent = '🎮 TUG OF WAR! TAP AS FAST AS YOU CAN!';
   }
 
   function renderArenaTeamLists(players) {
@@ -1168,7 +1168,7 @@
     var remainingSec = Math.max(0, Math.ceil(payload.remainingMs / 1000));
     var statusEl = document.getElementById('status-line');
     statusEl.className = 'playing';
-    statusEl.textContent = '🎮 Đang kéo co! — còn ' + remainingSec + 's';
+    statusEl.textContent = '🎮 Tug of War! — ' + remainingSec + 's left';
     document.getElementById('race-timer-display').textContent = remainingSec + 's';
 
     // Ribbon position
@@ -1259,29 +1259,29 @@
     var bannerClass = 'team-victory-banner ' + winnerTeam;
     var bannerText = '';
     if (winnerTeam === 'red') {
-      bannerText = '🔴 ĐỘI ĐỎ CHIẾN THẮNG! 🔴';
+      bannerText = '🔴 RED TEAM WINS! 🔴';
     } else if (winnerTeam === 'blue') {
-      bannerText = '🔵 ĐỘI XANH CHIẾN THẮNG! 🔵';
+      bannerText = '🔵 BLUE TEAM WINS! 🔵';
     } else {
-      bannerText = '🤝 HAI BÊN HÒA NHAU! 🤝';
+      bannerText = '🤝 IT\'S A TIE! 🤝';
     }
 
     overlay.innerHTML = 
       '<div class="winner-card" style="max-width: 580px;">' +
-        '<h1 class="winner-title">🏁 KẾT QUẢ TRẬN ĐẤU 🏁</h1>' +
+        '<h1 class="winner-title">🏁 MATCH RESULTS 🏁</h1>' +
         '<div class="' + bannerClass + '">' + bannerText + '</div>' +
         '<div style="margin: 28px 0; display: flex; justify-content: space-around; font-size: 24px; font-weight: 800; color: #854d0e;">' +
-          '<div style="color: #ef4444; background: #fee2e2; padding: 12px 24px; border-radius: 16px; border: 3px solid #fca5a5; box-shadow: 0 4px 0 #fca5a5;">🔴 Đỏ: ' + (payload.redTaps || 0) + ' taps</div>' +
-          '<div style="color: #3b82f6; background: #dbeafe; padding: 12px 24px; border-radius: 16px; border: 3px solid #93c5fd; box-shadow: 0 4px 0 #93c5fd;">🔵 Xanh: ' + (payload.blueTaps || 0) + ' taps</div>' +
+          '<div style="color: #ef4444; background: #fee2e2; padding: 12px 24px; border-radius: 16px; border: 3px solid #fca5a5; box-shadow: 0 4px 0 #fca5a5;">🔴 Red: ' + (payload.redTaps || 0) + ' taps</div>' +
+          '<div style="color: #3b82f6; background: #dbeafe; padding: 12px 24px; border-radius: 16px; border: 3px solid #93c5fd; box-shadow: 0 4px 0 #93c5fd;">🔵 Blue: ' + (payload.blueTaps || 0) + ' taps</div>' +
         '</div>' +
-        '<div class="restart-timer-line" id="restart-timer-line">Chuẩn bị mở phòng chơi mới...</div>' +
+        '<div class="restart-timer-line" id="restart-timer-line">Preparing new game room...</div>' +
       '</div>';
 
     document.getElementById('race-content').style.display = 'none';
 
     var statusEl = document.getElementById('status-line');
     statusEl.className = 'finished';
-    statusEl.textContent = '🏁 Trò chơi kết thúc! Phòng mới sắp mở...';
+    statusEl.textContent = '🏁 Game Over! New room opening soon...';
   }
 
   function startConfetti() {
@@ -1349,9 +1349,9 @@
     if (!statusEl) return;
     statusEl.className = 'lobby';
     if (lobbyPlayers.length === 0) {
-      statusEl.textContent = '⏳ Đang chờ người chơi quét mã tham gia...';
+      statusEl.textContent = '⏳ Waiting for players to scan QR code...';
     } else {
-      statusEl.textContent = '👉 Sẵn sàng! Hãy bấm "Bắt đầu chơi ngay" trên TV để bắt đầu!';
+      statusEl.textContent = '👉 Ready! Press "Start Game Now" on TV to begin!';
     }
   }
 

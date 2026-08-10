@@ -34,7 +34,18 @@ const server = app.listen(PORT, () => {
   console.log(`[BOOT] Game Server listening on http://0.0.0.0:${PORT}`);
 });
 
-const wss = new WebSocketServer({ server });
+const wss = new WebSocketServer({ noServer: true });
+
+// Handle WebSocket upgrade manually on specific paths
+server.on('upgrade', (request, socket, head) => {
+  const pathname = request.url || '';
+  console.log(`[WS] Upgrade request path=${pathname}`);
+  
+  // Accept WebSocket on /ws, /tug-of-war-ws, or root /
+  wss.handleUpgrade(request, socket, head, (ws) => {
+    wss.emit('connection', ws, request);
+  });
+});
 
 wss.on('connection', (ws, req) => {
   console.log(`[WS] New connection from ${req.headers.host} path=${req.url}`);

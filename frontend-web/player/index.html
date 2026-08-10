@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
@@ -216,12 +216,12 @@
 
 <div id="screen-join" class="screen active">
   <div class="card">
-    <span class="free-badge">🦆 Miễn phí tham gia</span>
+    <span class="free-badge">🦆 Free to Play</span>
     <h1>Duck Tap Race</h1>
-    <p class="subtitle">Nhập mã PIN hiển thị trên TV để tham gia</p>
-    <input id="input-pin" type="tel" inputmode="numeric" maxlength="4" placeholder="Mã PIN (4 số)">
-    <input id="input-nickname" type="text" maxlength="20" placeholder="Tên hiển thị">
-    <button class="primary" id="btn-join">Tham gia</button>
+    <p class="subtitle">Enter PIN displayed on TV to join</p>
+    <input id="input-pin" type="tel" inputmode="numeric" maxlength="4" placeholder="PIN Code (4 digits)">
+    <input id="input-nickname" type="text" maxlength="20" placeholder="Display Name">
+    <button class="primary" id="btn-join">Join Game</button>
     <div class="error" id="join-error"></div>
   </div>
 </div>
@@ -229,9 +229,9 @@
 <div id="screen-waiting" class="screen">
   <div class="card">
     <div class="color-chip" id="waiting-color-chip"></div>
-    <h1>Đã vào phòng!</h1>
+    <h1>Joined Room!</h1>
     <p class="subtitle" id="waiting-nickname"></p>
-    <p class="score-line">Chờ trận đua bắt đầu trên TV...</p>
+    <p class="score-line">Waiting for race to start on TV...</p>
   </div>
 </div>
 
@@ -249,16 +249,16 @@
   
   <!-- Floating Real-time Leaderboard Widget -->
   <div id="race-realtime-board">
-    <div style="text-align:center; font-size:12px; opacity:0.6; font-weight:700;">Đang tính toán thứ hạng...</div>
+    <div style="text-align:center; font-size:12px; opacity:0.6; font-weight:700;">Calculating ranks...</div>
   </div>
 
-  <button id="tap-button">QUÁC QUÁC!</button>
+  <button id="tap-button">QUACK QUACK!</button>
 
   <!-- Animated Synchronized Countdown/Loading Overlay -->
   <div id="player-loading-overlay" style="position: absolute; inset: 0; background: rgba(0,0,0,0.85); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 10; color: #fff; padding: 24px;">
     <div style="font-size: 54px; animation: playerWaddle 0.4s ease-in-out infinite alternate;">🦆</div>
-    <h2 style="font-size: 24px; font-weight: 800; color: #facc15; text-shadow: 0 2px 0 #b45309; margin: 12px 0 4px; text-transform: uppercase;">Khởi tạo đường đua</h2>
-    <p style="font-weight: 700; opacity: 0.8; margin: 0; font-size: 14px;">Đang chuẩn bị phao bơi...</p>
+    <h2 style="font-size: 24px; font-weight: 800; color: #facc15; text-shadow: 0 2px 0 #b45309; margin: 12px 0 4px; text-transform: uppercase;">Setting up track</h2>
+    <p style="font-weight: 700; opacity: 0.8; margin: 0; font-size: 14px;">Preparing floating rings...</p>
   </div>
 </div>
 
@@ -271,18 +271,18 @@
     
     <!-- Player's personal rank box -->
     <div style="width: 100%; background: #fef9c3; border: 2.5px solid #ca8a04; border-radius: 16px; padding: 8px 12px; margin-bottom: 12px; font-weight: 800; color: #854d0e; font-size: 14px;">
-      Thứ hạng của bạn: <span id="player-my-rank" style="color: #a16207; font-size: 17px; display: block; margin-top: 2px;">-</span>
+      Your Rank: <span id="player-my-rank" style="color: #a16207; font-size: 17px; display: block; margin-top: 2px;">-</span>
     </div>
 
     <!-- Top 10 Leaderboard container -->
     <div style="width: 100%; text-align: left;">
-      <div style="font-size: 12px; font-weight: 800; color: #854d0e; margin-bottom: 4px; letter-spacing: 0.05em; text-transform: uppercase;">🏆 BẢNG XẾP HẠNG TOP 10</div>
+      <div style="font-size: 12px; font-weight: 800; color: #854d0e; margin-bottom: 4px; letter-spacing: 0.05em; text-transform: uppercase;">🏆 TOP 10 LEADERBOARD</div>
       <div id="player-top10-list" style="background: rgba(133, 77, 14, 0.05); border-radius: 12px; padding: 6px; max-height: 140px; overflow-y: auto; border: 1.5px solid rgba(133, 77, 14, 0.1);">
         <!-- Filled dynamically -->
       </div>
     </div>
 
-    <button class="primary" id="btn-play-again" style="margin-top: 14px; font-size: 16px; padding: 10px 16px;">Chơi lại</button>
+    <button class="primary" id="btn-play-again" style="margin-top: 14px; font-size: 16px; padding: 10px 16px;">Play Again</button>
   </div>
 </div>
 
@@ -357,7 +357,7 @@
     });
     socket.addEventListener('close', function () {
       document.getElementById('join-error').textContent =
-        'Mất kết nối tới server. Vui lòng tải lại trang.';
+        'Server disconnected. Please reload page.';
       showScreen('screen-join');
     });
   }
@@ -381,7 +381,7 @@
         onRaceOver(payload);
         break;
       case 'room_closed':
-        document.getElementById('join-error').textContent = 'Host đã đóng phòng chơi.';
+        document.getElementById('join-error').textContent = 'Host closed the room.';
         showScreen('screen-join');
         break;
       default:
@@ -392,18 +392,18 @@
   function onJoinAck(payload) {
     if (!payload.success) {
       var errorMessages = {
-        nickname_required: 'Vui lòng nhập tên hiển thị.',
-        room_full: 'Phòng đã đủ 100 người chơi, vui lòng thử phòng khác.',
-        invalid_pin_or_started: 'Mã PIN không đúng hoặc phòng đã bắt đầu.',
+        nickname_required: 'Please enter your display name.',
+        room_full: 'Room is full (100 players max).',
+        invalid_pin_or_started: 'Invalid PIN or game has already started.',
       };
       document.getElementById('join-error').textContent =
-        errorMessages[payload.error] || 'Không thể vào phòng, vui lòng thử lại.';
+        errorMessages[payload.error] || 'Unable to join room, please try again.';
       return;
     }
     myPlayerId = payload.playerId;
     targetTaps = payload.targetTaps || targetTaps;
     myColor = payload.color || myColor;
-    document.getElementById('waiting-nickname').textContent = 'Xin chào, ' + myNickname + '!';
+    document.getElementById('waiting-nickname').textContent = 'Hello, ' + myNickname + '!';
     document.getElementById('waiting-color-chip').style.background = myColor;
     document.getElementById('waiting-color-chip').innerHTML = getDuckSvg('#ffffff');
     showScreen('screen-waiting');
@@ -451,13 +451,13 @@
     loader.style.display = 'flex';
     loader.innerHTML = 
       '<div style="font-size: 54px; animation: playerWaddle 0.4s ease-in-out infinite alternate;">🦆</div>' +
-      '<h2 style="font-size: 22px; font-weight: 800; color: #facc15; text-shadow: 0 2px 0 #b45309; margin: 12px 0 4px; text-transform: uppercase;">Khởi tạo đường đua</h2>' +
-      '<p style="font-weight: 700; opacity: 0.8; margin: 0; font-size: 14px;">Đang chuẩn bị phao bơi...</p>';
+      '<h2 style="font-size: 22px; font-weight: 800; color: #facc15; text-shadow: 0 2px 0 #b45309; margin: 12px 0 4px; text-transform: uppercase;">Setting up track</h2>' +
+      '<p style="font-weight: 700; opacity: 0.8; margin: 0; font-size: 14px;">Preparing floating rings...</p>';
 
     // Clear real-time leaderboard
     var board = document.getElementById('race-realtime-board');
     if (board) {
-      board.innerHTML = '<div style="text-align:center; font-size:12px; opacity:0.6; font-weight:700;">Đang tính toán thứ hạng...</div>';
+      board.innerHTML = '<div style="text-align:center; font-size:12px; opacity:0.6; font-weight:700;">Calculating ranks...</div>';
     }
 
     // Step 1: Transitions from loading to Countdown after 1.6s
@@ -465,7 +465,7 @@
       var count = 3;
       loader.innerHTML = 
         '<div style="font-size: 72px; font-weight: 900; color: #facc15; text-shadow: 0 4px 0 #b45309;" id="countdown-num">3</div>' +
-        '<p style="font-weight: 700; font-size: 15px; opacity: 0.8; margin-top: 10px; text-transform: uppercase; letter-spacing:0.04em;">Sẵn sàng chưa?</p>';
+        '<p style="font-weight: 700; font-size: 15px; opacity: 0.8; margin-top: 10px; text-transform: uppercase; letter-spacing:0.04em;">Are you ready?</p>';
       
       playBeep(600, 0.15, 'sine');
 
@@ -473,7 +473,7 @@
         count--;
         var numEl = document.getElementById('countdown-num');
         if (numEl) {
-          numEl.textContent = count > 0 ? count : 'BƠI!';
+          numEl.textContent = count > 0 ? count : 'SWIM!';
         }
         
         if (count > 0) {
@@ -523,7 +523,7 @@
     var board = document.getElementById('race-realtime-board');
     if (!board) return;
 
-    var header = '<div style="font-size: 8px; font-weight:800; color:#b45309; text-transform:uppercase; margin-bottom:3px; letter-spacing:0.02em; border-bottom: 1px solid rgba(133,77,14,0.15); padding-bottom:2px; text-align:center;">🏆 BXH Real-time</div>';
+    var header = '<div style="font-size: 8px; font-weight:800; color:#b45309; text-transform:uppercase; margin-bottom:3px; letter-spacing:0.02em; border-bottom: 1px solid rgba(133,77,14,0.15); padding-bottom:2px; text-align:center;">🏆 Real-time Board</div>';
     
     // Show Top 10
     var limit = Math.min(10, sorted.length);
@@ -540,7 +540,7 @@
 
       html += 
         '<div class="' + styleClass + '">' +
-          '<span>#' + (i + 1) + ' ' + displayName + (isMe ? ' (bạn)' : '') + '</span>' +
+          '<span>#' + (i + 1) + ' ' + displayName + (isMe ? ' (you)' : '') + '</span>' +
           '<span style="color:' + item.color + '">' + item.taps + '</span>' +
         '</div>';
     }
@@ -554,7 +554,7 @@
       html += 
         '<div style="height: 1px; border-top: 1px dashed rgba(133, 77, 14, 0.2); margin: 3px 0; pointer-events: none;"></div>' +
         '<div class="rt-row me">' +
-          '<span>#' + (myIndex + 1) + ' ' + displayName + ' (bạn)</span>' +
+          '<span>#' + (myIndex + 1) + ' ' + displayName + ' (you)</span>' +
           '<span style="color:' + myItem.color + '">' + myItem.taps + '</span>' +
         '</div>';
     }
@@ -599,16 +599,16 @@
     var iconEl = document.getElementById('result-icon');
     if (payload.rank === 1) {
       iconEl.textContent = '🏆';
-      titleEl.innerHTML = '👑 CHIẾN THẮNG! 👑';
+      titleEl.innerHTML = '👑 VICTORY! 👑';
     } else if (payload.rank <= 3) {
       iconEl.textContent = '🥈';
-      titleEl.innerHTML = 'Hạng ' + payload.rank + '! Tuyệt vời!';
+      titleEl.innerHTML = 'Rank #' + payload.rank + '! Awesome!';
     } else {
       iconEl.textContent = '🏁';
-      titleEl.innerHTML = 'Hạng ' + payload.rank;
+      titleEl.innerHTML = 'Rank #' + payload.rank;
     }
     
-    document.getElementById('result-taps').textContent = payload.taps + ' lần chạm';
+    document.getElementById('result-taps').textContent = payload.taps + ' taps';
     
     // Update personal rank summary
     document.getElementById('player-my-rank').textContent = '#' + payload.rank + ' / ' + (payload.totalPlayers || 1);
@@ -622,11 +622,11 @@
       var rowStyle = isMe ? 'background: rgba(250, 204, 21, 0.25); border-radius: 8px; font-weight: 800;' : 'font-weight: 700;';
       html += 
         '<div style="display: flex; justify-content: space-between; align-items: center; padding: 5px 8px; font-size: 13px; color: #854d0e; ' + rowStyle + '">' +
-          '<span>#' + item.rank + ' ' + item.nickname + (isMe ? ' (Bạn)' : '') + '</span>' +
+          '<span>#' + item.rank + ' ' + item.nickname + (isMe ? ' (You)' : '') + '</span>' +
           '<span style="color:' + item.color + '">' + item.taps + ' taps</span>' +
         '</div>';
     });
-    listEl.innerHTML = html || '<div style="text-align:center; padding:8px; font-size:12px; opacity:0.6;">Không có xếp hạng</div>';
+    listEl.innerHTML = html || '<div style="text-align:center; padding:8px; font-size:12px; opacity:0.6;">No rankings</div>';
 
     showScreen('screen-result');
   }
@@ -636,7 +636,7 @@
     var nickname = document.getElementById('input-nickname').value.trim();
     document.getElementById('join-error').textContent = '';
     if (!pin || !nickname) {
-      document.getElementById('join-error').textContent = 'Vui lòng nhập đủ mã PIN và tên hiển thị.';
+      document.getElementById('join-error').textContent = 'Please enter both PIN and display name.';
       return;
     }
     myNickname = nickname;

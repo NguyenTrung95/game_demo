@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=1280">
@@ -830,33 +830,33 @@
 
 <div class="wrapper">
   <div class="card">
-    <span class="free-badge">🦆 Miễn phí tham gia</span>
+    <span class="free-badge">🦆 Free to Play</span>
     <h1>Duck Tap Race</h1>
 
     <div id="lobby-content">
       <!-- Split layout to prevent vertical overflow -->
       <div id="lobby-grid">
         <div class="lobby-col-left">
-          <img id="qr-image" alt="QR tham gia">
+          <img id="qr-image" alt="Join QR">
           <div id="pin-fallback"></div>
           <div class="start-btn-wrap">
             <button class="action-btn" id="btn-force-start" disabled>
               <span id="start-btn-icon">🔒</span>
-              <span id="start-btn-label">▶️ Bắt đầu chơi ngay</span>
+              <span id="start-btn-label">▶️ Start Game Now</span>
             </button>
           </div>
-          <div id="start-btn-hint">Chờ người chơi tham gia để bắt đầu...</div>
+          <div id="start-btn-hint">Waiting for players to join...</div>
         </div>
         <div class="lobby-col-right">
           <!-- Interactive lobby pool -->
           <div id="lobby-pool-container">
-            <div class="pool-header">HỒ NƯỚC CHỜ ĐUA</div>
+            <div class="pool-header">WAITING POND</div>
             <div id="lobby-pool">
-              <div class="pool-empty-text">Đang chờ người chơi tham gia...</div>
+              <div class="pool-empty-text">Waiting for players to join...</div>
             </div>
           </div>
           <div id="stats-row">
-            <div class="stat-box">Đã kết nối<span class="stat-value" id="connected-count">0 / 100</span></div>
+            <div class="stat-box">Connected<span class="stat-value" id="connected-count">0 / 100</span></div>
           </div>
         </div>
       </div>
@@ -1002,7 +1002,7 @@
       handleMessage(message.type, message.payload);
     });
     socket.addEventListener('close', function () {
-      document.getElementById('status-line').textContent = 'Mất kết nối server. Vui lòng tải lại trang.';
+      document.getElementById('status-line').textContent = 'Server disconnected. Please reload page.';
     });
   }
 
@@ -1042,7 +1042,7 @@
     lobbyPlayers = [];
     targetTaps = payload.targetTaps || targetTaps;
     document.getElementById('qr-image').src = payload.qrDataUrl;
-    document.getElementById('pin-fallback').textContent = 'Mã PIN: ' + payload.pin;
+    document.getElementById('pin-fallback').textContent = 'PIN Code: ' + payload.pin;
     lobbyDeadline = Date.now() + payload.lobbyDurationMs;
 
     document.getElementById('lobby-content').style.display = 'block';
@@ -1065,7 +1065,7 @@
     // Clear lobby pool
     var pool = document.getElementById('lobby-pool');
     if (pool) {
-      pool.innerHTML = '<div class="pool-empty-text">Đang chờ người chơi tham gia...</div>';
+      pool.innerHTML = '<div class="pool-empty-text">Waiting for players to join...</div>';
     }
 
     startLobbyCountdownLoop();
@@ -1115,7 +1115,7 @@
 
     var pool = document.getElementById('lobby-pool');
     if (pool && pool.querySelectorAll('.lobby-pool-duck').length === 0) {
-      pool.innerHTML = '<div class="pool-empty-text">Đang chờ người chơi tham gia...</div>';
+      pool.innerHTML = '<div class="pool-empty-text">Waiting for players to join...</div>';
     }
   }
 
@@ -1157,11 +1157,11 @@
     startBtn.disabled = !canStart;
     if (canStart) {
       startIcon.textContent = '▶';
-      startHint.textContent = payload.connectedCount + ' người chơi đã sẵn sàng — Nhấn để bắt đầu!';
+      startHint.textContent = payload.connectedCount + ' players ready — Press to start!';
       startHint.className = 'ready';
     } else {
       startIcon.textContent = '🔒';
-      startHint.textContent = 'Chờ người chơi tham gia để bắt đầu...';
+      startHint.textContent = 'Waiting for players to join...';
       startHint.className = '';
     }
     if (justBecameEnabled) startBtn.focus();
@@ -1189,7 +1189,7 @@
     loadingView.innerHTML = 
       '<div class="loading-card">' +
         '<div class="loading-duck-anim">🦆</div>' +
-        '<div class="loading-title">Đang chuẩn bị đường đua...</div>' +
+        '<div class="loading-title">Preparing racetrack...</div>' +
         '<div class="loading-bar-bg"><div class="loading-bar-fill" id="loading-fill"></div></div>' +
       '</div>';
     
@@ -1201,7 +1201,7 @@
 
     var statusEl = document.getElementById('status-line');
     statusEl.className = 'playing';
-    statusEl.textContent = '🌊 Đang chuẩn bị phao bơi...';
+    statusEl.textContent = '🌊 Preparing floating rings...';
 
     clearTimeout(lineupTimer);
     lineupTimer = setTimeout(function () {
@@ -1212,7 +1212,7 @@
       
       // Play start lineup cue sound
       playCountdownBeep();
-      statusEl.textContent = '🦆 Sẵn sàng... Bơi!';
+      statusEl.textContent = '🦆 Ready... Swim!';
       
       setTimeout(function() {
         document.getElementById('lineup-view').style.display = 'none';
@@ -1226,7 +1226,7 @@
     var view = document.getElementById('lineup-view');
     view.innerHTML =
       '<div class="lineup-pond"><div class="lineup-finish"></div></div>' +
-      '<div class="lineup-caption">Sẵn sàng... Bơi!</div>';
+      '<div class="lineup-caption">Ready... Swim!</div>';
     var pond = view.querySelector('.lineup-pond');
     
     // Dynamically scale lineup spacing based on player count to prevent container overflow
@@ -1252,7 +1252,7 @@
     var remainingSec = Math.max(0, Math.ceil(payload.remainingMs / 1000));
     var statusEl = document.getElementById('status-line');
     statusEl.className = 'playing';
-    statusEl.textContent = '🎮 Đang đua! — còn ' + remainingSec + 's';
+    statusEl.textContent = '🎮 Racing! — ' + remainingSec + 's left';
     
     var timerDisplay = document.getElementById('race-timer-display');
     if (timerDisplay) {
@@ -1385,7 +1385,7 @@
     overlay.style.display = 'flex';
     overlay.innerHTML = 
       '<div class="winner-card">' +
-        '<h1 class="winner-title">🏁 BẢNG XẾP HẠNG CUỘC ĐUA 🏁</h1>' +
+        '<h1 class="winner-title">🏁 RACE LEADERBOARD 🏁</h1>' +
         '<div class="podium-container">' +
           '<!-- 2nd Place -->' +
           '<div class="podium-step step-2" id="podium-2">' +
@@ -1408,7 +1408,7 @@
           '</div>' +
         '</div>' +
         '<div id="leaderboard-list"></div>' +
-        '<div class="restart-timer-line" id="restart-timer-line">Chuẩn bị mở phòng chơi mới...</div>' +
+        '<div class="restart-timer-line" id="restart-timer-line">Preparing new game room...</div>' +
       '</div>';
 
     if (ranking[0]) {
@@ -1442,13 +1442,13 @@
           '<span style="color:' + item.color + '">' + item.taps + ' taps</span>' +
         '</div>';
     }
-    lbList.innerHTML = lbHtml || '<div style="color:#854d0e; font-weight:700; opacity:0.6; padding: 12px 0;">Không có thứ hạng nào khác</div>';
+    lbList.innerHTML = lbHtml || '<div style="color:#854d0e; font-weight:700; opacity:0.6; padding: 12px 0;">No other rankings</div>';
 
     document.getElementById('race-content').style.display = 'none';
 
     var statusEl = document.getElementById('status-line');
     statusEl.className = 'finished';
-    statusEl.textContent = '🏁 Trò chơi đã kết thúc! Phòng mới sắp mở...';
+    statusEl.textContent = '🏁 Game Over! New room opening soon...';
     document.getElementById('lobby-content').style.display = 'none';
   }
 
@@ -1532,7 +1532,7 @@
 
     var statusEl = document.getElementById('status-line');
     statusEl.className = 'lobby';
-    statusEl.textContent = '⏳ Bắt đầu sau: ' + remainingLobbySec + 's';
+    statusEl.textContent = '⏳ Starting in: ' + remainingLobbySec + 's';
   }
 
   document.getElementById('btn-force-start').addEventListener('click', function () {
