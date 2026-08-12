@@ -340,13 +340,13 @@
   .lobby-player-duck {
     display: inline-flex;
     align-items: center;
-    gap: 4px;
+    gap: 6px;
     background: #f7fee7;
     border: 2px solid #84cc16;
     border-radius: 999px;
-    padding: 3px 10px;
-    font-size: 12px;
-    font-weight: 700;
+    padding: 3px 12px 3px 4px;
+    font-size: 13px;
+    font-weight: 800;
     box-shadow: 0 2px 0 #84cc16;
     animation: popIn 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28) forwards;
   }
@@ -360,7 +360,22 @@
     border-color: #93c5fd;
     box-shadow: 0 2px 0 #93c5fd;
   }
-  .lobby-player-duck svg { width: 18px; height: 18px; }
+  .lobby-player-duck .chibi-avatar-frame {
+    width: 28px;
+    height: 28px;
+    flex-shrink: 0;
+    position: relative;
+    display: inline-block;
+  }
+  .chibi-avatar-frame {
+    display: inline-block;
+    position: relative;
+  }
+  .chibi-avatar-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+  }
   @keyframes popIn {
     0% { transform: scale(0.6); opacity: 0; }
     100% { transform: scale(1); opacity: 1; }
@@ -1140,41 +1155,23 @@
         glassesSvg = '';
         break;
     }
-    
-    // Aura Layer
-    var auraSvg = '';
-    switch (avatar.aura) {
-      case 'gold':
-        auraSvg = '<circle cx="40" cy="35" r="32" fill="none" stroke="#facc15" stroke-width="3" opacity="0.6" stroke-dasharray="6,4"/>';
-        break;
-      case 'cyber':
-        auraSvg = '<polygon points="40,2 72,18 72,54 40,70 8,54 8,18" fill="none" stroke="#22d3ee" stroke-width="2" opacity="0.7"/>';
-        break;
-      case 'flame':
-        auraSvg = '<path d="M 12,50 C 4,20 28,10 40,2 C 52,10 76,20 68,50 Z" fill="none" stroke="#ef4444" stroke-width="2.5" opacity="0.6"/>';
-        break;
-      case 'angel':
-        auraSvg = '<ellipse cx="40" cy="35" rx="34" ry="34" fill="none" stroke="#a7f3d0" stroke-width="2" opacity="0.6"/>';
-        break;
-      default:
-        auraSvg = '';
-        break;
-    }
 
-    return '<svg class="sumo-svg" viewBox="0 0 80 80" width="' + width + '" height="' + height + '" ' + transform + '>' +
-      auraSvg +
-      '<circle cx="40" cy="44" r="26" fill="' + skin.fill + '" stroke="' + skin.stroke + '" stroke-width="1.5"/>' +
-      '<circle cx="40" cy="25" r="15" fill="' + skin.fill + '" stroke="' + skin.stroke + '" stroke-width="1.5"/>' +
-      '<ellipse cx="27" cy="28" rx="3.5" ry="2" fill="' + skin.blush + '" opacity="0.4"/>' +
-      '<ellipse cx="53" cy="28" rx="3.5" ry="2" fill="' + skin.blush + '" opacity="0.4"/>' +
-      hairSvg +
-      faceSvg +
-      glassesSvg +
-      '<path d="M 14,50 Q 40,62 66,50 Q 56,64 24,64 Z" fill="' + teamColor + '" stroke="#0f172a" stroke-width="1.5"/>' +
-      '<path d="M 34,48 L 40,54 L 46,48 Z" fill="#facc15" stroke="#0f172a" stroke-width="1.5"/>' +
-      '<path d="M 46,34 C 55,34 64,40 62,44 C 60,48 51,42 46,38 Z" fill="' + skin.fill + '" stroke="' + skin.stroke + '" stroke-width="1.5"/>' +
-      '<path d="M 34,34 C 25,34 16,40 18,44 C 20,48 29,42 34,38 Z" fill="' + skin.fill + '" stroke="' + skin.stroke + '" stroke-width="1.5"/>' +
-      '</svg>';
+    var flip = faceLeft ? ' scaleX(-1)' : '';
+    var auraHtml = auraSvg
+      ? '<svg viewBox="0 0 80 70" style="position:absolute;left:' + (pose.headX * 100) + '%;top:' + (pose.headY * 100) +
+        '%;width:85%;height:85%;transform:translate(-50%,-50%)' + flip + ';overflow:visible;pointer-events:none;">' + auraSvg + '</svg>'
+      : '';
+    var glassesHtml = glassesSvg
+      ? '<svg viewBox="14 14 52 30" style="position:absolute;left:' + (pose.eyeX * 100) + '%;top:' + (pose.eyeY * 100) +
+        '%;width:52%;height:30%;transform:translate(-50%,-50%)' + flip + ';overflow:visible;">' + glassesSvg + '</svg>'
+      : '';
+
+    return '<div class="chibi-avatar-frame">' +
+      '<div class="chibi-avatar-inner" style="aspect-ratio:' + pose.w + '/' + pose.h + ';">' +
+      auraHtml +
+      '<img src="' + pose.file + '" style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain;transform:' + (faceLeft ? 'scaleX(-1)' : 'none') + ';filter:drop-shadow(0 4px 6px rgba(0,0,0,0.35));">' +
+      glassesHtml +
+      '</div></div>';
   }
 
   function getSumoSvg(color, faceLeft, avatar) {
