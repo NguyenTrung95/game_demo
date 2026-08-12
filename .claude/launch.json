@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "duckrace-server",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["backend/index.js"],
+      "port": 8787
+    }
+  ]
+}

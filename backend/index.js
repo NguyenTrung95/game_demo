@@ -73,6 +73,9 @@ wss.on('connection', (ws, req) => {
         case 'switch_team':
           tugOfWarRoomManager.switchTeam(ws, message.payload);
           break;
+        case 'update_avatar':
+          tugOfWarRoomManager.updateAvatar(ws, message.payload);
+          break;
         case 'report_taps':
           tugOfWarRoomManager.reportTapCount(ws, message.payload);
           break;

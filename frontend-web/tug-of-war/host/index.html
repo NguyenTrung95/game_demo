@@ -454,39 +454,32 @@
   /* The actual Rope */
   .arena-rope-wrapper {
     position: absolute;
-    left: 10%; right: 10%;
+    left: calc(10% - 29px); right: calc(10% - 29px);
     height: 30px;
     display: flex;
     align-items: center;
   }
-  .arena-rope {
+  .arena-rope-svg {
+    position: absolute;
+    inset: 0;
     width: 100%;
-    height: 14px;
-    background: repeating-linear-gradient(
-      -45deg,
-      #d97706,
-      #d97706 10px,
-      #b45309 10px,
-      #b45309 20px
-    );
-    border-radius: 6px;
-    border: 2px solid #78350f;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.2);
-    position: relative;
+    height: 100%;
+    pointer-events: none;
+    z-index: 3;
+    overflow: visible;
   }
-  .arena-rope.shaking {
-    animation: ropeShake 0.15s linear infinite;
-  }
-  @keyframes ropeShake {
-    0% { transform: translateY(-1.5px) rotate(0.5deg); }
-    50% { transform: translateY(1.5px) rotate(-0.5deg); }
-    100% { transform: translateY(-1.5px) rotate(0.5deg); }
+  .rope-path {
+    fill: none;
+    stroke: url(#ropePattern);
+    stroke-width: 7;
+    stroke-linecap: round;
+    filter: drop-shadow(0 3px 2px rgba(0,0,0,0.28));
   }
 
   .arena-rope-ribbon {
     position: absolute;
-    top: 50%;
-    left: 50%;
+    top: 0;
+    left: 0;
     width: 28px;
     height: 28px;
     background: #e11d48;
@@ -495,7 +488,6 @@
     transform: translate(-50%, -50%) rotate(45deg);
     box-shadow: 0 4px 8px rgba(0,0,0,0.25);
     z-index: 5;
-    transition: left 0.2s cubic-bezier(0.18, 0.89, 0.32, 1.28);
   }
   .arena-rope-ribbon::after {
     content: '';
@@ -505,43 +497,82 @@
     border-radius: 6px;
   }
 
-  /* Mascot Sumos Pulling */
-  .arena-mascot {
+  /* Player Team Roster Lineup on Rope */
+  .rope-team-lineup {
     position: absolute;
-    top: -25px; 
-    width: 85px;
-    height: 85px;
-    z-index: 4;
+    top: -55px;
+    height: 90px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    z-index: 10;
     transition: transform 0.2s cubic-bezier(0.18, 0.89, 0.32, 1.28);
   }
-  .arena-mascot.red-mascot {
-    left: calc(10% - 70px);
+  .rope-team-lineup.red-side {
+    right: 50%;
+    margin-right: 25px;
+    flex-direction: row-reverse;
   }
-  .arena-mascot.blue-mascot {
-    right: calc(10% - 70px);
-  }
-  
-  /* Sumo Pull Animations starting from current displacement */
-  .arena-mascot.red-mascot.pulling {
-    animation: sumoPullRed 0.2s ease-out;
-  }
-  .arena-mascot.blue-mascot.pulling {
-    animation: sumoPullBlue 0.2s ease-out;
-  }
-  @keyframes sumoPullRed {
-    0% { transform: var(--mascot-trans, translateX(0px)) scale(1) rotate(0deg); }
-    50% { transform: var(--mascot-trans, translateX(0px)) translateX(-15px) scale(1.08, 0.92) rotate(-8deg); }
-    100% { transform: var(--mascot-trans, translateX(0px)) scale(1) rotate(0deg); }
-  }
-  @keyframes sumoPullBlue {
-    0% { transform: var(--mascot-trans, translateX(0px)) scale(1) rotate(0deg); }
-    50% { transform: var(--mascot-trans, translateX(0px)) translateX(15px) scale(1.08, 0.92) rotate(8deg); }
-    100% { transform: var(--mascot-trans, translateX(0px)) scale(1) rotate(0deg); }
+  .rope-team-lineup.blue-side {
+    left: 50%;
+    margin-left: 25px;
+    flex-direction: row;
   }
   
-  .sumo-svg {
-    width: 100%; height: 100%;
-    filter: drop-shadow(0 4px 6px rgba(0,0,0,0.25));
+  .rope-player-node {
+    position: relative;
+    width: 65px;
+    height: 75px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: transform 0.15s ease-out;
+  }
+  .rope-player-name-tag {
+    position: absolute;
+    top: -18px;
+    background: #0f172a;
+    color: #fffdf0;
+    font-size: 10px;
+    font-weight: 800;
+    padding: 2px 6px;
+    border-radius: 6px;
+    white-space: nowrap;
+    border: 1.5px solid #facc15;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    z-index: 12;
+  }
+  .rope-player-node.red-side .rope-player-name-tag {
+    border-color: #fca5a5;
+  }
+  .rope-player-node.blue-side .rope-player-name-tag {
+    border-color: #93c5fd;
+  }
+  
+  .rope-player-node.pulling {
+    animation: playerNodePull 0.2s ease-out;
+  }
+  @keyframes playerNodePull {
+    0% { transform: scale(1) rotate(0deg); }
+    40% { transform: translateY(-4px) scale(1.12, 0.9) rotate(-10deg); }
+    100% { transform: scale(1) rotate(0deg); }
+  }
+  
+  .pull-particle {
+    position: absolute;
+    top: -30px;
+    font-size: 14px;
+    font-weight: 900;
+    color: #facc15;
+    text-shadow: 0 2px 0 #78350f, 0 0 8px rgba(250,204,21,0.8);
+    pointer-events: none;
+    z-index: 20;
+    animation: popUpParticle 0.45s ease-out forwards;
+  }
+  @keyframes popUpParticle {
+    0% { opacity: 1; transform: translateY(0) scale(0.8); }
+    50% { opacity: 1; transform: translateY(-16px) scale(1.2); }
+    100% { opacity: 0; transform: translateY(-28px) scale(1); }
   }
 
   /* Dust Particles */
@@ -825,19 +856,24 @@
         <div class="win-flag red">🚩</div>
         <div class="win-flag blue">🚩</div>
         
-        <!-- The Rope -->
+        <!-- The Rope: one continuous SVG strand anchored to each mascot's hand -->
+        <svg id="arena-rope-svg" class="arena-rope-svg">
+          <defs>
+            <pattern id="ropePattern" patternUnits="userSpaceOnUse" width="8" height="8" patternTransform="rotate(45)">
+              <rect width="8" height="8" fill="#cba876"></rect>
+              <rect width="4" height="8" fill="#8a6a42"></rect>
+            </pattern>
+          </defs>
+          <path id="rope-path" class="rope-path"></path>
+        </svg>
+        <div id="arena-rope-ribbon" class="arena-rope-ribbon"></div>
+
         <div class="arena-rope-wrapper">
-          <div id="arena-mascot-red" class="arena-mascot red-mascot">
-            <!-- Sumo Mascot left -->
-          </div>
+          <div id="rope-team-red" class="rope-team-lineup red-side"></div>
+          <div id="rope-team-blue" class="rope-team-lineup blue-side"></div>
           
-          <div id="arena-rope" class="arena-rope">
-            <div id="arena-rope-ribbon" class="arena-rope-ribbon"></div>
-          </div>
-          
-          <div id="arena-mascot-blue" class="arena-mascot blue-mascot">
-            <!-- Sumo Mascot right -->
-          </div>
+          <div id="arena-mascot-red" class="arena-mascot red-mascot" style="display:none;"></div>
+          <div id="arena-mascot-blue" class="arena-mascot blue-mascot" style="display:none;"></div>
         </div>
       </div>
 
@@ -952,32 +988,112 @@
     } catch (e) {}
   }
 
-  // Get Sumo wrestler SVG design
-  function getSumoSvg(color, faceLeft) {
+  function renderCustomSumoSvg(avatar, options) {
+    avatar = avatar || {};
+    options = options || {};
+    
+    var skinMap = {
+      fair: { fill: '#fed7aa', stroke: '#f97316' },
+      tan: { fill: '#f59e0b', stroke: '#b45309' },
+      dark: { fill: '#7c2d12', stroke: '#451a03' },
+      pale: { fill: '#fef3c7', stroke: '#d97706' },
+      green: { fill: '#84cc16', stroke: '#4d7c0f' },
+      purple: { fill: '#c084fc', stroke: '#6b21a8' }
+    };
+    
+    var skin = skinMap[avatar.skin] || skinMap.fair;
+    var teamColor = options.team === 'blue' ? '#3b82f6' : (options.color || '#ef4444');
+    var width = options.width || 65;
+    var height = options.height || 65;
+    var faceLeft = options.faceLeft || false;
     var transform = faceLeft ? 'transform="scale(-1, 1) translate(-80, 0)"' : '';
-    return '<svg class="sumo-svg" viewBox="0 0 80 80" width="85" height="85" ' + transform + '>' +
-      // Topknot hair (Chonmage)
-      '<path d="M 40,5 C 38,1 32,1 32,5 C 32,9 38,9 40,5 Z" fill="#1e293b"></path>' +
-      '<circle cx="36" cy="11" r="9" fill="#1e293b"></circle>' +
-      // Sumo Body/Skin (Warm skin tone)
-      '<circle cx="36" cy="38" r="24" fill="#fed7aa" stroke="#f97316" stroke-width="1.5"></circle>' + 
-      '<circle cx="36" cy="20" r="11" fill="#fed7aa" stroke="#f97316" stroke-width="1.5"></circle>' + 
-      // Face details
-      '<path d="M 31,19 C 32,18 34,18 35,19" stroke="#1e293b" stroke-width="2" fill="none" stroke-linecap="round"></path>' +
-      '<path d="M 41,19 C 42,18 44,18 45,19" stroke="#1e293b" stroke-width="2" fill="none" stroke-linecap="round"></path>' +
-      '<circle cx="29" cy="22" r="2.5" fill="#fca5a5" opacity="0.6"></circle>' +
-      '<circle cx="43" cy="22" r="2.5" fill="#fca5a5" opacity="0.6"></circle>' +
-      '<path d="M 34,24 Q 36,28 38,24 Z" fill="#991b1b" stroke="#1e293b" stroke-width="1"></path>' +
-      // Mawashi Sumo belt
-      '<path d="M 14,44 Q 36,54 58,44 Q 50,56 22,56 Z" fill="' + color + '" stroke="#1e293b" stroke-width="1.5"></path>' +
-      '<rect x="31" y="47" width="10" height="15" fill="' + color + '" stroke="#1e293b" stroke-width="1.5" rx="2"></rect>' +
-      // Arms pulling
-      '<path d="M 42,28 C 50,28 58,34 56,38 C 54,42 46,36 42,32 Z" fill="#fed7aa" stroke="#f97316" stroke-width="1.5"></path>' +
-      '<path d="M 28,28 C 20,28 12,34 14,38 C 16,42 24,36 28,32 Z" fill="#fed7aa" stroke="#f97316" stroke-width="1.5"></path>' +
-      // Legs squatting
-      '<path d="M 18,54 C 14,56 12,62 16,66 C 20,68 22,62 22,56 Z" fill="#fed7aa" stroke="#f97316" stroke-width="1.5"></path>' +
-      '<path d="M 54,54 C 58,56 60,62 56,66 C 52,68 50,62 50,56 Z" fill="#fed7aa" stroke="#f97316" stroke-width="1.5"></path>' +
+    
+    var hairSvg = '';
+    switch (avatar.hair) {
+      case 'spiky':
+        hairSvg = '<path d="M 24,14 L 28,2 L 34,12 L 40,0 L 46,12 L 52,2 L 56,14 Z" fill="#1e293b"/>';
+        break;
+      case 'afro':
+        hairSvg = '<circle cx="30" cy="10" r="10" fill="#1e293b"/><circle cx="40" cy="6" r="11" fill="#1e293b"/><circle cx="50" cy="10" r="10" fill="#1e293b"/>';
+        break;
+      case 'viking':
+        hairSvg = '<path d="M 22,14 Q 40,4 58,14 Z" fill="#78350f"/><path d="M 20,14 C 12,6 10,-2 14,-6 C 18,2 24,10 26,14 Z" fill="#f59e0b"/><path d="M 60,14 C 68,6 70,-2 66,-6 C 62,2 56,10 54,14 Z" fill="#f59e0b"/>';
+        break;
+      case 'crown':
+        hairSvg = '<path d="M 24,14 L 24,4 L 32,10 L 40,2 L 48,10 L 56,4 L 56,14 Z" fill="#facc15" stroke="#b45309" stroke-width="1.5"/><circle cx="40" cy="2" r="2.5" fill="#ef4444"/>';
+        break;
+      case 'pirate':
+        hairSvg = '<path d="M 18,14 C 18,2 62,2 62,14 Z" fill="#0f172a"/><path d="M 12,14 L 68,14 L 40,2 Z" fill="#1e293b"/><circle cx="40" cy="8" r="3" fill="#f87171"/>';
+        break;
+      case 'cap':
+        hairSvg = '<path d="M 20,16 Q 40,4 60,16 Z" fill="#ef4444"/><rect x="14" y="14" width="18" height="4" rx="2" fill="#b91c1c"/>';
+        break;
+      case 'bald':
+        hairSvg = '<ellipse cx="40" cy="11" rx="4" ry="2" fill="#ffffff" opacity="0.4"/>';
+        break;
+      case 'chonmage':
+      default:
+        hairSvg = '<path d="M 40,5 C 38,1 32,1 32,5 C 32,9 38,9 40,5 Z" fill="#1e293b"/><circle cx="36" cy="11" r="9" fill="#1e293b"/>';
+        break;
+    }
+    
+    var glassesSvg = '';
+    switch (avatar.glasses) {
+      case 'shades':
+        glassesSvg = '<rect x="24" y="17" width="14" height="8" rx="2" fill="#0f172a"/><rect x="42" y="17" width="14" height="8" rx="2" fill="#0f172a"/><line x1="38" y1="20" x2="42" y2="20" stroke="#0f172a" stroke-width="2"/>';
+        break;
+      case 'round':
+        glassesSvg = '<circle cx="30" cy="20" r="6" fill="none" stroke="#f59e0b" stroke-width="2"/><circle cx="50" cy="20" r="6" fill="none" stroke="#f59e0b" stroke-width="2"/><line x1="36" y1="20" x2="44" y2="20" stroke="#f59e0b" stroke-width="2"/>';
+        break;
+      case 'star':
+        glassesSvg = '<path d="M 30,15 L 32,19 L 36,19 L 33,22 L 34,26 L 30,23 L 26,26 L 27,22 L 24,19 L 28,19 Z" fill="#facc15"/><path d="M 50,15 L 52,19 L 56,19 L 53,22 L 54,26 L 50,23 L 46,26 L 47,22 L 44,19 L 48,19 Z" fill="#facc15"/>';
+        break;
+      case 'vr':
+        glassesSvg = '<rect x="22" y="15" width="36" height="12" rx="4" fill="#0284c7" stroke="#38bdf8" stroke-width="1.5"/><rect x="26" y="18" width="28" height="6" rx="2" fill="#38bdf8" opacity="0.8"/>';
+        break;
+      case 'patch':
+        glassesSvg = '<circle cx="30" cy="20" r="6" fill="#0f172a"/><line x1="18" y1="14" x2="62" y2="24" stroke="#0f172a" stroke-width="1.5"/>';
+        break;
+      case 'none':
+      default:
+        glassesSvg = '';
+        break;
+    }
+    
+    var faceSvg = '';
+    switch (avatar.expression) {
+      case 'happy':
+        faceSvg = '<path d="M 27,19 Q 31,16 34,19" stroke="#1e293b" stroke-width="2" fill="none" stroke-linecap="round"/><path d="M 46,19 Q 49,16 53,19" stroke="#1e293b" stroke-width="2" fill="none" stroke-linecap="round"/><path d="M 33,24 Q 40,30 47,24" stroke="#1e293b" stroke-width="2.5" fill="none" stroke-linecap="round"/>';
+        break;
+      case 'roar':
+        faceSvg = '<path d="M 28,17 L 34,20" stroke="#1e293b" stroke-width="2.5" stroke-linecap="round"/><path d="M 52,17 L 46,20" stroke="#1e293b" stroke-width="2.5" stroke-linecap="round"/><ellipse cx="40" cy="25" rx="6" ry="5" fill="#991b1b" stroke="#1e293b" stroke-width="1.5"/>';
+        break;
+      case 'smirk':
+        faceSvg = '<path d="M 28,18 L 34,19" stroke="#1e293b" stroke-width="2" stroke-linecap="round"/><path d="M 52,17 L 46,18" stroke="#1e293b" stroke-width="2" stroke-linecap="round"/><path d="M 35,26 Q 44,28 46,22" stroke="#1e293b" stroke-width="2.5" fill="none" stroke-linecap="round"/>';
+        break;
+      case 'determined':
+      default:
+        faceSvg = '<path d="M 28,20 L 34,18" stroke="#1e293b" stroke-width="2.5" stroke-linecap="round"/><path d="M 52,20 L 46,18" stroke="#1e293b" stroke-width="2.5" stroke-linecap="round"/><path d="M 34,25 Q 40,29 46,25 Z" fill="#991b1b" stroke="#1e293b" stroke-width="1"/>';
+        break;
+    }
+    
+    return '<svg class="sumo-svg" viewBox="0 0 80 80" width="' + width + '" height="' + height + '" ' + transform + '>' +
+      hairSvg +
+      '<circle cx="40" cy="42" r="26" fill="' + skin.fill + '" stroke="' + skin.stroke + '" stroke-width="1.5"/>' +
+      '<circle cx="40" cy="22" r="13" fill="' + skin.fill + '" stroke="' + skin.stroke + '" stroke-width="1.5"/>' +
+      faceSvg +
+      glassesSvg +
+      '<circle cx="31" cy="24" r="2.5" fill="#fca5a5" opacity="0.5"/>' +
+      '<circle cx="49" cy="24" r="2.5" fill="#fca5a5" opacity="0.5"/>' +
+      '<path d="M 14,48 Q 40,60 66,48 Q 56,62 24,62 Z" fill="' + teamColor + '" stroke="#1e293b" stroke-width="1.5"/>' +
+      '<rect x="35" y="51" width="10" height="16" fill="#facc15" stroke="#1e293b" stroke-width="1.5" rx="2"/>' +
+      '<path d="M 46,32 C 55,32 64,38 62,42 C 60,46 51,40 46,36 Z" fill="' + skin.fill + '" stroke="' + skin.stroke + '" stroke-width="1.5"/>' +
+      '<path d="M 34,32 C 25,32 16,38 18,42 C 20,46 29,40 34,36 Z" fill="' + skin.fill + '" stroke="' + skin.stroke + '" stroke-width="1.5"/>' +
       '</svg>';
+  }
+
+  function getSumoSvg(color, faceLeft, avatar) {
+    return renderCustomSumoSvg(avatar, { color: color, team: faceLeft ? 'blue' : 'red', faceLeft: faceLeft });
   }
 
   function connect() {
@@ -1015,8 +1131,8 @@
       case 'race_progress':
         onRaceProgress(payload);
         break;
-      case 'race_over':
-        onRaceOver(payload);
+      case 'player_tapped':
+        onPlayerTapped(payload);
         break;
       default:
         break;
@@ -1053,9 +1169,12 @@
     document.getElementById('lobby-team-list-red').innerHTML = '';
     document.getElementById('lobby-team-list-blue').innerHTML = '';
 
-    // Initialize Sumo mascots (Red faces right, Blue faces left)
-    document.getElementById('arena-mascot-red').innerHTML = getSumoSvg('#ef4444', false); 
-    document.getElementById('arena-mascot-blue').innerHTML = getSumoSvg('#3b82f6', true); 
+    // Initialize Sumo mascots (Red faces right, Blue faces left) as animated sprites
+    redFrame = 1;
+    blueFrame = 1;
+    document.getElementById('arena-mascot-red').innerHTML = '<img id="sumo-img-red" class="sumo-sprite" src="assets/sumo/red/frame_1.png" alt="Red sumo">';
+    document.getElementById('arena-mascot-blue').innerHTML = '<img id="sumo-img-blue" class="sumo-sprite" src="assets/sumo/blue/frame_1.png" alt="Blue sumo">';
+    requestAnimationFrame(function () { updateRopeLine(0); });
 
     renderLobbyStatusLine();
     initCameraFlashes();
@@ -1101,7 +1220,7 @@
       var playerEl = document.createElement('div');
       playerEl.className = 'lobby-player-duck ' + player.team;
       playerEl.setAttribute('id', 'lobby-player-' + player.playerId);
-      playerEl.innerHTML = getSumoSvg(player.color, player.team === 'blue') + ' ' + player.nickname;
+      playerEl.innerHTML = renderCustomSumoSvg(player.avatar, { color: player.color, team: player.team, width: 36, height: 36 }) + ' ' + player.nickname;
       pool.appendChild(playerEl);
     });
     
@@ -1118,17 +1237,27 @@
     // Reset scoreboard
     document.getElementById('scoreboard-taps-red').textContent = '0';
     document.getElementById('scoreboard-taps-blue').textContent = '0';
-    document.getElementById('arena-rope-ribbon').style.left = '50%';
+    ropeRibbonPct = 50;
     document.getElementById('race-timer-display').textContent = '30s';
-    
+
     // Clear pulling classes
     document.getElementById('arena-mascot-red').className = 'arena-mascot red-mascot';
     document.getElementById('arena-mascot-blue').className = 'arena-mascot blue-mascot';
-    document.getElementById('arena-rope').className = 'arena-rope';
+
+    // Reset sumo sprite animation to idle frame
+    redFrame = 1;
+    blueFrame = 1;
+    var redImgReset = document.getElementById('sumo-img-red');
+    var blueImgReset = document.getElementById('sumo-img-blue');
+    if (redImgReset) redImgReset.src = 'assets/sumo/red/frame_1.png';
+    if (blueImgReset) blueImgReset.src = 'assets/sumo/blue/frame_1.png';
 
     // Set initial custom properties for transform coordinates
     document.getElementById('arena-mascot-red').style.setProperty('--mascot-trans', 'translateX(0px)');
     document.getElementById('arena-mascot-blue').style.setProperty('--mascot-trans', 'translateX(0px)');
+    document.getElementById('arena-mascot-red').style.transform = 'translateX(0px)';
+    document.getElementById('arena-mascot-blue').style.transform = 'translateX(0px)';
+    updateRopeLine(0);
 
     // Render teams list
     renderArenaTeamLists(payload.players || []);
@@ -1142,30 +1271,142 @@
   function renderArenaTeamLists(players) {
     var redContainer = document.getElementById('arena-team-list-red');
     var blueContainer = document.getElementById('arena-team-list-blue');
+    var redRope = document.getElementById('rope-team-red');
+    var blueRope = document.getElementById('rope-team-blue');
+    
     redContainer.innerHTML = '';
     blueContainer.innerHTML = '';
+    if (redRope) redRope.innerHTML = '';
+    if (blueRope) blueRope.innerHTML = '';
 
     players.forEach(function (player) {
       var row = document.createElement('div');
       row.className = 'arena-player-row ' + (player.team === 'red' ? 'red-row' : 'blue-row');
       row.setAttribute('id', 'arena-row-' + player.playerId);
-      row.innerHTML = 
-        '<span class="arena-player-name">' +
-          getSumoSvg(player.color, player.team === 'blue') + 
-          '<span>' + player.nickname + '</span>' +
-        '</span>' +
-        '<span class="arena-player-taps ' + player.team + '" id="arena-taps-' + player.playerId + '">0</span>';
-      
+      row.innerHTML = renderCustomSumoSvg(player.avatar, { color: player.color, team: player.team, width: 28, height: 28 }) +
+        '<span class="nickname">' + player.nickname + '</span>' +
+        '<span class="score-value">' + player.taps + '</span>';
+
       if (player.team === 'red') {
         redContainer.appendChild(row);
       } else {
         blueContainer.appendChild(row);
       }
+      
+      // Render player on the live rope lineup!
+      var ropeContainer = player.team === 'red' ? redRope : blueRope;
+      if (ropeContainer) {
+        var pNode = document.createElement('div');
+        pNode.className = 'rope-player-node ' + (player.team === 'red' ? 'red-side' : 'blue-side');
+        pNode.setAttribute('id', 'rope-player-' + player.playerId);
+        
+        var nameTag = document.createElement('div');
+        nameTag.className = 'rope-player-name-tag';
+        nameTag.textContent = player.nickname;
+        
+        var svgHtml = renderCustomSumoSvg(player.avatar, {
+          color: player.color,
+          team: player.team,
+          faceLeft: player.team === 'blue',
+          width: 60,
+          height: 60
+        });
+        
+        pNode.appendChild(nameTag);
+        pNode.insertAdjacentHTML('beforeend', svgHtml);
+        ropeContainer.appendChild(pNode);
+      }
     });
+  }
+
+  function onPlayerTapped(payload) {
+    if (!payload || !payload.playerId) return;
+    var node = document.getElementById('rope-player-' + payload.playerId);
+    if (node) {
+      node.classList.remove('pulling');
+      void node.offsetWidth;
+      node.classList.add('pulling');
+
+      var particle = document.createElement('div');
+      particle.className = 'pull-particle';
+      particle.textContent = '+1 PULL!';
+      node.appendChild(particle);
+
+      setTimeout(function () {
+        particle.remove();
+      }, 450);
+    }
   }
 
   var prevRedTaps = 0;
   var prevBlueTaps = 0;
+  var redFrame = 1;
+  var blueFrame = 1;
+  var SUMO_FRAME_COUNT = 9;
+  var ropeRibbonPct = 50;
+  var ropeSyncRAF = null;
+
+  // Fractional position of each sumo's hand/rope-grip within its 85x85 sprite box,
+  // measured from the source artwork so the rope strand always anchors to the hand.
+  var RED_HAND_FRAC = { x: 0.4856, y: 0.5394 };
+  var BLUE_HAND_FRAC = { x: 0.5144, y: 0.5394 };
+  var ROPE_SAG = 6;
+
+  function quadPoint(x1, y1, cx, cy, x2, y2, t) {
+    var mt = 1 - t;
+    return {
+      x: mt * mt * x1 + 2 * mt * t * cx + t * t * x2,
+      y: mt * mt * y1 + 2 * mt * t * cy + t * t * y2
+    };
+  }
+
+  function updateRopeLine(jitter) {
+    var container = document.querySelector('.rope-arena-container');
+    var redMascot = document.getElementById('arena-mascot-red');
+    var blueMascot = document.getElementById('arena-mascot-blue');
+    var path = document.getElementById('rope-path');
+    var ribbon = document.getElementById('arena-rope-ribbon');
+    if (!container || !redMascot || !blueMascot || !path) return;
+
+    var cRect = container.getBoundingClientRect();
+    var rRect = redMascot.getBoundingClientRect();
+    var bRect = blueMascot.getBoundingClientRect();
+    if (!cRect.width || !rRect.width || !bRect.width) return;
+
+    var jy = jitter ? (Math.random() - 0.5) * jitter : 0;
+
+    var x1 = rRect.left + rRect.width * RED_HAND_FRAC.x - cRect.left;
+    var y1 = rRect.top + rRect.height * RED_HAND_FRAC.y - cRect.top + jy;
+    var x2 = bRect.left + bRect.width * BLUE_HAND_FRAC.x - cRect.left;
+    var y2 = bRect.top + bRect.height * BLUE_HAND_FRAC.y - cRect.top + jy;
+    var cx = (x1 + x2) / 2;
+    var cy = (y1 + y2) / 2 + ROPE_SAG;
+
+    path.setAttribute('d', 'M ' + x1 + ' ' + y1 + ' Q ' + cx + ' ' + cy + ' ' + x2 + ' ' + y2);
+
+    if (ribbon) {
+      var p = quadPoint(x1, y1, cx, cy, x2, y2, ropeRibbonPct / 100);
+      ribbon.style.left = p.x + 'px';
+      ribbon.style.top = p.y + 'px';
+    }
+  }
+
+  function syncRopeLine(durationMs, jitter) {
+    var start = performance.now();
+    if (ropeSyncRAF) cancelAnimationFrame(ropeSyncRAF);
+    function step() {
+      updateRopeLine(jitter);
+      if (performance.now() - start < durationMs) {
+        ropeSyncRAF = requestAnimationFrame(step);
+      } else {
+        ropeSyncRAF = null;
+        updateRopeLine(0);
+      }
+    }
+    step();
+  }
+
+  window.addEventListener('resize', function () { updateRopeLine(0); });
 
   function spawnDust(isRed) {
     var mascot = document.getElementById(isRed ? 'arena-mascot-red' : 'arena-mascot-blue');
@@ -1211,45 +1452,49 @@
     statusEl.textContent = '🎮 Tug of War! — ' + remainingSec + 's left';
     document.getElementById('race-timer-display').textContent = remainingSec + 's';
 
-    // Ribbon position
+    // Ribbon position (drawn along the rope strand by updateRopeLine)
     var delta = payload.delta || 0;
     var rawPercentage = 50 + (delta / targetNetTaps) * 50;
-    var boundedPercentage = Math.max(8, Math.min(92, rawPercentage));
-    document.getElementById('arena-rope-ribbon').style.left = boundedPercentage + '%';
+    ropeRibbonPct = Math.max(8, Math.min(92, rawPercentage));
 
     // Displace Sumo wrestlers based on delta
     var redMascot = document.getElementById('arena-mascot-red');
     var blueMascot = document.getElementById('arena-mascot-blue');
-    var rope = document.getElementById('arena-rope');
 
-    var displacement = (delta / targetNetTaps) * 45; 
+    var displacement = (delta / targetNetTaps) * 45;
     var transStr = 'translateX(' + displacement + 'px)';
-    
+
     redMascot.style.setProperty('--mascot-trans', transStr);
     blueMascot.style.setProperty('--mascot-trans', transStr);
-    
+
     redMascot.style.transform = transStr;
     blueMascot.style.transform = transStr;
+
+    var tapped = redTaps > prevRedTaps || blueTaps > prevBlueTaps;
 
     // Trigger pulling animation & dust particles on tap increment
     if (redTaps > prevRedTaps) {
       redMascot.classList.add('pulling');
-      rope.classList.add('shaking');
       spawnDust(true);
+      redFrame = (redFrame % SUMO_FRAME_COUNT) + 1;
+      var redImg = document.getElementById('sumo-img-red');
+      if (redImg) redImg.src = 'assets/sumo/red/frame_' + redFrame + '.png';
       setTimeout(function() { redMascot.classList.remove('pulling'); }, 200);
       playCountdownBeep();
     }
     if (blueTaps > prevBlueTaps) {
       blueMascot.classList.add('pulling');
-      rope.classList.add('shaking');
       spawnDust(false);
+      blueFrame = (blueFrame % SUMO_FRAME_COUNT) + 1;
+      var blueImg = document.getElementById('sumo-img-blue');
+      if (blueImg) blueImg.src = 'assets/sumo/blue/frame_' + blueFrame + '.png';
       setTimeout(function() { blueMascot.classList.remove('pulling'); }, 200);
       playCountdownBeep();
     }
-    
-    if (redTaps === prevRedTaps && blueTaps === prevBlueTaps) {
-      rope.classList.remove('shaking');
-    }
+
+    // Keep the rope strand locked to both hands as the mascots shift, with a
+    // little tremor on the frames right after a tap
+    syncRopeLine(220, tapped ? 3 : 0);
 
     prevRedTaps = redTaps;
     prevBlueTaps = blueTaps;

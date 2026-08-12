@@ -11,9 +11,7 @@ const TARGET_NET_TAPS = 50;
 const RACE_DURATION_MS = 30_000;
 const RACE_TICK_MS = 200;
 
-// Chống cheat
-const MAX_TAPS_PER_SECOND = 15;
-const TAP_RATE_GRACE = 5;
+const DEFAULT_AVATAR = { skin: 'fair', hair: 'chonmage', glasses: 'none', expression: 'determined' };
 
 // Shades of Red/Orange for Team Red
 const RED_COLORS = [
@@ -69,7 +67,8 @@ function broadcastLobbyUpdate(room) {
       playerId: p.playerId,
       nickname: p.nickname,
       color: p.color,
-      team: p.team
+      team: p.team,
+      avatar: p.avatar || DEFAULT_AVATAR,
     }))
   });
 }
@@ -89,6 +88,7 @@ function raceSnapshot(room) {
     taps: player.taps,
     color: player.color,
     team: player.team,
+    avatar: player.avatar || DEFAULT_AVATAR,
   }));
 }
 
@@ -195,6 +195,13 @@ function joinRoom(ws, payload) {
     color = BLUE_COLORS[blueCount % BLUE_COLORS.length];
   }
 
+  const avatar = {
+    skin: payload.avatar?.skin || 'fair',
+    hair: payload.avatar?.hair || 'chonmage',
+    glasses: payload.avatar?.glasses || 'none',
+    expression: payload.avatar?.expression || 'determined',
+  };
+
   room.players.set(playerId, {
     playerId,
     ws,
@@ -202,15 +209,44 @@ function joinRoom(ws, payload) {
     taps: 0,
     color,
     team,
+    avatar,
   });
 
   ws.roomPin = room.pin;
   ws.role = 'player';
   ws.playerId = playerId;
 
-  sendJson(ws, 'join_ack', { success: true, playerId, targetNetTaps: TARGET_NET_TAPS, color, team });
+  sendJson(ws, 'join_ack', { success: true, playerId, targetNetTaps: TARGET_NET_TAPS, color, team, avatar });
   broadcastLobbyUpdate(room);
   notifyRoomStats(room);
+}
+
+function updateAvatar(ws, payload) {
+  const room = rooms.get(ws.roomPin);
+  if (!room || ws.role !== 'player' || !ws.playerId) return;
+
+  const player = room.players.get(ws.playerId);
+  if (!player) return;
+
+  if (payload && payload.avatar) {
+    player.avatar = {
+      skin: payload.avatar.skin || player.avatar.skin,
+      hair: payload.avatar.hair || player.avatar.hair,
+      glasses: payload.avatar.glasses || player.avatar.glasses,
+      expression: payload.avatar.expression || player.avatar.expression,
+    };
+  }
+
+  sendJson(ws, 'join_ack', {
+    success: true,
+    playerId: player.playerId,
+    targetNetTaps: TARGET_NET_TAPS,
+    color: player.color,
+    team: player.team,
+    avatar: player.avatar,
+  });
+
+  broadcastLobbyUpdate(room);
 }
 
 function startRace(room) {
@@ -430,6 +466,7 @@ module.exports = {
   createRoom,
   joinRoom,
   switchTeam,
+  updateAvatar,
   reportTapCount,
   forceStart,
   handleDisconnect,
