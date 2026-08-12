@@ -508,6 +508,11 @@
         <button class="preset-btn" data-preset="kitsune">🦊 Kitsune</button>
         <button class="preset-btn" data-preset="royal">👑 Royal</button>
         <button class="preset-btn" data-preset="demon">😈 Demon</button>
+        <button class="preset-btn" data-preset="pirate">🏴‍☠️ Pirate</button>
+        <button class="preset-btn" data-preset="wizard">🧙 Wizard</button>
+        <button class="preset-btn" data-preset="dj">🎧 DJ</button>
+        <button class="preset-btn" data-preset="neko">🐱 Neko</button>
+        <button class="preset-btn" data-preset="mecha">🤖 Mecha</button>
       </div>
 
       <!-- Locker Category Tabs -->
@@ -607,9 +612,14 @@
   var presetsMap = {
     saiyan: { title: '⚡ SAIYAN WARRIOR', rarity: 'epic', skin: 'tan', hair: 'saiyan', glasses: 'none', expression: 'heroic', aura: 'gold' },
     cyber: { title: '🥷 CYBER NINJA', rarity: 'legendary', skin: 'cyber', hair: 'hero', glasses: 'cyber', expression: 'smirk', aura: 'cyber' },
-    kitsune: { title: '🦊 KITSUNE SPIRIT', rarity: 'epic', skin: 'fair', hair: 'kitsune', glasses: 'mask', expression: 'sparkle', aura: 'gold' },
-    royal: { title: '👑 ROYAL EMPEROR', rarity: 'legendary', skin: 'peach', hair: 'halo', glasses: 'round', expression: 'happy', aura: 'angel' },
+    kitsune: { title: '🦊 KITSUNE SPIRIT', rarity: 'epic', skin: 'fair', hair: 'kitsune', glasses: 'mask', expression: 'sparkle', aura: 'sakura' },
+    royal: { title: '👑 ROYAL EMPEROR', rarity: 'legendary', skin: 'peach', hair: 'crown', glasses: 'round', expression: 'happy', aura: 'angel' },
     demon: { title: '😈 DEMON OVERLORD', rarity: 'epic', skin: 'dark', hair: 'demon', glasses: 'shades', expression: 'fierce', aura: 'flame' },
+    pirate: { title: '🏴‍☠️ PIRATE KING', rarity: 'rare', skin: 'tan', hair: 'pirate', glasses: 'patch', expression: 'smirk', aura: 'gold' },
+    wizard: { title: '🧙 ARCANE MAGE', rarity: 'legendary', skin: 'violet', hair: 'wizard', glasses: 'round', expression: 'sparkle', aura: 'mana' },
+    dj: { title: '🎧 CYBER DJ', rarity: 'epic', skin: 'cyber', hair: 'headphones', glasses: 'cyber', expression: 'smirk', aura: 'rainbow' },
+    neko: { title: '🐱 NEKO HEROINE', rarity: 'rare', skin: 'fair', hair: 'neko', glasses: 'none', expression: 'sparkle', aura: 'sakura' },
+    mecha: { title: '🤖 MECHA TITAN', rarity: 'legendary', skin: 'blue', hair: 'mecha', glasses: 'monocle', expression: 'heroic', aura: 'cyber' },
   };
 
   var swatchData = {
@@ -620,13 +630,21 @@
       { id: 'kitsune', icon: '🦊', label: 'Kitsune' },
       { id: 'demon', icon: '😈', label: 'Demon' },
       { id: 'halo', icon: '😇', label: 'Angel' },
-      { id: 'chonmage', icon: '🥷', label: 'Samurai' }
+      { id: 'crown', icon: '👑', label: 'Crown' },
+      { id: 'pirate', icon: '🏴‍☠️', label: 'Pirate' },
+      { id: 'wizard', icon: '🧙', label: 'Wizard' },
+      { id: 'headphones', icon: '🎧', label: 'DJ' },
+      { id: 'neko', icon: '🐱', label: 'Neko' },
+      { id: 'mecha', icon: '🤖', label: 'Mecha' }
     ],
     glasses: [
       { id: 'cyber', icon: '🥽', label: 'Cyber' },
       { id: 'shades', icon: '🕶️', label: 'Shades' },
       { id: 'round', icon: '👓', label: 'Round' },
       { id: 'mask', icon: '🦊', label: 'Fox Mask' },
+      { id: 'patch', icon: '🏴‍☠️', label: 'Patch' },
+      { id: 'star', icon: '⭐', label: 'Star' },
+      { id: 'monocle', icon: '🔴', label: 'Laser' },
       { id: 'none', icon: '❌', label: 'None' }
     ],
     aura: [
@@ -634,6 +652,9 @@
       { id: 'cyber', icon: '🌐', label: 'Cyber' },
       { id: 'flame', icon: '🔥', label: 'Flame' },
       { id: 'angel', icon: '✨', label: 'Angel' },
+      { id: 'mana', icon: '🔮', label: 'Mana' },
+      { id: 'sakura', icon: '🌸', label: 'Sakura' },
+      { id: 'rainbow', icon: '🌈', label: 'Neon' },
       { id: 'none', icon: '❌', label: 'None' }
     ],
     skin: [
@@ -642,7 +663,9 @@
       { id: 'tan', icon: '☀️', label: 'Tan' },
       { id: 'dark', icon: '🤎', label: 'Bronze' },
       { id: 'pale', icon: '❄️', label: 'Pale' },
-      { id: 'cyber', icon: '💚', label: 'Cyber' }
+      { id: 'cyber', icon: '💚', label: 'Green' },
+      { id: 'violet', icon: '💜', label: 'Violet' },
+      { id: 'blue', icon: '💙', label: 'Avatar' }
     ]
   };
 
@@ -659,6 +682,8 @@
       dark: { fill: '#7c2d12', stroke: '#451a03', blush: '#9a3412' },
       pale: { fill: '#f8fafc', stroke: '#94a3b8', blush: '#cbd5e1' },
       cyber: { fill: '#a7f3d0', stroke: '#059669', blush: '#10b981' },
+      violet: { fill: '#e9d5ff', stroke: '#9333ea', blush: '#c084fc' },
+      blue: { fill: '#bae6fd', stroke: '#0284c7', blush: '#38bdf8' },
     };
     
     var skin = skinMap[avatar.skin] || skinMap.fair;
@@ -682,6 +707,15 @@
         break;
       case 'angel':
         auraSvg = '<ellipse cx="40" cy="35" rx="34" ry="34" fill="none" stroke="#a7f3d0" stroke-width="2" opacity="0.6"/>';
+        break;
+      case 'mana':
+        auraSvg = '<circle cx="40" cy="35" r="33" fill="none" stroke="#c084fc" stroke-width="2.5" opacity="0.8" stroke-dasharray="4,6"/>';
+        break;
+      case 'sakura':
+        auraSvg = '<ellipse cx="40" cy="35" rx="32" ry="32" fill="none" stroke="#f472b6" stroke-width="2.5" opacity="0.7"/>';
+        break;
+      case 'rainbow':
+        auraSvg = '<circle cx="40" cy="35" r="33" fill="none" stroke="#f43f5e" stroke-width="2" opacity="0.8"/><circle cx="40" cy="35" r="31" fill="none" stroke="#3b82f6" stroke-width="2" opacity="0.8"/>';
         break;
       default:
         auraSvg = '';
@@ -707,6 +741,24 @@
         break;
       case 'halo':
         hairSvg = '<ellipse cx="40" cy="2" rx="18" ry="4" fill="none" stroke="#facc15" stroke-width="2.5"/><path d="M 22,22 Q 40,8 58,22 Z" fill="#e2e8f0"/>';
+        break;
+      case 'crown':
+        hairSvg = '<path d="M 24,14 L 24,4 L 32,10 L 40,2 L 48,10 L 56,4 L 56,14 Z" fill="#facc15" stroke="#b45309" stroke-width="1.5"/><circle cx="40" cy="2" r="2.5" fill="#ef4444"/><path d="M 22,22 Q 40,8 58,22 Z" fill="#1e293b"/>';
+        break;
+      case 'pirate':
+        hairSvg = '<path d="M 18,14 C 18,2 62,2 62,14 Z" fill="#0f172a"/><path d="M 12,14 L 68,14 L 40,2 Z" fill="#1e293b"/><circle cx="40" cy="8" r="3" fill="#f87171"/>';
+        break;
+      case 'wizard':
+        hairSvg = '<path d="M 14,20 L 40,-4 L 66,20 Z" fill="#6b21a8" stroke="#a855f7" stroke-width="1.5"/><ellipse cx="40" cy="20" rx="30" ry="4" fill="#581c87"/>';
+        break;
+      case 'headphones':
+        hairSvg = '<path d="M 14,24 C 14,4 66,4 66,24 Z" fill="none" stroke="#06b6d4" stroke-width="4"/><rect x="10" y="20" width="8" height="14" rx="3" fill="#38bdf8"/><rect x="62" y="20" width="8" height="14" rx="3" fill="#38bdf8"/><path d="M 22,22 Q 40,8 58,22 Z" fill="#1e293b"/>';
+        break;
+      case 'neko':
+        hairSvg = '<path d="M 22,18 L 14,0 L 30,12 Z" fill="#f472b6"/><path d="M 58,18 L 66,0 L 50,12 Z" fill="#f472b6"/><path d="M 22,22 Q 40,8 58,22 Z" fill="#fff"/>';
+        break;
+      case 'mecha':
+        hairSvg = '<path d="M 18,10 Q 40,2 62,10 L 66,24 L 14,24 Z" fill="#475569" stroke="#94a3b8" stroke-width="1.5"/><rect x="36" y="2" width="8" height="10" fill="#ef4444"/>';
         break;
       case 'chonmage':
       default:
@@ -744,6 +796,15 @@
         break;
       case 'mask':
         glassesSvg = '<path d="M 22,27 Q 40,24 58,27 L 54,42 Q 40,46 26,42 Z" fill="#ffffff" stroke="#0f172a" stroke-width="1.5"/><circle cx="40" cy="34" r="3" fill="#ef4444"/>';
+        break;
+      case 'patch':
+        glassesSvg = '<circle cx="30" cy="24" r="6" fill="#0f172a"/><line x1="18" y1="18" x2="62" y2="28" stroke="#0f172a" stroke-width="2"/>';
+        break;
+      case 'star':
+        glassesSvg = '<path d="M 30,18 L 32,22 L 36,22 L 33,25 L 34,29 L 30,26 L 26,29 L 27,25 L 24,22 L 28,22 Z" fill="#facc15"/><path d="M 50,18 L 52,22 L 56,22 L 53,25 L 54,29 L 50,26 L 46,29 L 47,25 L 44,22 L 48,22 Z" fill="#facc15"/>';
+        break;
+      case 'monocle':
+        glassesSvg = '<rect x="20" y="20" width="40" height="8" rx="2" fill="#ef4444" opacity="0.95" stroke="#f87171" stroke-width="1.5"/>';
         break;
       case 'none':
       default:
