@@ -431,19 +431,46 @@
     to { transform: rotate(360deg); }
   }
 
+  .preset-carousel-container {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    gap: 4px;
+    position: relative;
+  }
+  .carousel-arrow {
+    background: rgba(255,255,255,0.18);
+    border: 1.5px solid rgba(255,255,255,0.4);
+    color: #fde047;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    font-weight: 900;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: transform 0.15s ease, background 0.15s ease;
+  }
+  .carousel-arrow:hover, .carousel-arrow:active {
+    background: #facc15;
+    color: #451a03;
+    border-color: #fef08a;
+    transform: scale(1.15);
+  }
   .preset-row {
     display: flex;
     gap: 4px;
     width: 100%;
     overflow-x: auto;
-    padding-bottom: 4px;
-    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
   }
-  .preset-row::-webkit-scrollbar, .swatch-grid::-webkit-scrollbar {
-    height: 4px; width: 4px;
-  }
-  .preset-row::-webkit-scrollbar-thumb, .swatch-grid::-webkit-scrollbar-thumb {
-    background: rgba(250,204,21,0.5); border-radius: 4px;
+  .preset-row::-webkit-scrollbar {
+    display: none;
   }
 
   .preset-btn {
@@ -564,19 +591,23 @@
           <div class="avatar-preview-slot" id="avatar-preview-slot"></div>
         </div>
 
-        <!-- Quick Presets -->
-        <div class="preset-row">
-          <button class="preset-btn active" data-preset="common">⚪ Common</button>
-          <button class="preset-btn" data-preset="saiyan">⚡ Saiyan</button>
-          <button class="preset-btn" data-preset="cyber">🥷 Cyber</button>
-          <button class="preset-btn" data-preset="kitsune">🦊 Kitsune</button>
-          <button class="preset-btn" data-preset="royal">👑 Royal</button>
-          <button class="preset-btn" data-preset="demon">😈 Demon</button>
-          <button class="preset-btn" data-preset="pirate">🏴‍☠️ Pirate</button>
-          <button class="preset-btn" data-preset="wizard">🧙 Wizard</button>
-          <button class="preset-btn" data-preset="dj">🎧 DJ</button>
-          <button class="preset-btn" data-preset="neko">🐱 Neko</button>
-          <button class="preset-btn" data-preset="mecha">🤖 Mecha</button>
+        <!-- Quick Presets Carousel -->
+        <div class="preset-carousel-container">
+          <button class="carousel-arrow left" id="btn-preset-prev">◀</button>
+          <div class="preset-row" id="preset-row">
+            <button class="preset-btn active" data-preset="common">⚪ Common</button>
+            <button class="preset-btn" data-preset="saiyan">⚡ Saiyan</button>
+            <button class="preset-btn" data-preset="cyber">🥷 Cyber</button>
+            <button class="preset-btn" data-preset="kitsune">🦊 Kitsune</button>
+            <button class="preset-btn" data-preset="royal">👑 Royal</button>
+            <button class="preset-btn" data-preset="demon">😈 Demon</button>
+            <button class="preset-btn" data-preset="pirate">🏴‍☠️ Pirate</button>
+            <button class="preset-btn" data-preset="wizard">🧙 Wizard</button>
+            <button class="preset-btn" data-preset="dj">🎧 DJ</button>
+            <button class="preset-btn" data-preset="neko">🐱 Neko</button>
+            <button class="preset-btn" data-preset="mecha">🤖 Mecha</button>
+          </div>
+          <button class="carousel-arrow right" id="btn-preset-next">▶</button>
         </div>
       </div>
 
@@ -927,6 +958,22 @@
         if (myPlayerId) send('update_avatar', { avatar: myAvatar });
       });
       grid.appendChild(card);
+    });
+  }
+
+  // Preset Carousel Nav Arrow Listeners
+  var btnPrev = document.getElementById('btn-preset-prev');
+  var btnNext = document.getElementById('btn-preset-next');
+  if (btnPrev) {
+    btnPrev.addEventListener('click', function() {
+      var row = document.getElementById('preset-row');
+      if (row) row.scrollBy({ left: -90, behavior: 'smooth' });
+    });
+  }
+  if (btnNext) {
+    btnNext.addEventListener('click', function() {
+      var row = document.getElementById('preset-row');
+      if (row) row.scrollBy({ left: 90, behavior: 'smooth' });
     });
   }
 
