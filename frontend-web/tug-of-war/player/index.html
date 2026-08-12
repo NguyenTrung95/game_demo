@@ -1389,9 +1389,9 @@
   }
 
   prefillPinFromQrScan();
-  updateLockerUI();
-  document.addEventListener('DOMContentLoaded', updateLockerUI);
-  setTimeout(updateLockerUI, 100);
+  selectPresetByIndex(0);
+  document.addEventListener('DOMContentLoaded', function() { selectPresetByIndex(0); });
+  setTimeout(function() { selectPresetByIndex(0); }, 100);
   connect();
 }());
 </script>
