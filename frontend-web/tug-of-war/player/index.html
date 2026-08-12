@@ -330,59 +330,144 @@
     from { transform: translateY(0); }
     to { transform: translateY(-3px); }
   }
-  .avatar-customizer-box {
-    background: linear-gradient(180deg, #fef08a, #fde047);
-    border: 3.5px solid #854d0e;
-    border-radius: 24px;
-    padding: 12px 14px;
+  .pro-locker-box {
+    background: linear-gradient(180deg, #1e1b4b, #0f172a);
+    border: 3.5px solid #fbbf24;
+    border-radius: 28px;
+    padding: 14px 12px;
     margin: 12px 0;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 8px;
-    box-shadow: inset 0 3px 6px rgba(255,255,255,0.8), 0 5px 0 #854d0e;
+    gap: 10px;
+    color: #fff;
+    box-shadow: 0 0 20px rgba(251, 191, 36, 0.4), inset 0 2px 4px rgba(255,255,255,0.2);
   }
-  .avatar-preview-slot {
-    width: 90px;
-    height: 90px;
-    background: radial-gradient(circle, #ffffff, #fffdf0);
-    border: 3.5px solid #854d0e;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 0 16px rgba(250,204,21,0.6), 0 4px 8px rgba(0,0,0,0.15);
-    animation: avatarPulse 3s ease-in-out infinite alternate;
-  }
-  @keyframes avatarPulse {
-    from { box-shadow: 0 0 12px rgba(250,204,21,0.4), 0 4px 8px rgba(0,0,0,0.15); }
-    to { box-shadow: 0 0 22px rgba(250,204,21,0.9), 0 6px 12px rgba(0,0,0,0.25); }
-  }
-  .avatar-opt-row {
-    width: 100%;
+  .pro-locker-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    gap: 6px;
-    font-size: 12.5px;
-    font-weight: 800;
-    color: #854d0e;
+    width: 100%;
+    padding: 0 4px;
   }
-  .avatar-opt-btn {
-    background: linear-gradient(180deg, #ffffff, #fffdf0);
-    border: 2.5px solid #854d0e;
+  .rarity-badge {
+    font-size: 10px;
+    font-weight: 900;
+    padding: 3px 8px;
+    border-radius: 999px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border: 1.5px solid rgba(255,255,255,0.6);
+  }
+  .rarity-badge.epic { background: linear-gradient(135deg, #a855f7, #ec4899); }
+  .rarity-badge.legendary { background: linear-gradient(135deg, #f59e0b, #facc15); color: #78350f; }
+  .rarity-badge.rare { background: linear-gradient(135deg, #0284c7, #38bdf8); }
+  
+  .preset-title {
+    font-size: 12px;
+    font-weight: 900;
+    color: #fde047;
+    text-shadow: 0 0 8px rgba(250,204,21,0.6);
+  }
+
+  .pro-locker-stage {
+    position: relative;
+    width: 96px;
+    height: 96px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .stage-spotlight {
+    position: absolute;
+    inset: -6px;
+    background: radial-gradient(circle, rgba(250,204,21,0.35), transparent 70%);
+    border-radius: 50%;
+    animation: spotlightSpin 4s linear infinite;
+  }
+  @keyframes spotlightSpin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  .preset-row {
+    display: flex;
+    gap: 4px;
+    width: 100%;
+    overflow-x: auto;
+    padding-bottom: 2px;
+  }
+  .preset-btn {
+    background: rgba(255,255,255,0.1);
+    border: 1.5px solid rgba(255,255,255,0.3);
     border-radius: 12px;
-    padding: 5px 12px;
-    font-size: 11.5px;
+    color: #fff;
+    font-size: 10.5px;
     font-weight: 800;
+    padding: 4px 8px;
+    white-space: nowrap;
     cursor: pointer;
-    color: #854d0e;
-    box-shadow: 0 3px 0 #854d0e;
-    transition: transform 0.1s, box-shadow 0.1s;
   }
-  .avatar-opt-btn:active {
-    transform: translateY(2px);
-    box-shadow: 0 1px 0 #854d0e;
+  .preset-btn.active, .preset-btn:active {
+    background: linear-gradient(135deg, #fbbf24, #f59e0b);
+    color: #451a03;
+    border-color: #fef08a;
+    box-shadow: 0 0 10px rgba(250,204,21,0.6);
+  }
+
+  .locker-tabs {
+    display: flex;
+    width: 100%;
+    background: rgba(0,0,0,0.4);
+    border-radius: 14px;
+    padding: 3px;
+    gap: 3px;
+  }
+  .locker-tab {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: #94a3b8;
+    font-size: 11px;
+    font-weight: 800;
+    padding: 5px 0;
+    border-radius: 10px;
+    cursor: pointer;
+  }
+  .locker-tab.active {
+    background: #3b82f6;
+    color: #fff;
+    box-shadow: 0 2px 6px rgba(59,130,246,0.5);
+  }
+
+  .swatch-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 6px;
+    width: 100%;
+    max-height: 110px;
+    overflow-y: auto;
+    padding: 2px;
+  }
+  .swatch-card {
+    background: rgba(255,255,255,0.08);
+    border: 2px solid rgba(255,255,255,0.2);
+    border-radius: 12px;
+    padding: 6px 4px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    font-size: 10px;
+    font-weight: 800;
+    color: #e2e8f0;
+    cursor: pointer;
+  }
+  .swatch-card.active {
+    border-color: #facc15;
+    background: rgba(250,204,21,0.2);
+    box-shadow: 0 0 10px rgba(250,204,21,0.5);
+    color: #fef08a;
   }
   .sumo-mini-img {
     width: 36px; height: 36px;
@@ -405,26 +490,36 @@
     <input id="input-pin" type="tel" inputmode="numeric" maxlength="4" placeholder="PIN Code (4 digits)">
     <input id="input-nickname" type="text" maxlength="20" placeholder="Display Name">
     
-    <div class="avatar-customizer-box">
-      <div style="font-size: 12px; font-weight: 900; color: #854d0e;">✨ CUSTOMIZE YOUR SUMO AVATAR ✨</div>
-      <div class="avatar-preview-slot" id="avatar-preview-slot"></div>
-      
-      <div class="avatar-opt-row">
-        <span>Skin:</span>
-        <button class="avatar-opt-btn" id="btn-opt-skin">🎨 Fair</button>
+    <div class="pro-locker-box">
+      <div class="pro-locker-header">
+        <span class="rarity-badge epic" id="locker-rarity">🔥 EPIC HERO</span>
+        <span class="preset-title" id="locker-title">⚡ SAIYAN WARRIOR</span>
       </div>
-      <div class="avatar-opt-row">
-        <span>Hair/Hat:</span>
-        <button class="avatar-opt-btn" id="btn-opt-hair">💇 Chonmage</button>
+
+      <div class="pro-locker-stage">
+        <div class="stage-spotlight"></div>
+        <div class="avatar-preview-slot" id="avatar-preview-slot"></div>
       </div>
-      <div class="avatar-opt-row">
-        <span>Glasses:</span>
-        <button class="avatar-opt-btn" id="btn-opt-glasses">👓 None</button>
+
+      <!-- Quick Presets -->
+      <div class="preset-row">
+        <button class="preset-btn active" data-preset="saiyan">⚡ Saiyan</button>
+        <button class="preset-btn" data-preset="cyber">🥷 Cyber</button>
+        <button class="preset-btn" data-preset="kitsune">🦊 Kitsune</button>
+        <button class="preset-btn" data-preset="royal">👑 Royal</button>
+        <button class="preset-btn" data-preset="demon">😈 Demon</button>
       </div>
-      <div class="avatar-opt-row">
-        <span>Face:</span>
-        <button class="avatar-opt-btn" id="btn-opt-expression">😮 Determined</button>
+
+      <!-- Locker Category Tabs -->
+      <div class="locker-tabs">
+        <button class="locker-tab active" data-tab="hair">💇 Hair</button>
+        <button class="locker-tab" data-tab="glasses">👓 Glasses</button>
+        <button class="locker-tab" data-tab="aura">⚡ Aura</button>
+        <button class="locker-tab" data-tab="skin">🎨 Skin</button>
       </div>
+
+      <!-- Swatches Grid -->
+      <div class="swatch-grid" id="swatch-grid"></div>
     </div>
 
     <button class="primary" id="btn-join">Join Game</button>
@@ -499,19 +594,59 @@
   var reportInterval = null;
   var raceTimerInterval = null;
 
-  var myAvatar = { skin: 'fair', hair: 'chonmage', glasses: 'none', expression: 'determined' };
-  
-  var skinOptions = ['fair', 'tan', 'dark', 'pale', 'green', 'purple'];
-  var skinLabels = { fair: '🎨 Fair', tan: '🎨 Tan', dark: '🎨 Bronze', pale: '🎨 Pale', green: '🎨 Hulk', purple: '🎨 Cosmic' };
-  
-  var hairOptions = ['saiyan', 'hero', 'twintails', 'kitsune', 'demon', 'halo', 'chonmage'];
-  var hairLabels = { saiyan: '⚡ Saiyan', hero: '🗡️ Hero', twintails: '🎀 Twintails', kitsune: '🦊 Kitsune', demon: '😈 Demon', halo: '😇 Angel', chonmage: '🥷 Samurai' };
-  
-  var glassesOptions = ['none', 'cyber', 'shades', 'round', 'mask'];
-  var glassesLabels = { none: '👓 None', cyber: '🥽 Cyber Visor', shades: '🕶️ Shades', round: '👓 Round', mask: '🦊 Fox Mask' };
-  
-  var expressionOptions = ['sparkle', 'heroic', 'smirk', 'fierce'];
-  var expressionLabels = { sparkle: '✨ Sparkle', heroic: '⚔️ Heroic', smirk: '😏 Smirk', fierce: '🔥 Fierce' };
+  var myAvatar = {
+    skin: 'fair',
+    hair: 'saiyan',
+    glasses: 'cyber',
+    expression: 'heroic',
+    outfit: 'gi',
+    aura: 'gold',
+    rarity: 'EPIC'
+  };
+
+  var presetsMap = {
+    saiyan: { title: '⚡ SAIYAN WARRIOR', rarity: 'epic', skin: 'tan', hair: 'saiyan', glasses: 'none', expression: 'heroic', aura: 'gold' },
+    cyber: { title: '🥷 CYBER NINJA', rarity: 'legendary', skin: 'cyber', hair: 'hero', glasses: 'cyber', expression: 'smirk', aura: 'cyber' },
+    kitsune: { title: '🦊 KITSUNE SPIRIT', rarity: 'epic', skin: 'fair', hair: 'kitsune', glasses: 'mask', expression: 'sparkle', aura: 'gold' },
+    royal: { title: '👑 ROYAL EMPEROR', rarity: 'legendary', skin: 'peach', hair: 'halo', glasses: 'round', expression: 'happy', aura: 'angel' },
+    demon: { title: '😈 DEMON OVERLORD', rarity: 'epic', skin: 'dark', hair: 'demon', glasses: 'shades', expression: 'fierce', aura: 'flame' },
+  };
+
+  var swatchData = {
+    hair: [
+      { id: 'saiyan', icon: '⚡', label: 'Saiyan' },
+      { id: 'hero', icon: '🗡️', label: 'Hero' },
+      { id: 'twintails', icon: '🎀', label: 'Twintails' },
+      { id: 'kitsune', icon: '🦊', label: 'Kitsune' },
+      { id: 'demon', icon: '😈', label: 'Demon' },
+      { id: 'halo', icon: '😇', label: 'Angel' },
+      { id: 'chonmage', icon: '🥷', label: 'Samurai' }
+    ],
+    glasses: [
+      { id: 'cyber', icon: '🥽', label: 'Cyber' },
+      { id: 'shades', icon: '🕶️', label: 'Shades' },
+      { id: 'round', icon: '👓', label: 'Round' },
+      { id: 'mask', icon: '🦊', label: 'Fox Mask' },
+      { id: 'none', icon: '❌', label: 'None' }
+    ],
+    aura: [
+      { id: 'gold', icon: '⚡', label: 'Gold' },
+      { id: 'cyber', icon: '🌐', label: 'Cyber' },
+      { id: 'flame', icon: '🔥', label: 'Flame' },
+      { id: 'angel', icon: '✨', label: 'Angel' },
+      { id: 'none', icon: '❌', label: 'None' }
+    ],
+    skin: [
+      { id: 'fair', icon: '🎨', label: 'Fair' },
+      { id: 'peach', icon: '🍑', label: 'Peach' },
+      { id: 'tan', icon: '☀️', label: 'Tan' },
+      { id: 'dark', icon: '🤎', label: 'Bronze' },
+      { id: 'pale', icon: '❄️', label: 'Pale' },
+      { id: 'cyber', icon: '💚', label: 'Cyber' }
+    ]
+  };
+
+  var activeTab = 'hair';
 
   function renderCustomSumoSvg(avatar, options) {
     avatar = avatar || {};
@@ -533,6 +668,26 @@
     var faceLeft = options.faceLeft || false;
     var transform = faceLeft ? 'transform="scale(-1, 1) translate(-80, 0)"' : '';
     
+    // Aura Layer
+    var auraSvg = '';
+    switch (avatar.aura) {
+      case 'gold':
+        auraSvg = '<circle cx="40" cy="35" r="32" fill="none" stroke="#facc15" stroke-width="3" opacity="0.6" stroke-dasharray="6,4"/>';
+        break;
+      case 'cyber':
+        auraSvg = '<polygon points="40,2 72,18 72,54 40,70 8,54 8,18" fill="none" stroke="#22d3ee" stroke-width="2" opacity="0.7"/>';
+        break;
+      case 'flame':
+        auraSvg = '<path d="M 12,50 C 4,20 28,10 40,2 C 52,10 76,20 68,50 Z" fill="none" stroke="#ef4444" stroke-width="2.5" opacity="0.6"/>';
+        break;
+      case 'angel':
+        auraSvg = '<ellipse cx="40" cy="35" rx="34" ry="34" fill="none" stroke="#a7f3d0" stroke-width="2" opacity="0.6"/>';
+        break;
+      default:
+        auraSvg = '';
+        break;
+    }
+
     var hairSvg = '';
     switch (avatar.hair) {
       case 'saiyan':
@@ -597,6 +752,7 @@
     }
     
     return '<svg class="sumo-svg" viewBox="0 0 80 80" width="' + width + '" height="' + height + '" ' + transform + '>' +
+      auraSvg +
       hairSvg +
       '<circle cx="40" cy="44" r="26" fill="' + skin.fill + '" stroke="' + skin.stroke + '" stroke-width="1.5"/>' +
       '<circle cx="40" cy="25" r="15" fill="' + skin.fill + '" stroke="' + skin.stroke + '" stroke-width="1.5"/>' +
@@ -611,45 +767,71 @@
       '</svg>';
   }
 
-  function updateAvatarPreview() {
+  function updateLockerUI() {
     var slot = document.getElementById('avatar-preview-slot');
     if (slot) {
-      slot.innerHTML = renderCustomSumoSvg(myAvatar, { width: 64, height: 64, team: myTeam, color: myColor });
+      slot.innerHTML = renderCustomSumoSvg(myAvatar, { width: 72, height: 72, team: myTeam, color: myColor });
     }
+    
+    var titleEl = document.getElementById('locker-title');
+    var rarityEl = document.getElementById('locker-rarity');
+    if (rarityEl) {
+      rarityEl.className = 'rarity-badge ' + (myAvatar.rarity || 'epic').toLowerCase();
+      rarityEl.textContent = (myAvatar.rarity === 'LEGENDARY' ? '🌟 LEGENDARY' : (myAvatar.rarity === 'RARE' ? '💎 RARE' : '🔥 EPIC HERO'));
+    }
+    
+    renderSwatches();
   }
 
-  function cycleOption(arr, currentVal) {
-    var idx = arr.indexOf(currentVal);
-    var nextIdx = (idx + 1) % arr.length;
-    return arr[nextIdx];
+  function renderSwatches() {
+    var grid = document.getElementById('swatch-grid');
+    if (!grid) return;
+    grid.innerHTML = '';
+    
+    var list = swatchData[activeTab] || [];
+    list.forEach(function(item) {
+      var card = document.createElement('div');
+      card.className = 'swatch-card' + (myAvatar[activeTab] === item.id ? ' active' : '');
+      card.innerHTML = '<span style="font-size: 16px;">' + item.icon + '</span><span>' + item.label + '</span>';
+      card.addEventListener('click', function() {
+        myAvatar[activeTab] = item.id;
+        updateLockerUI();
+        if (myPlayerId) send('update_avatar', { avatar: myAvatar });
+      });
+      grid.appendChild(card);
+    });
   }
 
-  document.getElementById('btn-opt-skin').addEventListener('click', function() {
-    myAvatar.skin = cycleOption(skinOptions, myAvatar.skin);
-    this.textContent = skinLabels[myAvatar.skin];
-    updateAvatarPreview();
-    if (myPlayerId) send('update_avatar', { avatar: myAvatar });
+  // Preset button listeners
+  document.querySelectorAll('.preset-btn').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      document.querySelectorAll('.preset-btn').forEach(function(b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+      var pKey = btn.getAttribute('data-preset');
+      var preset = presetsMap[pKey];
+      if (preset) {
+        myAvatar.skin = preset.skin;
+        myAvatar.hair = preset.hair;
+        myAvatar.glasses = preset.glasses;
+        myAvatar.expression = preset.expression;
+        myAvatar.aura = preset.aura;
+        myAvatar.rarity = preset.rarity.toUpperCase();
+        var titleEl = document.getElementById('locker-title');
+        if (titleEl) titleEl.textContent = preset.title;
+        updateLockerUI();
+        if (myPlayerId) send('update_avatar', { avatar: myAvatar });
+      }
+    });
   });
 
-  document.getElementById('btn-opt-hair').addEventListener('click', function() {
-    myAvatar.hair = cycleOption(hairOptions, myAvatar.hair);
-    this.textContent = hairLabels[myAvatar.hair];
-    updateAvatarPreview();
-    if (myPlayerId) send('update_avatar', { avatar: myAvatar });
-  });
-
-  document.getElementById('btn-opt-glasses').addEventListener('click', function() {
-    myAvatar.glasses = cycleOption(glassesOptions, myAvatar.glasses);
-    this.textContent = glassesLabels[myAvatar.glasses];
-    updateAvatarPreview();
-    if (myPlayerId) send('update_avatar', { avatar: myAvatar });
-  });
-
-  document.getElementById('btn-opt-expression').addEventListener('click', function() {
-    myAvatar.expression = cycleOption(expressionOptions, myAvatar.expression);
-    this.textContent = expressionLabels[myAvatar.expression];
-    updateAvatarPreview();
-    if (myPlayerId) send('update_avatar', { avatar: myAvatar });
+  // Tab button listeners
+  document.querySelectorAll('.locker-tab').forEach(function(tabBtn) {
+    tabBtn.addEventListener('click', function() {
+      document.querySelectorAll('.locker-tab').forEach(function(tb) { tb.classList.remove('active'); });
+      tabBtn.classList.add('active');
+      activeTab = tabBtn.getAttribute('data-tab');
+      renderSwatches();
+    });
   });
 
   function getSumoSvg(color, isBlue) {
@@ -1008,6 +1190,7 @@
   }
 
   prefillPinFromQrScan();
+  updateLockerUI();
   connect();
 }());
 </script>
