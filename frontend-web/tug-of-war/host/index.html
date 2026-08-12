@@ -1091,7 +1091,7 @@
         break;
       case 'chonmage':
       default:
-        hairSvg = '<path d="M 40,5 C 38,1 32,1 32,5 C 32,9 38,9 40,5 Z" fill="#1e293b"/><circle cx="36" cy="11" r="9" fill="#1e293b"/><path d="M 20,22 Q 40,6 60,22 Z" fill="#1e293b"/>';
+        hairSvg = '<ellipse cx="40" cy="7" rx="5" ry="3.5" fill="#1e293b" stroke="#0f172a" stroke-width="1"/><rect x="38" y="9" width="4" height="5" fill="#1e293b"/><path d="M 26,14 Q 40,10 54,14 L 52,17 Q 40,13 28,17 Z" fill="#1e293b"/>';
         break;
     }
     
@@ -1163,11 +1163,11 @@
 
     return '<svg class="sumo-svg" viewBox="0 0 80 80" width="' + width + '" height="' + height + '" ' + transform + '>' +
       auraSvg +
-      hairSvg +
       '<circle cx="40" cy="44" r="26" fill="' + skin.fill + '" stroke="' + skin.stroke + '" stroke-width="1.5"/>' +
       '<circle cx="40" cy="25" r="15" fill="' + skin.fill + '" stroke="' + skin.stroke + '" stroke-width="1.5"/>' +
       '<ellipse cx="27" cy="28" rx="3.5" ry="2" fill="' + skin.blush + '" opacity="0.4"/>' +
       '<ellipse cx="53" cy="28" rx="3.5" ry="2" fill="' + skin.blush + '" opacity="0.4"/>' +
+      hairSvg +
       faceSvg +
       glassesSvg +
       '<path d="M 14,50 Q 40,62 66,50 Q 56,64 24,64 Z" fill="' + teamColor + '" stroke="#0f172a" stroke-width="1.5"/>' +
