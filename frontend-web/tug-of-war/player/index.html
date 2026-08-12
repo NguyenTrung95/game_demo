@@ -285,6 +285,7 @@
     box-shadow: 0 4px 0 #854d0e, 0 8px 16px rgba(0,0,0,0.1);
   }
   .sumo-head-slot svg { width: 50px; height: 50px; }
+  .sumo-head-slot .chibi-avatar-frame { width: 50px; height: 50px; }
 
   /* Team Selection Styling */
   .team-selector-wrap {
@@ -481,6 +482,23 @@
     width: 80px;
     height: 80px;
     filter: drop-shadow(0 6px 10px rgba(0,0,0,0.5));
+  }
+  .chibi-avatar-frame {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .avatar-preview-slot .chibi-avatar-frame {
+    width: 72px;
+    height: 72px;
+  }
+  .chibi-avatar-inner {
+    position: relative;
+    height: 100%;
+    max-width: 100%;
   }
   .stage-spotlight {
     position: absolute;
@@ -691,7 +709,7 @@
         <!-- Swatches Pane (Tabs + Grid) -->
         <div class="pro-locker-swatches-pane">
           <div class="locker-tabs">
-            <button class="locker-tab active" data-tab="hair">💇 Hair</button>
+            <button class="locker-tab active" data-tab="hair">🧍 Pose</button>
             <button class="locker-tab" data-tab="glasses">👓 Glasses</button>
             <button class="locker-tab" data-tab="aura">⚡ Aura</button>
             <button class="locker-tab" data-tab="skin">🎨 Skin</button>
@@ -795,7 +813,7 @@
 
   var myAvatar = {
     skin: 'fair',
-    hair: 'chonmage',
+    hair: 'pose1',
     glasses: 'none',
     expression: 'fierce',
     outfit: 'gi',
@@ -804,33 +822,27 @@
   };
 
   var presetsMap = {
-    common: { title: '🥷 COMMON SUMO', rarity: 'common', skin: 'fair', hair: 'chonmage', glasses: 'none', expression: 'fierce', aura: 'none' },
-    saiyan: { title: '⚡ SAIYAN WARRIOR', rarity: 'epic', skin: 'tan', hair: 'saiyan', glasses: 'none', expression: 'heroic', aura: 'gold' },
-    cyber: { title: '🥷 CYBER NINJA', rarity: 'legendary', skin: 'cyber', hair: 'hero', glasses: 'cyber', expression: 'smirk', aura: 'cyber' },
-    kitsune: { title: '🦊 KITSUNE SPIRIT', rarity: 'epic', skin: 'fair', hair: 'kitsune', glasses: 'mask', expression: 'sparkle', aura: 'sakura' },
-    royal: { title: '👑 ROYAL EMPEROR', rarity: 'legendary', skin: 'peach', hair: 'crown', glasses: 'round', expression: 'happy', aura: 'angel' },
-    demon: { title: '😈 DEMON OVERLORD', rarity: 'epic', skin: 'dark', hair: 'demon', glasses: 'shades', expression: 'fierce', aura: 'flame' },
-    pirate: { title: '🏴‍☠️ PIRATE KING', rarity: 'rare', skin: 'tan', hair: 'pirate', glasses: 'patch', expression: 'smirk', aura: 'gold' },
-    wizard: { title: '🧙 ARCANE MAGE', rarity: 'legendary', skin: 'violet', hair: 'wizard', glasses: 'round', expression: 'sparkle', aura: 'mana' },
-    dj: { title: '🎧 CYBER DJ', rarity: 'epic', skin: 'cyber', hair: 'headphones', glasses: 'cyber', expression: 'smirk', aura: 'rainbow' },
-    neko: { title: '🐱 NEKO HEROINE', rarity: 'rare', skin: 'fair', hair: 'neko', glasses: 'none', expression: 'sparkle', aura: 'sakura' },
-    mecha: { title: '🤖 MECHA TITAN', rarity: 'legendary', skin: 'blue', hair: 'mecha', glasses: 'monocle', expression: 'heroic', aura: 'cyber' },
+    common: { title: '🥷 COMMON SUMO', rarity: 'common', skin: 'fair', hair: 'pose1', glasses: 'none', expression: 'fierce', aura: 'none' },
+    saiyan: { title: '⚡ SAIYAN WARRIOR', rarity: 'epic', skin: 'tan', hair: 'pose2', glasses: 'none', expression: 'heroic', aura: 'gold' },
+    cyber: { title: '🥷 CYBER NINJA', rarity: 'legendary', skin: 'cyber', hair: 'pose3', glasses: 'cyber', expression: 'smirk', aura: 'cyber' },
+    kitsune: { title: '🦊 KITSUNE SPIRIT', rarity: 'epic', skin: 'fair', hair: 'pose4', glasses: 'mask', expression: 'sparkle', aura: 'sakura' },
+    royal: { title: '👑 ROYAL EMPEROR', rarity: 'legendary', skin: 'peach', hair: 'pose5', glasses: 'round', expression: 'happy', aura: 'angel' },
+    demon: { title: '😈 DEMON OVERLORD', rarity: 'epic', skin: 'dark', hair: 'pose6', glasses: 'shades', expression: 'fierce', aura: 'flame' },
+    pirate: { title: '🏴‍☠️ PIRATE KING', rarity: 'rare', skin: 'tan', hair: 'pose1', glasses: 'patch', expression: 'smirk', aura: 'gold' },
+    wizard: { title: '🧙 ARCANE MAGE', rarity: 'legendary', skin: 'violet', hair: 'pose2', glasses: 'round', expression: 'sparkle', aura: 'mana' },
+    dj: { title: '🎧 CYBER DJ', rarity: 'epic', skin: 'cyber', hair: 'pose3', glasses: 'cyber', expression: 'smirk', aura: 'rainbow' },
+    neko: { title: '🐱 NEKO HEROINE', rarity: 'rare', skin: 'fair', hair: 'pose4', glasses: 'none', expression: 'sparkle', aura: 'sakura' },
+    mecha: { title: '🤖 MECHA TITAN', rarity: 'legendary', skin: 'blue', hair: 'pose5', glasses: 'monocle', expression: 'heroic', aura: 'cyber' },
   };
 
   var swatchData = {
     hair: [
-      { id: 'saiyan', icon: '⚡', label: 'Saiyan' },
-      { id: 'hero', icon: '🗡️', label: 'Hero' },
-      { id: 'twintails', icon: '🎀', label: 'Twintails' },
-      { id: 'kitsune', icon: '🦊', label: 'Kitsune' },
-      { id: 'demon', icon: '😈', label: 'Demon' },
-      { id: 'halo', icon: '😇', label: 'Angel' },
-      { id: 'crown', icon: '👑', label: 'Crown' },
-      { id: 'pirate', icon: '🏴‍☠️', label: 'Pirate' },
-      { id: 'wizard', icon: '🧙', label: 'Wizard' },
-      { id: 'headphones', icon: '🎧', label: 'DJ' },
-      { id: 'neko', icon: '🐱', label: 'Neko' },
-      { id: 'mecha', icon: '🤖', label: 'Mecha' }
+      { id: 'pose1', icon: '🤺', label: 'Stance' },
+      { id: 'pose2', icon: '🧎', label: 'Ready' },
+      { id: 'pose3', icon: '🦵', label: 'Kick' },
+      { id: 'pose4', icon: '🍡', label: 'Snack' },
+      { id: 'pose5', icon: '🪑', label: 'Squat' },
+      { id: 'pose6', icon: '🍚', label: 'Rice Bowl' }
     ],
     glasses: [
       { id: 'cyber', icon: '🥽', label: 'Cyber' },
@@ -853,41 +865,38 @@
       { id: 'none', icon: '❌', label: 'None' }
     ],
     skin: [
-      { id: 'fair', icon: '🎨', label: 'Fair' },
-      { id: 'peach', icon: '🍑', label: 'Peach' },
-      { id: 'tan', icon: '☀️', label: 'Tan' },
-      { id: 'dark', icon: '🤎', label: 'Bronze' },
-      { id: 'pale', icon: '❄️', label: 'Pale' },
-      { id: 'cyber', icon: '💚', label: 'Green' },
-      { id: 'violet', icon: '💜', label: 'Violet' },
-      { id: 'blue', icon: '💙', label: 'Avatar' }
+      { id: 'fair', color: '#fff1f2', stroke: '#fb7185', label: 'Fair' },
+      { id: 'peach', color: '#ffedd5', stroke: '#fb923c', label: 'Peach' },
+      { id: 'tan', color: '#fed7aa', stroke: '#ca8a04', label: 'Golden' },
+      { id: 'dark', color: '#7c2d12', stroke: '#ea580c', label: 'Bronze' },
+      { id: 'pale', color: '#f8fafc', stroke: '#94a3b8', label: 'Pale' },
+      { id: 'cyber', color: '#a7f3d0', stroke: '#059669', label: 'Cyber' },
+      { id: 'violet', color: '#e9d5ff', stroke: '#9333ea', label: 'Violet' },
+      { id: 'blue', color: '#bae6fd', stroke: '#0284c7', label: 'Avatar' }
     ]
   };
 
   var activeTab = 'hair';
 
+  // Chibi avatar art: each "pose" is a cut-out photo of the character, with the
+  // hand-measured head/eye anchor point (as a fraction of the image's own box)
+  // used to place the aura glow and glasses overlay in the right spot.
+  var POSES = {
+    pose1: { file: 'assets/avatars/avatar_1.png', w: 158, h: 140, headX: 0.51, headY: 0.23, eyeX: 0.51, eyeY: 0.29 },
+    pose2: { file: 'assets/avatars/avatar_2.png', w: 116, h: 146, headX: 0.50, headY: 0.19, eyeX: 0.50, eyeY: 0.25 },
+    pose3: { file: 'assets/avatars/avatar_3.png', w: 117, h: 137, headX: 0.29, headY: 0.18, eyeX: 0.29, eyeY: 0.24 },
+    pose4: { file: 'assets/avatars/avatar_4.png', w: 91, h: 136, headX: 0.50, headY: 0.19, eyeX: 0.50, eyeY: 0.25 },
+    pose5: { file: 'assets/avatars/avatar_5.png', w: 120, h: 130, headX: 0.53, headY: 0.18, eyeX: 0.53, eyeY: 0.25 },
+    pose6: { file: 'assets/avatars/avatar_6.png', w: 104, h: 135, headX: 0.55, headY: 0.19, eyeX: 0.55, eyeY: 0.25 }
+  };
+
   function renderCustomSumoSvg(avatar, options) {
     avatar = avatar || {};
     options = options || {};
-    
-    var skinMap = {
-      fair: { fill: '#fff1f2', stroke: '#fb7185', blush: '#f43f5e' },
-      peach: { fill: '#ffedd5', stroke: '#fb923c', blush: '#fb7185' },
-      tan: { fill: '#fde047', stroke: '#ca8a04', blush: '#f59e0b' },
-      dark: { fill: '#7c2d12', stroke: '#451a03', blush: '#9a3412' },
-      pale: { fill: '#f8fafc', stroke: '#94a3b8', blush: '#cbd5e1' },
-      cyber: { fill: '#a7f3d0', stroke: '#059669', blush: '#10b981' },
-      violet: { fill: '#e9d5ff', stroke: '#9333ea', blush: '#c084fc' },
-      blue: { fill: '#bae6fd', stroke: '#0284c7', blush: '#38bdf8' },
-    };
-    
-    var skin = skinMap[avatar.skin] || skinMap.fair;
-    var teamColor = options.team === 'blue' ? '#3b82f6' : (options.color || '#ef4444');
-    var width = options.width || 80;
-    var height = options.height || 80;
+
     var faceLeft = options.faceLeft || false;
-    var transform = faceLeft ? 'transform="scale(-1, 1) translate(-80, 0)"' : '';
-    
+    var pose = POSES[avatar.hair] || POSES.pose1;
+
     // Aura Layer
     var auraSvg = '';
     switch (avatar.aura) {
@@ -917,67 +926,6 @@
         break;
     }
 
-    var hairSvg = '';
-    switch (avatar.hair) {
-      case 'saiyan':
-        hairSvg = '<path d="M 18,24 L 14,8 L 26,16 L 30,0 L 40,8 L 50,0 L 54,16 L 66,8 L 62,24 Z" fill="#facc15" stroke="#b45309" stroke-width="1.5"/>';
-        break;
-      case 'hero':
-        hairSvg = '<path d="M 18,24 Q 40,-4 62,24 L 56,12 Q 40,2 24,12 Z" fill="#1e293b"/><path d="M 20,22 Q 32,28 36,22 Q 40,28 44,22 Q 48,28 60,22 L 56,14 Q 40,4 24,14 Z" fill="#1e293b"/>';
-        break;
-      case 'twintails':
-        hairSvg = '<path d="M 14,24 C 2,10 0,36 10,42 Z" fill="#ec4899"/><path d="M 66,24 C 78,10 80,36 70,42 Z" fill="#ec4899"/><path d="M 20,20 Q 40,6 60,20 Z" fill="#ec4899"/>';
-        break;
-      case 'kitsune':
-        hairSvg = '<path d="M 20,18 L 10,-2 L 28,10 Z" fill="#f97316" stroke="#c2410c" stroke-width="1.5"/><path d="M 16,14 L 12,2 L 24,10 Z" fill="#fff"/><path d="M 60,18 L 70,-2 L 52,10 Z" fill="#f97316" stroke="#c2410c" stroke-width="1.5"/><path d="M 64,14 L 68,2 L 56,10 Z" fill="#fff"/><path d="M 22,22 Q 40,8 58,22 Z" fill="#1e293b"/>';
-        break;
-      case 'demon':
-        hairSvg = '<path d="M 24,16 C 16,4 12,-4 20,-2 C 24,4 26,12 28,16 Z" fill="#dc2626"/><path d="M 56,16 C 64,4 68,-4 60,-2 C 56,4 54,12 52,16 Z" fill="#dc2626"/><path d="M 22,22 Q 40,8 58,22 Z" fill="#1e293b"/>';
-        break;
-      case 'halo':
-        hairSvg = '<ellipse cx="40" cy="2" rx="18" ry="4" fill="none" stroke="#facc15" stroke-width="2.5"/><path d="M 22,22 Q 40,8 58,22 Z" fill="#e2e8f0"/>';
-        break;
-      case 'crown':
-        hairSvg = '<path d="M 24,14 L 24,4 L 32,10 L 40,2 L 48,10 L 56,4 L 56,14 Z" fill="#facc15" stroke="#b45309" stroke-width="1.5"/><circle cx="40" cy="2" r="2.5" fill="#ef4444"/><path d="M 22,22 Q 40,8 58,22 Z" fill="#1e293b"/>';
-        break;
-      case 'pirate':
-        hairSvg = '<path d="M 18,14 C 18,2 62,2 62,14 Z" fill="#0f172a"/><path d="M 12,14 L 68,14 L 40,2 Z" fill="#1e293b"/><circle cx="40" cy="8" r="3" fill="#f87171"/>';
-        break;
-      case 'wizard':
-        hairSvg = '<path d="M 14,20 L 40,-4 L 66,20 Z" fill="#6b21a8" stroke="#a855f7" stroke-width="1.5"/><ellipse cx="40" cy="20" rx="30" ry="4" fill="#581c87"/>';
-        break;
-      case 'headphones':
-        hairSvg = '<path d="M 14,24 C 14,4 66,4 66,24 Z" fill="none" stroke="#06b6d4" stroke-width="4"/><rect x="10" y="20" width="8" height="14" rx="3" fill="#38bdf8"/><rect x="62" y="20" width="8" height="14" rx="3" fill="#38bdf8"/><path d="M 22,22 Q 40,8 58,22 Z" fill="#1e293b"/>';
-        break;
-      case 'neko':
-        hairSvg = '<path d="M 22,18 L 14,0 L 30,12 Z" fill="#f472b6"/><path d="M 58,18 L 66,0 L 50,12 Z" fill="#f472b6"/><path d="M 22,22 Q 40,8 58,22 Z" fill="#fff"/>';
-        break;
-      case 'mecha':
-        hairSvg = '<path d="M 18,10 Q 40,2 62,10 L 66,24 L 14,24 Z" fill="#475569" stroke="#94a3b8" stroke-width="1.5"/><rect x="36" y="2" width="8" height="10" fill="#ef4444"/>';
-        break;
-      case 'chonmage':
-      default:
-        hairSvg = '<ellipse cx="40" cy="7" rx="5" ry="3.5" fill="#1e293b" stroke="#0f172a" stroke-width="1"/><rect x="38" y="9" width="4" height="5" fill="#1e293b"/><path d="M 26,14 Q 40,10 54,14 L 52,17 Q 40,13 28,17 Z" fill="#1e293b"/>';
-        break;
-    }
-    
-    var faceSvg = '';
-    switch (avatar.expression) {
-      case 'sparkle':
-        faceSvg = '<ellipse cx="30" cy="24" rx="4.5" ry="6" fill="#0f172a"/><ellipse cx="50" cy="24" rx="4.5" ry="6" fill="#0f172a"/><circle cx="28.5" cy="22" r="2" fill="#fff"/><circle cx="48.5" cy="22" r="2" fill="#fff"/><circle cx="31.5" cy="26" r="1" fill="#fff"/><circle cx="51.5" cy="26" r="1" fill="#fff"/><path d="M 34,31 Q 40,36 46,31" stroke="#0f172a" stroke-width="2.5" fill="none" stroke-linecap="round"/>';
-        break;
-      case 'heroic':
-        faceSvg = '<path d="M 24,19 L 34,22 L 26,26 Z" fill="#0f172a"/><path d="M 56,19 L 46,22 L 54,26 Z" fill="#0f172a"/><circle cx="30" cy="23" r="1.5" fill="#38bdf8"/><circle cx="50" cy="23" r="1.5" fill="#38bdf8"/><path d="M 33,30 L 47,30" stroke="#0f172a" stroke-width="2.5" stroke-linecap="round"/>';
-        break;
-      case 'smirk':
-        faceSvg = '<path d="M 25,20 Q 30,17 35,20" stroke="#0f172a" stroke-width="2.5" fill="none" stroke-linecap="round"/><path d="M 45,20 Q 50,17 55,20" stroke="#0f172a" stroke-width="2.5" fill="none" stroke-linecap="round"/><ellipse cx="30" cy="23" rx="3" ry="4" fill="#0f172a"/><ellipse cx="50" cy="23" rx="3" ry="4" fill="#0f172a"/><path d="M 36,32 Q 44,34 46,28" stroke="#0f172a" stroke-width="2.5" fill="none" stroke-linecap="round"/>';
-        break;
-      case 'fierce':
-      default:
-        faceSvg = '<path d="M 24,20 L 35,17" stroke="#0f172a" stroke-width="3" stroke-linecap="round"/><path d="M 56,20 L 45,17" stroke="#0f172a" stroke-width="3" stroke-linecap="round"/><ellipse cx="31" cy="24" rx="4" ry="5" fill="#0f172a"/><ellipse cx="49" cy="24" rx="4" ry="5" fill="#0f172a"/><circle cx="29.5" cy="22.5" r="1.5" fill="#fff"/><circle cx="47.5" cy="22.5" r="1.5" fill="#fff"/><path d="M 34,31 Q 40,36 46,31 Z" fill="#991b1b" stroke="#0f172a" stroke-width="1.5"/>';
-        break;
-    }
-    
     var glassesSvg = '';
     switch (avatar.glasses) {
       case 'cyber':
@@ -1007,20 +955,22 @@
         break;
     }
     
-    return '<svg class="sumo-svg" viewBox="0 0 80 80" width="' + width + '" height="' + height + '" ' + transform + '>' +
-      auraSvg +
-      '<circle cx="40" cy="44" r="26" fill="' + skin.fill + '" stroke="' + skin.stroke + '" stroke-width="1.5"/>' +
-      '<circle cx="40" cy="25" r="15" fill="' + skin.fill + '" stroke="' + skin.stroke + '" stroke-width="1.5"/>' +
-      '<ellipse cx="27" cy="28" rx="3.5" ry="2" fill="' + skin.blush + '" opacity="0.4"/>' +
-      '<ellipse cx="53" cy="28" rx="3.5" ry="2" fill="' + skin.blush + '" opacity="0.4"/>' +
-      hairSvg +
-      faceSvg +
-      glassesSvg +
-      '<path d="M 14,50 Q 40,62 66,50 Q 56,64 24,64 Z" fill="' + teamColor + '" stroke="#0f172a" stroke-width="1.5"/>' +
-      '<path d="M 34,48 L 40,54 L 46,48 Z" fill="#facc15" stroke="#0f172a" stroke-width="1.5"/>' +
-      '<path d="M 46,34 C 55,34 64,40 62,44 C 60,48 51,42 46,38 Z" fill="' + skin.fill + '" stroke="' + skin.stroke + '" stroke-width="1.5"/>' +
-      '<path d="M 34,34 C 25,34 16,40 18,44 C 20,48 29,42 34,38 Z" fill="' + skin.fill + '" stroke="' + skin.stroke + '" stroke-width="1.5"/>' +
-      '</svg>';
+    var flip = faceLeft ? ' scaleX(-1)' : '';
+    var auraHtml = auraSvg
+      ? '<svg viewBox="0 0 80 70" style="position:absolute;left:' + (pose.headX * 100) + '%;top:' + (pose.headY * 100) +
+        '%;width:85%;height:85%;transform:translate(-50%,-50%)' + flip + ';overflow:visible;pointer-events:none;">' + auraSvg + '</svg>'
+      : '';
+    var glassesHtml = glassesSvg
+      ? '<svg viewBox="14 14 52 30" style="position:absolute;left:' + (pose.eyeX * 100) + '%;top:' + (pose.eyeY * 100) +
+        '%;width:52%;height:30%;transform:translate(-50%,-50%)' + flip + ';overflow:visible;">' + glassesSvg + '</svg>'
+      : '';
+
+    return '<div class="chibi-avatar-frame">' +
+      '<div class="chibi-avatar-inner" style="aspect-ratio:' + pose.w + '/' + pose.h + ';">' +
+      auraHtml +
+      '<img src="' + pose.file + '" style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain;transform:' + (faceLeft ? 'scaleX(-1)' : 'none') + ';filter:drop-shadow(0 4px 6px rgba(0,0,0,0.35));">' +
+      glassesHtml +
+      '</div></div>';
   }
 
   function updateLockerUI() {
@@ -1048,7 +998,12 @@
     list.forEach(function(item) {
       var card = document.createElement('div');
       card.className = 'swatch-card' + (myAvatar[activeTab] === item.id ? ' active' : '');
-      card.innerHTML = '<span style="font-size: 16px;">' + item.icon + '</span><span>' + item.label + '</span>';
+      
+      var iconContent = item.color
+        ? '<div class="skin-color-swatch" style="width:20px;height:20px;border-radius:50%;background:' + item.color + ';border:2px solid ' + item.stroke + ';box-shadow:0 2px 4px rgba(0,0,0,0.3);"></div>'
+        : '<span style="font-size: 16px;">' + item.icon + '</span>';
+        
+      card.innerHTML = iconContent + '<span>' + item.label + '</span>';
       card.addEventListener('click', function() {
         myAvatar[activeTab] = item.id;
         updateLockerUI();
@@ -1455,8 +1410,6 @@
       }
     }, 100);
   });
-
-  updateAvatarPreview();
 
   document.getElementById('btn-select-red').addEventListener('click', function () {
     if (myTeam !== 'red') {
