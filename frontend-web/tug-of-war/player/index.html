@@ -399,6 +399,7 @@
     letter-spacing: 0.05em;
     border: 1.5px solid rgba(255,255,255,0.6);
   }
+  .rarity-badge.common { background: linear-gradient(135deg, #64748b, #475569); color: #f8fafc; }
   .rarity-badge.epic { background: linear-gradient(135deg, #a855f7, #ec4899); }
   .rarity-badge.legendary { background: linear-gradient(135deg, #f59e0b, #facc15); color: #78350f; }
   .rarity-badge.rare { background: linear-gradient(135deg, #0284c7, #38bdf8); }
@@ -554,8 +555,8 @@
       <!-- Left Pane: Spotlight Stage & Presets -->
       <div class="pro-locker-stage-pane">
         <div class="pro-locker-header">
-          <span class="rarity-badge epic" id="locker-rarity">🔥 EPIC HERO</span>
-          <span class="preset-title" id="locker-title">⚡ SAIYAN WARRIOR</span>
+          <span class="rarity-badge common" id="locker-rarity">⚪ COMMON</span>
+          <span class="preset-title" id="locker-title">🥷 COMMON SUMO</span>
         </div>
 
         <div class="pro-locker-stage">
@@ -565,7 +566,8 @@
 
         <!-- Quick Presets -->
         <div class="preset-row">
-          <button class="preset-btn active" data-preset="saiyan">⚡ Saiyan</button>
+          <button class="preset-btn active" data-preset="common">⚪ Common</button>
+          <button class="preset-btn" data-preset="saiyan">⚡ Saiyan</button>
           <button class="preset-btn" data-preset="cyber">🥷 Cyber</button>
           <button class="preset-btn" data-preset="kitsune">🦊 Kitsune</button>
           <button class="preset-btn" data-preset="royal">👑 Royal</button>
@@ -665,15 +667,16 @@
 
   var myAvatar = {
     skin: 'fair',
-    hair: 'saiyan',
-    glasses: 'cyber',
-    expression: 'heroic',
+    hair: 'chonmage',
+    glasses: 'none',
+    expression: 'fierce',
     outfit: 'gi',
-    aura: 'gold',
-    rarity: 'EPIC'
+    aura: 'none',
+    rarity: 'COMMON'
   };
 
   var presetsMap = {
+    common: { title: '🥷 COMMON SUMO', rarity: 'common', skin: 'fair', hair: 'chonmage', glasses: 'none', expression: 'fierce', aura: 'none' },
     saiyan: { title: '⚡ SAIYAN WARRIOR', rarity: 'epic', skin: 'tan', hair: 'saiyan', glasses: 'none', expression: 'heroic', aura: 'gold' },
     cyber: { title: '🥷 CYBER NINJA', rarity: 'legendary', skin: 'cyber', hair: 'hero', glasses: 'cyber', expression: 'smirk', aura: 'cyber' },
     kitsune: { title: '🦊 KITSUNE SPIRIT', rarity: 'epic', skin: 'fair', hair: 'kitsune', glasses: 'mask', expression: 'sparkle', aura: 'sakura' },
@@ -901,8 +904,8 @@
     var titleEl = document.getElementById('locker-title');
     var rarityEl = document.getElementById('locker-rarity');
     if (rarityEl) {
-      rarityEl.className = 'rarity-badge ' + (myAvatar.rarity || 'epic').toLowerCase();
-      rarityEl.textContent = (myAvatar.rarity === 'LEGENDARY' ? '🌟 LEGENDARY' : (myAvatar.rarity === 'RARE' ? '💎 RARE' : '🔥 EPIC HERO'));
+      rarityEl.className = 'rarity-badge ' + (myAvatar.rarity || 'common').toLowerCase();
+      rarityEl.textContent = (myAvatar.rarity === 'LEGENDARY' ? '🌟 LEGENDARY' : (myAvatar.rarity === 'RARE' ? '💎 RARE' : (myAvatar.rarity === 'COMMON' ? '⚪ COMMON' : '🔥 EPIC HERO')));
     }
     
     renderSwatches();

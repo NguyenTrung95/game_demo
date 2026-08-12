@@ -11,7 +11,7 @@ const TARGET_NET_TAPS = 50;
 const RACE_DURATION_MS = 30_000;
 const RACE_TICK_MS = 200;
 
-const DEFAULT_AVATAR = { skin: 'fair', hair: 'saiyan', glasses: 'cyber', expression: 'heroic', outfit: 'gi', aura: 'gold', rarity: 'EPIC' };
+const DEFAULT_AVATAR = { skin: 'fair', hair: 'chonmage', glasses: 'none', expression: 'fierce', outfit: 'gi', aura: 'none', rarity: 'COMMON' };
 
 // Shades of Red/Orange for Team Red
 const RED_COLORS = [
@@ -197,12 +197,12 @@ function joinRoom(ws, payload) {
 
   const avatar = {
     skin: payload.avatar?.skin || 'fair',
-    hair: payload.avatar?.hair || 'saiyan',
-    glasses: payload.avatar?.glasses || 'cyber',
-    expression: payload.avatar?.expression || 'heroic',
+    hair: payload.avatar?.hair || 'chonmage',
+    glasses: payload.avatar?.glasses || 'none',
+    expression: payload.avatar?.expression || 'fierce',
     outfit: payload.avatar?.outfit || 'gi',
-    aura: payload.avatar?.aura || 'gold',
-    rarity: payload.avatar?.rarity || 'EPIC',
+    aura: payload.avatar?.aura || 'none',
+    rarity: payload.avatar?.rarity || 'COMMON',
   };
 
   room.players.set(playerId, {
