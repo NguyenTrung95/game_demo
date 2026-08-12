@@ -480,15 +480,72 @@
     display: flex;
     align-items: center;
   }
-  .stadium-lines {
+  /* Center Finish Line & Win Gates */
+  .finish-line-pole {
     position: absolute;
-    inset: 0;
-    background-image: 
-      linear-gradient(90deg, transparent 50%, rgba(255,255,255,0.4) 50%, rgba(255,255,255,0.4) 50.5%, transparent 50.5%),
-      linear-gradient(90deg, rgba(255,255,255,0.25) 15%, transparent 15%, transparent 85%, rgba(255,255,255,0.25) 85%);
-    background-size: 100% 100%;
-    pointer-events: none;
+    top: 0; bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 4px;
+    background: linear-gradient(180deg, #facc15, #b45309);
+    box-shadow: 0 0 10px rgba(250, 204, 21, 0.8);
+    z-index: 4;
+    display: flex;
+    justify-content: center;
   }
+  .finish-flag-icon {
+    position: absolute;
+    top: 6px;
+    font-size: 20px;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.4));
+    animation: flagWiggle 2s infinite ease-in-out;
+  }
+  @keyframes flagWiggle {
+    0%, 100% { transform: rotate(-5deg); }
+    50% { transform: rotate(5deg); }
+  }
+
+  .win-gate-threshold {
+    position: absolute;
+    top: 0; bottom: 0;
+    width: 3px;
+    z-index: 4;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .win-gate-threshold.red-win-threshold {
+    left: 12%;
+    background: linear-gradient(180deg, #ef4444, #991b1b);
+    box-shadow: 0 0 12px rgba(239, 68, 68, 0.8);
+  }
+  .win-gate-threshold.blue-win-threshold {
+    right: 12%;
+    background: linear-gradient(180deg, #3b82f6, #1e40af);
+    box-shadow: 0 0 12px rgba(59, 130, 246, 0.8);
+  }
+
+  .win-gate-badge {
+    position: absolute;
+    bottom: 6px;
+    font-size: 10.5px;
+    font-weight: 900;
+    padding: 2px 8px;
+    border-radius: 999px;
+    white-space: nowrap;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.3);
+  }
+  .win-gate-badge.red {
+    background: linear-gradient(135deg, #ef4444, #b91c1c);
+    color: #fff;
+    border: 1.5px solid #fca5a5;
+  }
+  .win-gate-badge.blue {
+    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+    color: #fff;
+    border: 1.5px solid #bfdbfe;
+  }
+
   .win-flag {
     position: absolute;
     bottom: 12px;
@@ -912,9 +969,19 @@
 
       <div class="rope-arena-container">
         <div class="stadium-lines"></div>
-        <div class="win-flag red">🚩</div>
-        <div class="win-flag blue">🚩</div>
         
+        <!-- Finish Line Pole & Win Gate Thresholds -->
+        <div class="finish-line-pole">
+          <span class="finish-flag-icon">🏁</span>
+        </div>
+        
+        <div class="win-gate-threshold red-win-threshold">
+          <span class="win-gate-badge red">🚩 RED WIN</span>
+        </div>
+        <div class="win-gate-threshold blue-win-threshold">
+          <span class="win-gate-badge blue">🚩 BLUE WIN</span>
+        </div>
+
         <!-- The Rope: one continuous SVG strand anchored to each mascot's hand -->
         <svg id="arena-rope-svg" class="arena-rope-svg">
           <defs>
