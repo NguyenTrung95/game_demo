@@ -443,6 +443,49 @@ function switchTeam(ws, payload) {
   notifyRoomStats(room);
 }
 
+function triggerSkill(ws, payload) {
+  const room = rooms.get(ws.roomPin);
+  if (!room || ws.role !== 'player' || room.phase !== 'racing') return;
+
+  const player = room.players.get(ws.playerId);
+  if (!player) return;
+
+  // Add bonus taps to player (e.g. +6 taps immediately)
+  player.taps += 6;
+  
+  // Recalculate team total taps
+  let redTotal = 0;
+  let blueTotal = 0;
+  for (const p of room.players.values()) {
+    if (p.team === 'red') {
+      redTotal += p.taps;
+    } else {
+      blueTotal += p.taps;
+    }
+  }
+
+  room.redTaps = redTotal;
+  room.blueTaps = blueTotal;
+  room.delta = blueTotal - redTotal;
+
+  // Broadcast skill activation banner to Host TV and Players
+  const skillPayload = {
+    playerId: player.playerId,
+    nickname: player.nickname,
+    team: player.team,
+    skillName: payload?.skillName || 'ULTIMATE BURST',
+    skillIcon: payload?.skillIcon || '⚡',
+  };
+
+  notifyHost(room, 'skill_activated', skillPayload);
+  broadcastToPlayers(room, 'skill_activated', skillPayload);
+
+  // Check win condition
+  if (room.delta <= -TARGET_NET_TAPS || room.delta >= TARGET_NET_TAPS) {
+    concludeRace(room, 'finished');
+  }
+}
+
 function handleDisconnect(ws) {
   const room = rooms.get(ws.roomPin);
   if (!room) return;
@@ -474,6 +517,7 @@ module.exports = {
   switchTeam,
   updateAvatar,
   reportTapCount,
+  triggerSkill,
   forceStart,
   handleDisconnect,
 };

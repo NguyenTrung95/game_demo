@@ -79,6 +79,9 @@ wss.on('connection', (ws, req) => {
         case 'report_taps':
           tugOfWarRoomManager.reportTapCount(ws, message.payload);
           break;
+        case 'trigger_skill':
+          tugOfWarRoomManager.triggerSkill(ws, message.payload);
+          break;
         case 'force_start':
           tugOfWarRoomManager.forceStart(ws);
           break;
