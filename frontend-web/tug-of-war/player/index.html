@@ -961,40 +961,64 @@
     });
   }
 
-  // Preset Carousel Nav Arrow Listeners
+  var presetKeys = ['common', 'saiyan', 'cyber', 'kitsune', 'royal', 'demon', 'pirate', 'wizard', 'dj', 'neko', 'mecha'];
+  var currentPresetIdx = 0;
+
+  function selectPresetByIndex(idx) {
+    if (idx < 0) idx = presetKeys.length - 1;
+    if (idx >= presetKeys.length) idx = 0;
+    currentPresetIdx = idx;
+    
+    var pKey = presetKeys[currentPresetIdx];
+    var preset = presetsMap[pKey];
+    if (preset) {
+      myAvatar.skin = preset.skin;
+      myAvatar.hair = preset.hair;
+      myAvatar.glasses = preset.glasses;
+      myAvatar.expression = preset.expression;
+      myAvatar.aura = preset.aura;
+      myAvatar.rarity = preset.rarity.toUpperCase();
+      
+      var titleEl = document.getElementById('locker-title');
+      if (titleEl) titleEl.textContent = preset.title;
+      
+      document.querySelectorAll('.preset-btn').forEach(function(b) {
+        if (b.getAttribute('data-preset') === pKey) {
+          b.classList.add('active');
+          try {
+            b.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+          } catch(e) {}
+        } else {
+          b.classList.remove('active');
+        }
+      });
+      
+      updateLockerUI();
+      if (myPlayerId) send('update_avatar', { avatar: myAvatar });
+    }
+  }
+
+  // Preset Carousel Nav Arrow Listeners (Automatic Preset Switching)
   var btnPrev = document.getElementById('btn-preset-prev');
   var btnNext = document.getElementById('btn-preset-next');
   if (btnPrev) {
     btnPrev.addEventListener('click', function() {
-      var row = document.getElementById('preset-row');
-      if (row) row.scrollBy({ left: -90, behavior: 'smooth' });
+      selectPresetByIndex(currentPresetIdx - 1);
     });
   }
   if (btnNext) {
     btnNext.addEventListener('click', function() {
-      var row = document.getElementById('preset-row');
-      if (row) row.scrollBy({ left: 90, behavior: 'smooth' });
+      selectPresetByIndex(currentPresetIdx + 1);
     });
   }
 
-  // Preset button listeners
+  // Preset button direct click listeners
   document.querySelectorAll('.preset-btn').forEach(function(btn) {
     btn.addEventListener('click', function() {
-      document.querySelectorAll('.preset-btn').forEach(function(b) { b.classList.remove('active'); });
-      btn.classList.add('active');
       var pKey = btn.getAttribute('data-preset');
-      var preset = presetsMap[pKey];
-      if (preset) {
-        myAvatar.skin = preset.skin;
-        myAvatar.hair = preset.hair;
-        myAvatar.glasses = preset.glasses;
-        myAvatar.expression = preset.expression;
-        myAvatar.aura = preset.aura;
-        myAvatar.rarity = preset.rarity.toUpperCase();
-        var titleEl = document.getElementById('locker-title');
-        if (titleEl) titleEl.textContent = preset.title;
-        updateLockerUI();
-        if (myPlayerId) send('update_avatar', { avatar: myAvatar });
+      var idx = presetKeys.indexOf(pKey);
+      if (idx !== -1) {
+        selectPresetByIndex(idx);
       }
     });
   });
@@ -1366,6 +1390,8 @@
 
   prefillPinFromQrScan();
   updateLockerUI();
+  document.addEventListener('DOMContentLoaded', updateLockerUI);
+  setTimeout(updateLockerUI, 100);
   connect();
 }());
 </script>
