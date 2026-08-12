@@ -709,10 +709,10 @@
         <!-- Swatches Pane (Tabs + Grid) -->
         <div class="pro-locker-swatches-pane">
           <div class="locker-tabs">
-            <button class="locker-tab active" data-tab="hair">🧍 Pose</button>
-            <button class="locker-tab" data-tab="glasses">👓 Glasses</button>
+            <button class="locker-tab active" data-tab="pose">🎭 Pose</button>
             <button class="locker-tab" data-tab="aura">⚡ Aura</button>
-            <button class="locker-tab" data-tab="skin">🎨 Skin</button>
+            <button class="locker-tab" data-tab="expression">👑 Title</button>
+            <button class="locker-tab" data-tab="belt">🥊 Belt</button>
           </div>
 
           <div class="swatch-grid" id="swatch-grid"></div>
@@ -836,23 +836,13 @@
   };
 
   var swatchData = {
-    hair: [
+    pose: [
       { id: 'pose1', icon: '🤺', label: 'Stance' },
       { id: 'pose2', icon: '🧎', label: 'Ready' },
       { id: 'pose3', icon: '🦵', label: 'Kick' },
       { id: 'pose4', icon: '🍡', label: 'Snack' },
       { id: 'pose5', icon: '🪑', label: 'Squat' },
-      { id: 'pose6', icon: '🍚', label: 'Rice Bowl' }
-    ],
-    glasses: [
-      { id: 'cyber', icon: '🥽', label: 'Cyber' },
-      { id: 'shades', icon: '🕶️', label: 'Shades' },
-      { id: 'round', icon: '👓', label: 'Round' },
-      { id: 'mask', icon: '🦊', label: 'Fox Mask' },
-      { id: 'patch', icon: '🏴‍☠️', label: 'Patch' },
-      { id: 'star', icon: '⭐', label: 'Star' },
-      { id: 'monocle', icon: '🔴', label: 'Laser' },
-      { id: 'none', icon: '❌', label: 'None' }
+      { id: 'pose6', icon: '🍚', label: 'Rice' }
     ],
     aura: [
       { id: 'gold', icon: '⚡', label: 'Gold' },
@@ -864,19 +854,25 @@
       { id: 'rainbow', icon: '🌈', label: 'Neon' },
       { id: 'none', icon: '❌', label: 'None' }
     ],
-    skin: [
-      { id: 'fair', color: '#fff1f2', stroke: '#fb7185', label: 'Fair' },
-      { id: 'peach', color: '#ffedd5', stroke: '#fb923c', label: 'Peach' },
-      { id: 'tan', color: '#fed7aa', stroke: '#ca8a04', label: 'Golden' },
-      { id: 'dark', color: '#7c2d12', stroke: '#ea580c', label: 'Bronze' },
-      { id: 'pale', color: '#f8fafc', stroke: '#94a3b8', label: 'Pale' },
-      { id: 'cyber', color: '#a7f3d0', stroke: '#059669', label: 'Cyber' },
-      { id: 'violet', color: '#e9d5ff', stroke: '#9333ea', label: 'Violet' },
-      { id: 'blue', color: '#bae6fd', stroke: '#0284c7', label: 'Avatar' }
+    expression: [
+      { id: 'fierce', icon: '🔥', label: 'Fierce' },
+      { id: 'heroic', icon: '⚡', label: 'Heroic' },
+      { id: 'sparkle', icon: '✨', label: 'Sparkle' },
+      { id: 'smirk', icon: '😏', label: 'Smirk' },
+      { id: 'happy', icon: '😄', label: 'Happy' },
+      { id: 'champion', icon: '🏆', label: 'Master' }
+    ],
+    belt: [
+      { id: 'gi', color: '#ef4444', label: 'Red' },
+      { id: 'blue', color: '#3b82f6', label: 'Blue' },
+      { id: 'gold', color: '#facc15', label: 'Gold' },
+      { id: 'purple', color: '#a855f7', label: 'Purple' },
+      { id: 'green', color: '#22c55e', label: 'Green' },
+      { id: 'black', color: '#0f172a', label: 'Black' }
     ]
   };
 
-  var activeTab = 'hair';
+  var activeTab = 'pose';
 
   // Chibi avatar art: each "pose" is a cut-out photo of the character, with the
   // hand-measured head/eye anchor point (as a fraction of the image's own box)
@@ -995,17 +991,24 @@
     grid.innerHTML = '';
     
     var list = swatchData[activeTab] || [];
+    var currentVal = activeTab === 'pose' ? (myAvatar.pose || myAvatar.hair) : myAvatar[activeTab];
+    
     list.forEach(function(item) {
       var card = document.createElement('div');
-      card.className = 'swatch-card' + (myAvatar[activeTab] === item.id ? ' active' : '');
+      card.className = 'swatch-card' + (currentVal === item.id ? ' active' : '');
       
       var iconContent = item.color
-        ? '<div class="skin-color-swatch" style="width:20px;height:20px;border-radius:50%;background:' + item.color + ';border:2px solid ' + item.stroke + ';box-shadow:0 2px 4px rgba(0,0,0,0.3);"></div>'
+        ? '<div class="skin-color-swatch" style="width:20px;height:20px;border-radius:50%;background:' + item.color + ';border:2px solid rgba(255,255,255,0.6);box-shadow:0 2px 4px rgba(0,0,0,0.3);"></div>'
         : '<span style="font-size: 16px;">' + item.icon + '</span>';
         
       card.innerHTML = iconContent + '<span>' + item.label + '</span>';
       card.addEventListener('click', function() {
-        myAvatar[activeTab] = item.id;
+        if (activeTab === 'pose') {
+          myAvatar.pose = item.id;
+          myAvatar.hair = item.id;
+        } else {
+          myAvatar[activeTab] = item.id;
+        }
         updateLockerUI();
         if (myPlayerId) send('update_avatar', { avatar: myAvatar });
       });
