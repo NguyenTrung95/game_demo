@@ -328,11 +328,18 @@
       document.getElementById('join-error').textContent = 'Vui lòng nhập đủ PIN và tên hiển thị.';
       return;
     }
-    connect();
+    if (!socket || socket.readyState !== WebSocket.OPEN) {
+      connect();
+    }
+    var attempts = 0;
     var checkInterval = setInterval(function () {
+      attempts++;
       if (socket && socket.readyState === WebSocket.OPEN) {
         clearInterval(checkInterval);
         send('join_room', { pin: pin, nickname: nickname });
+      } else if (attempts > 30) {
+        clearInterval(checkInterval);
+        document.getElementById('join-error').textContent = 'Không thể kết nối đến TV. Vui lòng thử lại.';
       }
     }, 100);
   });
@@ -345,6 +352,7 @@
     }
   }
   prefillPinFromQrScan();
+  connect();
 }());
 </script>
 </body>

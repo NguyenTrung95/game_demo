@@ -35,10 +35,12 @@ fun Application.configureRouting(webRoot: File, modules: List<GameModule>) {
 
     routing {
         staticFiles("/shared", File(webRoot, "shared"))
-        staticFiles("/host", File(webRoot, "host"))
-        staticFiles("/timing-game/host", File(webRoot, "timing-game/host"))
-        staticFiles("/timing-game", File(webRoot, "timing-game/player"))
-        staticFiles("/", File(webRoot, "player"))
+        staticFiles("/host", File(webRoot, "host"), index = "index.html")
+        staticFiles("/timing-game/host", File(webRoot, "timing-game/host"), index = "index.html")
+        staticFiles("/timing-game", File(webRoot, "timing-game/player"), index = "index.html")
+        staticFiles("/tug-of-war/host", File(webRoot, "tug-of-war/host"), index = "index.html")
+        staticFiles("/tug-of-war", File(webRoot, "tug-of-war/player"), index = "index.html")
+        staticFiles("/", File(webRoot, "player"), index = "index.html")
 
         webSocket("/") {
             runGameSocket(this, defaultModule)
