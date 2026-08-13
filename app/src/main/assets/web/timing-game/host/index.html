@@ -352,6 +352,7 @@
     var canStart = payload.connectedCount > 0;
     btn.disabled = !canStart;
     btn.textContent = canStart ? '▶️ Bắt đầu game (' + payload.connectedCount + ' người)' : '🔒 Chờ người chơi tham gia...';
+    setTimeout(function() { btn.focus(); }, 100);
   }
 
   function onPlayerJoined(payload) {
@@ -481,6 +482,22 @@
   document.getElementById('btn-force-start').addEventListener('click', function () {
     send('force_start');
   });
+
+  // Handle D-pad Remote OK / Enter / Space key press globally on Android TV
+  window.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter' || e.key === ' ' || e.keyCode === 13 || e.keyCode === 32 || e.keyCode === 23 || e.keyCode === 66) {
+      var btn = document.getElementById('btn-force-start');
+      if (btn && btn.style.display !== 'none' && !btn.disabled) {
+        send('force_start');
+      }
+    }
+  });
+
+  // Auto focus button when page loads or status updates
+  setTimeout(function() {
+    var btn = document.getElementById('btn-force-start');
+    if (btn) btn.focus();
+  }, 300);
 
   connect();
 }());
