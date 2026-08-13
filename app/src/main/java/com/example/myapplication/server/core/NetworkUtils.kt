@@ -11,8 +11,9 @@ import java.net.NetworkInterface
 import java.nio.ByteOrder
 
 /**
- * Port of backend/core/serverInfo.js's getLanIpAddress(). Prefers active Wi-Fi / Ethernet
- * addresses and filters out loopback, virtual (docker/vbox/dummy/tun), and link-local IPs.
+ * Port of backend/core/serverInfo.js's getLanIpAddress(). Prefers active physical Wi-Fi / Ethernet
+ * addresses and filters out loopback, virtual (docker/vbox/dummy/tun), link-local, and Android
+ * Emulator NAT (10.0.2.x) IPs.
  */
 object NetworkUtils {
 
@@ -21,24 +22,40 @@ object NetworkUtils {
     fun getLanIpAddress(context: Context): String {
         // 1. Try WifiManager IP (most reliable on Android TV / phones with Wi-Fi)
         getWifiIpAddress(context)?.let {
-            Log.d(TAG, "getLanIpAddress: Using WifiManager IP -> $it")
-            return it
+            if (isValidLanIp(it)) {
+                Log.d(TAG, "getLanIpAddress: Using WifiManager IP -> $it")
+                return it
+            }
         }
 
         // 2. Try ConnectivityManager active network IPv4
         getActiveNetworkIpv4(context)?.let {
-            Log.d(TAG, "getLanIpAddress: Using ConnectivityManager IP -> $it")
-            return it
+            if (isValidLanIp(it)) {
+                Log.d(TAG, "getLanIpAddress: Using ConnectivityManager IP -> $it")
+                return it
+            }
         }
 
         // 3. Fallback: enumerate hardware network interfaces prioritizing wlan/eth
         getFirstNonLoopbackIpv4()?.let {
-            Log.d(TAG, "getLanIpAddress: Using Interface enumeration IP -> $it")
-            return it
+            if (isValidLanIp(it)) {
+                Log.d(TAG, "getLanIpAddress: Using Interface enumeration IP -> $it")
+                return it
+            }
         }
 
-        Log.w(TAG, "getLanIpAddress: Fallback to loopback 127.0.0.1")
+        // 4. If running in Android Studio Emulator (where only 10.0.2.15 exists), fallback to 127.0.0.1
+        // for seamless ADB port-forwarding (adb forward tcp:3000 tcp:3000) on PC browser.
+        Log.w(TAG, "getLanIpAddress: No physical LAN IP found (Emulator NAT). Using 127.0.0.1 for ADB forward")
         return "127.0.0.1"
+    }
+
+    /** Filters out loopback (127.0.0.1), link-local (169.254.x.x), and Android Emulator NAT (10.0.2.x). */
+    private fun isValidLanIp(ip: String): Boolean {
+        if (ip.isEmpty() || ip == "127.0.0.1" || ip.startsWith("169.254.") || ip.startsWith("10.0.2.")) {
+            return false
+        }
+        return true
     }
 
     private fun getWifiIpAddress(context: Context): String? {
@@ -121,4 +138,5 @@ object NetworkUtils {
         }.getOrNull()
     }
 }
+
 
