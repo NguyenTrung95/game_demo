@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="/shared/fonts.css">
+<meta name="viewport" content="width=1280">
+<title>Bấm Đúng Nhịp — Host</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400..700&display=swap');
+  
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0; height: 100%; width: 100%;
+    font-family: 'Fredoka', -apple-system, sans-serif;
+    background: radial-gradient(circle at 50% 30%, #1e1b4b, #0f172a);
+    color: #f8fafc; overflow: hidden;
+  }
+
+  /* Cyber Grid & Glowing Particle Decorations */
+  .grid-decor {
+    position: fixed; inset: 0; pointer-events: none; opacity: 0.15;
+    background-image: linear-gradient(#a855f7 1px, transparent 1px), linear-gradient(90deg, #a855f7 1px, transparent 1px);
+    background-size: 40px 40px; z-index: 0;
+  }
+  .glow-orb {
+    position: fixed; border-radius: 50%; filter: blur(90px); pointer-events: none; opacity: 0.4;
+  }
+  .orb-1 { width: 350px; height: 350px; background: #ff2a5f; top: -50px; left: 10%; }
+  .orb-2 { width: 400px; height: 400px; background: #00e5ff; bottom: -80px; right: 10%; }
+
+  .wrapper {
+    height: 100vh; width: 100vw;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    padding: 24px; position: relative; z-index: 2;
+  }
+  .card {
+    width: 100%; max-width: 960px;
+    background: rgba(15, 23, 42, 0.75);
+    backdrop-filter: blur(20px);
+    border: 3.5px solid rgba(250, 204, 21, 0.6);
+    border-radius: 36px;
+    padding: 28px 40px;
+    box-shadow: 0 0 40px rgba(250, 204, 21, 0.2), inset 0 0 20px rgba(255,255,255,0.05);
+    text-align: center; position: relative;
+  }
+  
+  .game-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: rgba(250, 204, 21, 0.15); color: #facc15;
+    border: 2px solid #facc15; font-size: 11px; font-weight: 800;
+    letter-spacing: 0.08em; padding: 4px 16px; border-radius: 999px;
+    margin-bottom: 12px; text-transform: uppercase;
+    box-shadow: 0 0 12px rgba(250, 204, 21, 0.3);
+  }
+
+  h1 {
+    font-size: 42px; margin: 0 0 4px; font-weight: 900;
+    color: #facc15; text-shadow: 0 0 20px rgba(250, 204, 21, 0.6), 0 3px 0 #b45309;
+    letter-spacing: 0.02em;
+  }
+  .subtitle { color: #94a3b8; font-size: 15px; margin-bottom: 22px; font-weight: 700; }
+
+  /* Lobby Grid */
+  #lobby-grid { display: flex; gap: 32px; align-items: center; justify-content: center; }
+  .lobby-col-left {
+    flex: 0 0 240px; display: flex; flex-direction: column; align-items: center;
+    background: rgba(255, 255, 255, 0.03); border: 2.5px dashed rgba(250, 204, 21, 0.4);
+    border-radius: 24px; padding: 16px;
+  }
+  #qr-image {
+    width: 180px; height: 180px; background: #fff; border-radius: 20px;
+    padding: 10px; border: 3.5px solid #facc15; box-shadow: 0 0 20px rgba(250, 204, 21, 0.4);
+  }
+  
+  .shortlink-card {
+    width: 100%; background: rgba(250, 204, 21, 0.1);
+    border: 2px solid rgba(250, 204, 21, 0.4); border-radius: 14px;
+    padding: 8px 10px; margin-top: 12px; text-align: center;
+  }
+  .shortlink-label { font-size: 10px; font-weight: 800; color: #facc15; letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 3px; }
+  .shortlink-url { font-size: 12.5px; font-weight: 800; color: #38bdf8; word-break: break-all; margin-bottom: 4px; }
+  .pin-box { font-size: 16px; font-weight: 900; color: #facc15; letter-spacing: 0.06em; }
+
+  .lobby-col-right { flex: 1; text-align: left; }
+  #player-list {
+    display: flex; flex-wrap: wrap; gap: 10px; min-height: 140px; max-height: 220px;
+    overflow-y: auto; background: rgba(0,0,0,0.3); border-radius: 18px; padding: 16px;
+    border: 1.5px solid rgba(255,255,255,0.08); align-content: flex-start;
+  }
+  .player-chip {
+    background: linear-gradient(135deg, #3b82f6, #1d4ed8); color: #fff;
+    padding: 8px 18px; border-radius: 999px; font-size: 14px; font-weight: 800;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3); border: 1.5px solid rgba(255,255,255,0.3);
+    animation: chipPop 0.3s ease-out;
+  }
+  @keyframes chipPop { 0% { transform: scale(0.7); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+
+  #btn-force-start {
+    margin-top: 18px; width: 100%; padding: 16px; font-size: 18px; font-weight: 900;
+    border-radius: 16px; border: none; cursor: pointer;
+    background: linear-gradient(135deg, #22c55e, #16a34a); color: #fff;
+    font-family: 'Fredoka', sans-serif; box-shadow: 0 0 25px rgba(34, 197, 94, 0.4), 0 5px 0 #15803d;
+    transition: transform 0.15s, box-shadow 0.15s;
+  }
+  #btn-force-start:disabled { background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.3); box-shadow: none; cursor: not-allowed; }
+  #btn-force-start:not(:disabled):focus { outline: 4px solid #fff; transform: scale(1.03); }
+
+  /* Explaining Screen */
+  .explain-card {
+    background: rgba(0, 0, 0, 0.4); border-radius: 24px; padding: 24px;
+    border: 2.5px solid rgba(250, 204, 21, 0.3); text-align: left; max-width: 680px; margin: 0 auto;
+  }
+  .explain-item { display: flex; align-items: center; gap: 14px; margin-bottom: 16px; font-size: 17px; font-weight: 700; }
+  .explain-badge {
+    width: 36px; height: 36px; border-radius: 50%; background: #facc15; color: #0f172a;
+    font-weight: 900; display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    box-shadow: 0 0 12px #facc15;
+  }
+
+  /* Countdown Screen */
+  .countdown-num {
+    font-size: 140px; font-weight: 900; color: #facc15;
+    text-shadow: 0 0 40px rgba(250, 204, 21, 0.8), 0 6px 0 #b45309;
+    animation: countPulse 0.8s ease-in-out infinite alternate;
+  }
+  @keyframes countPulse { 0% { transform: scale(0.9); } 100% { transform: scale(1.1); } }
+
+  /* Play Screen - 3D Laser Neon Tracks */
+  .timer-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+  .phase-badge {
+    font-size: 14px; font-weight: 900; padding: 6px 20px; border-radius: 999px;
+    letter-spacing: 0.08em; text-transform: uppercase;
+  }
+  .phase-badge.visible { background: #0284c7; color: #fff; box-shadow: 0 0 16px #0284c7; }
+  .phase-badge.blackout { background: #7e22ce; color: #facc15; border: 2px solid #facc15; box-shadow: 0 0 20px #7e22ce; animation: blackoutGlow 1s infinite alternate; }
+  @keyframes blackoutGlow { 0% { opacity: 0.7; } 100% { opacity: 1; } }
+  .clock { font-size: 26px; font-weight: 900; color: #facc15; text-shadow: 0 0 12px rgba(250, 204, 21, 0.5); }
+
+  .track-container { display: flex; flex-direction: column; gap: 16px; margin-bottom: 24px; }
+  .lane {
+    position: relative; height: 56px; background: rgba(0, 0, 0, 0.5);
+    border-radius: 16px; overflow: hidden; box-shadow: inset 0 2px 8px rgba(0,0,0,0.6);
+  }
+  .lane.red { border: 2.5px solid #ff2a5f; box-shadow: 0 0 16px rgba(255, 42, 95, 0.3); }
+  .lane.blue { border: 2.5px solid #00e5ff; box-shadow: 0 0 16px rgba(0, 229, 255, 0.3); }
+  
+  .lane-label {
+    position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
+    font-size: 13px; font-weight: 900; z-index: 5; letter-spacing: 0.05em;
+  }
+  .lane.red .lane-label { color: #ff2a5f; text-shadow: 0 0 10px #ff2a5f; }
+  .lane.blue .lane-label { color: #00e5ff; text-shadow: 0 0 10px #00e5ff; }
+
+  .hit-mark {
+    position: absolute; top: 8px; bottom: 8px; width: 6px; border-radius: 999px;
+    background: rgba(255, 255, 255, 0.4); box-shadow: 0 0 8px rgba(255,255,255,0.6); z-index: 2;
+  }
+  .playhead {
+    position: absolute; top: 0; bottom: 0; width: 4px; background: #facc15;
+    box-shadow: 0 0 20px #facc15, 0 0 40px #facc15; z-index: 4; border-radius: 2px;
+  }
+
+  /* Cyber Blackout Pulse Orb Visualizer */
+  #blackout-overlay {
+    position: absolute; inset: 0; background: rgba(15, 23, 42, 0.95);
+    backdrop-filter: blur(12px); display: flex; flex-direction: column;
+    align-items: center; justify-content: center; border-radius: 30px; z-index: 10;
+  }
+  .pulse-orb {
+    width: 110px; height: 110px; border-radius: 50%;
+    background: radial-gradient(circle, #facc15, #a855f7);
+    box-shadow: 0 0 50px #facc15, 0 0 100px #a855f7;
+    animation: beatOrb 0.5s ease-in-out infinite alternate;
+    display: flex; align-items: center; justify-content: center; font-size: 48px;
+  }
+  @keyframes beatOrb { 0% { transform: scale(0.85); opacity: 0.8; } 100% { transform: scale(1.15); opacity: 1; } }
+
+  /* Live Crown Leaderboard */
+  #top3-list { display: flex; gap: 14px; justify-content: center; margin-top: 12px; }
+  .top3-item {
+    background: rgba(255, 255, 255, 0.08); border: 1.5px solid rgba(250, 204, 21, 0.3);
+    border-radius: 12px; padding: 10px 18px; font-size: 15px; font-weight: 800; color: #fff;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  }
+  .top3-item .rank { color: #facc15; margin-right: 6px; font-size: 16px; }
+
+  /* Result Table */
+  #result-table { width: 100%; border-collapse: collapse; font-size: 16px; margin-top: 14px; }
+  #result-table th, #result-table td { padding: 12px 16px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.08); }
+  #result-table th { color: #94a3b8; font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em; }
+  .page-dots { margin-top: 14px; font-size: 13px; color: #94a3b8; font-weight: 700; }
+</style>
+</head>
+<body>
+
+<div class="grid-decor"></div>
+<div class="glow-orb orb-1"></div>
+<div class="glow-orb orb-2"></div>
+
+<div class="wrapper">
+  <div class="card">
+    <span class="free-badge">⏱️ Rhythm Accuracy Race</span>
+    <h1>BẤM ĐÚNG NHỊP</h1>
+    <div class="subtitle" id="status-line">Đang khởi tạo máy chủ nhúng...</div>
+
+    <!-- 1. LOBBY SCREEN -->
+    <div id="screen-lobby">
+      <div id="lobby-grid">
+        <div class="lobby-col-left">
+          <img id="qr-image" alt="QR Code">
+          <div class="shortlink-card">
+            <div class="shortlink-label">🌐 SCAN QR OR OPEN WEB LINK:</div>
+            <div class="shortlink-url" id="join-url"></div>
+            <div class="pin-box" id="pin-box">PIN: ----</div>
+          </div>
+        </div>
+        <div class="lobby-col-right">
+          <div id="player-list"></div>
+          <button id="btn-force-start" disabled>🔒 Chờ người chơi tham gia...</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. EXPLAINING SCREEN -->
+    <div id="screen-explain" style="display:none;">
+      <div class="explain-card">
+        <div class="explain-item">
+          <div class="explain-badge">1</div>
+          <div>🔴🔵 Trên điện thoại có 2 nút Đỏ &amp; Xanh — mỗi nút chạy theo một dải nhịp riêng.</div>
+        </div>
+        <div class="explain-item">
+          <div class="explain-badge">2</div>
+          <div>🎯 Bấm đúng khoảnh khắc kim Laser quét qua điểm mốc — sai số ms càng nhỏ điểm càng cao!</div>
+        </div>
+        <div class="explain-item">
+          <div class="explain-badge">3</div>
+          <div>🌑 <b>Blackout Mode:</b> TV sẽ ẩn đường ray — hãy lắng nghe nhịp điệu và bấm theo cảm nhận!</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. COUNTDOWN SCREEN -->
+    <div id="screen-countdown" style="display:none;">
+      <div class="countdown-num" id="countdown-num">3</div>
+    </div>
+
+    <!-- 4. PLAY SCREEN -->
+    <div id="screen-play" style="display:none; position:relative;">
+      <div class="timer-row">
+        <span class="phase-badge visible" id="phase-badge">CHƠI VÀO NHỊP</span>
+        <span class="clock" id="play-clock">30s</span>
+      </div>
+
+      <div class="track-container">
+        <div class="lane red" id="lane-fast">
+          <span class="lane-label"></span>
+          <div class="playhead" id="playhead-red"></div>
+        </div>
+        <div class="lane blue" id="lane-slow">
+          <span class="lane-label"></span>
+          <div class="playhead" id="playhead-blue"></div>
+        </div>
+      </div>
+
+      <div id="top3-list"></div>
+
+      <!-- Blackout Audio Orb Visualizer Overlay -->
+      <div id="blackout-overlay" style="display:none;">
+        <div class="pulse-orb">🎵</div>
+        <h2 style="font-size: 24px; color: #facc15; margin-top: 20px; text-transform: uppercase; font-weight: 900;">🌑 BLACKOUT RHYTHM MODE</h2>
+        <p style="color: #94a3b8; font-size: 15px; margin: 4px 0 0; font-weight: 700;">Lắng nghe nhịp điệu và bấm theo cảm nhận!</p>
+      </div>
+    </div>
+
+    <!-- 5. RESULT SCREEN -->
+    <div id="screen-result" style="display:none;">
+      <table id="result-table">
+        <thead><tr><th>Xếp hạng</th><th>Người chơi</th><th>Tổng sai số</th></tr></thead>
+        <tbody id="result-tbody"></tbody>
+      </table>
+      <div class="page-dots" id="page-dots"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  var socket = null;
+  var players = {};
+  var raceConfig = null;
+  var playStartLocalTime = 0;
+  var animFrame = null;
+  var resultRanking = [];
+  var resultPage = 0;
+  var resultPageTimer = null;
+
+  function connect() {
+    var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
+    socket = new WebSocket(protocol + '://' + location.host + '/timing-game-ws');
+    socket.addEventListener('open', function () { send('create_room'); });
+    socket.addEventListener('message', function (event) {
+      var msg = JSON.parse(event.data);
+      handleMessage(msg.type, msg.payload);
+    });
+    socket.addEventListener('close', function () {
+      document.getElementById('status-line').textContent = 'Mất kết nối server. Tải lại trang.';
+    });
+  }
+
+  function send(type, payload) {
+    if (socket && socket.readyState === WebSocket.OPEN) {
+      socket.send(JSON.stringify({ type: type, payload: payload || {} }));
+    }
+  }
+
+  function showScreen(id) {
+    ['screen-lobby', 'screen-explain', 'screen-countdown', 'screen-play', 'screen-result'].forEach(function (s) {
+      document.getElementById(s).style.display = (s === id) ? 'block' : 'none';
+    });
+  }
+
+  function handleMessage(type, payload) {
+    switch (type) {
+      case 'room_created': onRoomCreated(payload); break;
+      case 'room_stats': onRoomStats(payload); break;
+      case 'player_joined': onPlayerJoined(payload); break;
+      case 'player_left': onPlayerLeft(payload); break;
+      case 'phase_changed': onPhaseChanged(payload); break;
+      case 'race_progress': onRaceProgress(payload); break;
+      case 'race_over': onRaceOver(payload); break;
+      default: break;
+    }
+  }
+
+  function onRoomCreated(payload) {
+    players = {};
+    document.getElementById('qr-image').src = payload.qrDataUrl;
+    document.getElementById('pin-box').textContent = 'PIN CODE: ' + payload.pin;
+    document.getElementById('join-url').textContent = (payload.joinUrl || '').replace(/^https?:\/\//, '');
+    document.getElementById('player-list').innerHTML = '';
+    showScreen('screen-lobby');
+    document.getElementById('status-line').textContent = 'Quét QR hoặc mở Web Link để tham gia';
+  }
+
+  function onRoomStats(payload) {
+    var btn = document.getElementById('btn-force-start');
+    if (payload.phase !== 'lobby' && payload.phase !== 'explaining') {
+      btn.style.display = 'none';
+      return;
+    }
+    btn.style.display = 'block';
+    var canStart = payload.connectedCount > 0;
+    btn.disabled = !canStart;
+    btn.textContent = canStart ? '▶️ Bắt đầu game (' + payload.connectedCount + ' người)' : '🔒 Chờ người chơi tham gia...';
+  }
+
+  function onPlayerJoined(payload) {
+    players[payload.playerId] = payload.nickname;
+    renderPlayerList();
+  }
+  function onPlayerLeft(payload) {
+    delete players[payload.playerId];
+    renderPlayerList();
+  }
+  function renderPlayerList() {
+    var list = document.getElementById('player-list');
+    list.innerHTML = Object.keys(players).map(function (id) {
+      return '<span class="player-chip">🎮 ' + players[id] + '</span>';
+    }).join('') || '<span style="color:#64748b; font-weight:700;">Chưa có ai tham gia</span>';
+  }
+
+  function onPhaseChanged(payload) {
+    if (payload.phase === 'lobby') { showScreen('screen-lobby'); return; }
+    if (payload.phase === 'explaining') {
+      showScreen('screen-explain');
+      document.getElementById('status-line').textContent = 'Hướng dẫn cách chơi';
+      return;
+    }
+    if (payload.phase === 'countdown') {
+      showScreen('screen-countdown');
+      document.getElementById('status-line').textContent = 'Sắp bắt đầu!';
+      runCountdown(Math.ceil(payload.durationMs / 1000));
+      return;
+    }
+    if (payload.phase === 'approach') {
+      showScreen('screen-countdown');
+      document.getElementById('countdown-num').textContent = '🏃';
+      document.getElementById('status-line').textContent = 'Chuẩn bị vào nhịp...';
+      return;
+    }
+    if (payload.phase === 'visiblePlay') {
+      raceConfig = payload;
+      playStartLocalTime = performance.now();
+      showScreen('screen-play');
+      document.getElementById('status-line').textContent = 'Bấm theo nhịp!';
+      document.getElementById('blackout-overlay').style.display = 'none';
+      document.getElementById('phase-badge').textContent = 'CHƠI VÀO NHỊP';
+      document.getElementById('phase-badge').className = 'phase-badge visible';
+      renderLaneMarks(payload.hitPointsByColor);
+      startPlayheadAnimation();
+      return;
+    }
+    if (payload.phase === 'blackout') {
+      document.getElementById('blackout-overlay').style.display = 'flex';
+      document.getElementById('phase-badge').textContent = '🌑 BLACKOUT RHYTHM MODE';
+      document.getElementById('phase-badge').className = 'phase-badge blackout';
+      return;
+    }
+  }
+
+  function runCountdown(n) {
+    var el = document.getElementById('countdown-num');
+    el.textContent = n;
+    if (n <= 0) return;
+    setTimeout(function () { runCountdown(n - 1); }, 1000);
+  }
+
+  function renderLaneMarks(hitPointsByColor) {
+    var totalMs = 30000;
+    ['red', 'blue'].forEach(function (color) {
+      var laneEl = document.getElementById(color === raceConfig.fastColor ? 'lane-fast' : 'lane-slow');
+      laneEl.querySelector('.lane-label').textContent = (color === raceConfig.fastColor ? '⚡ NHANH' : '🐢 CHẬM') + ' · ' + (color === 'red' ? 'ĐỎ' : 'XANH');
+      laneEl.className = 'lane ' + color;
+      Array.from(laneEl.querySelectorAll('.hit-mark')).forEach(function (m) { m.remove(); });
+      (hitPointsByColor[color] || []).forEach(function (t) {
+        var mark = document.createElement('div');
+        mark.className = 'hit-mark';
+        mark.style.left = (t / totalMs * 100) + '%';
+        laneEl.appendChild(mark);
+      });
+    });
+  }
+
+  function startPlayheadAnimation() {
+    if (animFrame) cancelAnimationFrame(animFrame);
+    var totalMs = 30000;
+    function step() {
+      var elapsed = performance.now() - playStartLocalTime;
+      var pct = Math.min(100, elapsed / totalMs * 100);
+      document.getElementById('playhead-red').style.left = pct + '%';
+      document.getElementById('playhead-blue').style.left = pct + '%';
+      if (elapsed < totalMs + 500) {
+        animFrame = requestAnimationFrame(step);
+      }
+    }
+    step();
+  }
+
+  function onRaceProgress(payload) {
+    document.getElementById('play-clock').textContent = Math.ceil(payload.remainingMs / 1000) + 's';
+    var top3 = payload.top3 || [];
+    document.getElementById('top3-list').innerHTML = top3.map(function (p, i) {
+      var crown = i === 0 ? '👑 ' : (i === 1 ? '🥈 ' : '🥉 ');
+      return '<div class="top3-item"><span class="rank">' + crown + '#' + (i + 1) + '</span>' + p.nickname + ' — ' + p.totalError + 'ms</div>';
+    }).join('');
+  }
+
+  function onRaceOver(payload) {
+    if (animFrame) cancelAnimationFrame(animFrame);
+    resultRanking = payload.ranking || [];
+    resultPage = 0;
+    showScreen('screen-result');
+    document.getElementById('status-line').textContent = 'Kết quả chung cuộc';
+    var rowsPerPage = payload.rowsPerPage || 8;
+    var pageDurationMs = payload.pageDurationMs || 5000;
+    function renderPage() {
+      var start = resultPage * rowsPerPage;
+      var rows = resultRanking.slice(start, start + rowsPerPage);
+      document.getElementById('result-tbody').innerHTML = rows.map(function (r) {
+        return '<tr><td>#' + r.rank + '</td><td>' + r.nickname + '</td><td><span style="color:#facc15; font-weight:800;">' + r.totalErrorMs + 'ms</span></td></tr>';
+      }).join('') || '<tr><td colspan="3" style="color:#64748b;">Không có người chơi</td></tr>';
+      var pageCount = Math.max(1, Math.ceil(resultRanking.length / rowsPerPage));
+      document.getElementById('page-dots').textContent = 'Trang ' + (resultPage + 1) + ' / ' + pageCount;
+      resultPage = (resultPage + 1) % pageCount;
+    }
+    renderPage();
+    clearInterval(resultPageTimer);
+    resultPageTimer = setInterval(renderPage, pageDurationMs);
+  }
+
+  document.getElementById('btn-force-start').addEventListener('click', function () {
+    send('force_start');
+  });
+
+  connect();
+}());
+</script>
+</body>
+</html>
+

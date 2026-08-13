@@ -46,19 +46,19 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
+import com.example.myapplication.server.EmbeddedGameServer
 import com.example.myapplication.ui.theme.KahootPalette
 import kotlinx.coroutines.delay
 import kotlin.math.sin
 
 enum class GameState { IDLE, LOADING, ACTIVE, ERROR }
 
-private const val GAME_URL = "http://10.0.2.2:8787/host/"
 private const val MIN_LOADING_DURATION_MS = 5000L
 
 @Composable
 fun GameWebViewScreen(
     modifier: Modifier = Modifier,
-    url: String = GAME_URL,
+    url: String = EmbeddedGameServer.localHostUrl("/host/"),
     gameTitle: String = "Game",
     onWebViewCreated: (WebView) -> Unit,
     onBackToHome: () -> Unit
@@ -71,6 +71,14 @@ fun GameWebViewScreen(
     var pageReady by remember { mutableStateOf(false) }
     var minTimeElapsed by remember { mutableStateOf(false) }
     var loadAttempt by remember { mutableStateOf(0) }
+
+    // embeddedServer(...).start(wait = false) returns before the port is actually bound, so the
+    // WebView must not load until the server has confirmed it's actually listening.
+    var serverReady by remember { mutableStateOf(false) }
+    LaunchedEffect(Unit) {
+        EmbeddedGameServer.awaitReady()
+        serverReady = true
+    }
 
     LaunchedEffect(loadAttempt) {
         minTimeElapsed = false
@@ -147,7 +155,8 @@ fun GameWebViewScreen(
                             e.printStackTrace()
                         }
                     }
-                    loadUrl(url)
+                    // loadUrl is deferred until the embedded server confirms it's listening —
+                    // see the LaunchedEffect(serverReady, webViewInstance) below.
                     webViewInstance = this
                     onWebViewCreated(this)
                 }
@@ -166,6 +175,12 @@ fun GameWebViewScreen(
                 webView.requestFocus()
             }
         )
+
+        LaunchedEffect(serverReady, webViewInstance) {
+            if (serverReady) {
+                webViewInstance?.loadUrl(url)
+            }
+        }
 
         // Request D-pad focus on WebView once page is fully loaded
         LaunchedEffect(gameState) {

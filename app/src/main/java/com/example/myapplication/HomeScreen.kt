@@ -1,5 +1,6 @@
 package com.example.myapplication
 
+import com.example.myapplication.server.EmbeddedGameServer
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -130,9 +131,9 @@ data class MetroGame(
 
 val METRO_GAMES = listOf(
     // Row 1
-    MetroGame("Duck Race",       R.drawable.ic_game_duck_real,   Color(0xFF1B5E20), tileGradients = listOf(Color(0xFF00E676), Color(0xFF00B0FF)), keyType = "real_image", isActive = true, playerCount = "12.5K Playing", url = "https://game-demo-production-4101.up.railway.app/host/"),
+    MetroGame("Duck Race",       R.drawable.ic_game_duck_real,   Color(0xFF1B5E20), tileGradients = listOf(Color(0xFF00E676), Color(0xFF00B0FF)), keyType = "real_image", isActive = true, playerCount = "12.5K Playing", url = EmbeddedGameServer.localHostUrl("/host/")),
     MetroGame("Tug of War",         R.drawable.ic_game_sumo_real,   Color(0xFF0D47A1), tileGradients = listOf(Color(0xFFFF1744), Color(0xFF2979FF)), keyType = "real_image", isActive = true, playerCount = "9.8K Playing",  url = "https://game-demo-production-4101.up.railway.app/tug-of-war/host/"),
-    MetroGame("Speed Trivia",      R.drawable.ic_game_trivia_real, Color(0xFF263238), tileGradients = listOf(Color(0xFFFFEA00), Color(0xFFFF6D00)), keyType = "real_image"),
+    MetroGame("Bấm Đúng Nhịp", R.drawable.ic_game_timer, Color(0xFF7C2D12), tileGradients = listOf(Color(0xFFF59E0B), Color(0xFFEF4444)), keyType = "", isActive = true, playerCount = "Trò chơi mới!", url = EmbeddedGameServer.localHostUrl("/timing-game/host/")),
     MetroGame("Obstacle Run", R.drawable.ic_game_rocket_real, Color(0xFF004D40), tileGradients = listOf(Color(0xFF00B0FF), Color(0xFF00E676)), keyType = "real_image"),
     // Row 2
     MetroGame("Treasure Hunt",        R.drawable.ic_game_treasure_real, Color(0xFF3E2723), tileGradients = listOf(Color(0xFFFFD700), Color(0xFFFF6D00)), keyType = "real_image"),

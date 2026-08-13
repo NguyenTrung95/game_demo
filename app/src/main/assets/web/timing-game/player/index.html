@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="/shared/fonts.css">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Bấm Đúng Nhịp — Controller</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400..700&display=swap');
+  
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body {
+    margin: 0; padding: 0; min-height: 100%; width: 100%;
+    font-family: 'Fredoka', -apple-system, sans-serif;
+    background: radial-gradient(circle at 50% 30%, #1e1b4b, #0f172a);
+    color: #f8fafc; overflow-x: hidden;
+  }
+  .screen { display: none; min-height: 100vh; padding: 24px 20px; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+  .screen.active { display: flex; }
+  
+  .card-box {
+    width: 100%; max-width: 360px; background: rgba(15, 23, 42, 0.8);
+    backdrop-filter: blur(16px); border: 2.5px solid rgba(250, 204, 21, 0.5);
+    border-radius: 28px; padding: 24px 20px;
+    box-shadow: 0 16px 40px rgba(0,0,0,0.5), inset 0 0 15px rgba(255,255,255,0.05);
+  }
+
+  h1 { font-size: 28px; color: #facc15; margin: 0 0 4px; font-weight: 900; text-shadow: 0 0 12px rgba(250,204,21,0.5); }
+  .subtitle { color: #94a3b8; font-size: 14px; margin-bottom: 22px; font-weight: 700; }
+  
+  input {
+    width: 100%; max-width: 320px; padding: 14px 16px; margin-bottom: 14px;
+    border-radius: 16px; border: 2.5px solid rgba(250, 204, 21, 0.4); background: rgba(0,0,0,0.4); color: #fff;
+    font-size: 17px; font-family: 'Fredoka', sans-serif; font-weight: 800; text-align: center;
+    outline: none; transition: border-color 0.2s;
+  }
+  input:focus { border-color: #facc15; box-shadow: 0 0 12px rgba(250, 204, 21, 0.4); }
+  input::placeholder { color: #64748b; font-weight: 600; }
+
+  button.primary {
+    width: 100%; max-width: 320px; padding: 16px; border-radius: 16px; border: none;
+    background: linear-gradient(135deg, #f59e0b, #d97706); color: #0f172a; font-weight: 900;
+    font-size: 18px; font-family: 'Fredoka', sans-serif; cursor: pointer; margin-top: 8px;
+    box-shadow: 0 0 20px rgba(245, 158, 11, 0.4), 0 5px 0 #b45309;
+    transition: transform 0.1s;
+  }
+  button.primary:active { transform: translateY(3px); box-shadow: 0 2px 0 #b45309; }
+  
+  button.secondary {
+    background: transparent; border: 2px solid rgba(255,255,255,0.2); color: #94a3b8;
+    width: 100%; max-width: 320px; padding: 12px; border-radius: 14px; margin-top: 14px;
+    font-family: 'Fredoka', sans-serif; font-size: 14px; font-weight: 700; cursor: pointer;
+  }
+
+  .error-text { color: #f87171; font-size: 14px; font-weight: 700; min-height: 20px; margin-bottom: 6px; }
+
+  .choice-row { display: flex; gap: 10px; margin-bottom: 14px; max-width: 320px; width: 100%; }
+  .choice-btn {
+    flex: 1; padding: 12px; border-radius: 14px; border: 2px solid rgba(255,255,255,0.15); background: rgba(0,0,0,0.3);
+    color: #cbd5e1; font-weight: 800; font-size: 14px; font-family: 'Fredoka', sans-serif; cursor: pointer;
+    transition: all 0.2s;
+  }
+  .choice-btn.active { border-color: #facc15; background: rgba(250, 204, 21, 0.2); color: #facc15; box-shadow: 0 0 12px rgba(250, 204, 21, 0.3); }
+
+  .countdown-num { font-size: 110px; font-weight: 900; color: #facc15; text-shadow: 0 0 30px rgba(250,204,21,0.6); }
+
+  /* Play Screen - 3D Neon Arcade Push Buttons */
+  .play-header { display: flex; justify-content: space-between; width: 100%; max-width: 360px; margin-bottom: 20px; font-size: 14px; font-weight: 800; color: #94a3b8; }
+  .tap-grid { display: flex; gap: 16px; width: 100%; max-width: 360px; }
+  
+  .tap-btn {
+    flex: 1; height: 180px; border-radius: 24px; border: 3px solid rgba(255,255,255,0.4); font-size: 22px; font-weight: 900;
+    color: #fff; font-family: 'Fredoka', sans-serif; cursor: pointer; user-select: none;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px;
+    letter-spacing: 0.05em; text-shadow: 0 2px 4px rgba(0,0,0,0.4);
+    transition: transform 0.08s, box-shadow 0.08s;
+  }
+  .tap-btn.red {
+    background: linear-gradient(180deg, #ff2a5f, #b91c1c);
+    box-shadow: 0 10px 0 #881337, 0 12px 25px rgba(255, 42, 95, 0.4);
+  }
+  .tap-btn.blue {
+    background: linear-gradient(180deg, #00e5ff, #1d4ed8);
+    box-shadow: 0 10px 0 #1e3a8a, 0 12px 25px rgba(0, 229, 255, 0.4);
+  }
+  .tap-btn:active {
+    transform: translateY(6px);
+    box-shadow: 0 3px 0 rgba(0,0,0,0.5);
+  }
+
+  .feedback-row { display: flex; gap: 16px; width: 100%; max-width: 360px; margin-top: 16px; }
+  .feedback-box {
+    flex: 1; text-align: center; font-size: 15px; font-weight: 900; min-height: 28px;
+    background: rgba(0,0,0,0.3); border-radius: 12px; padding: 6px; border: 1.5px solid rgba(255,255,255,0.1);
+  }
+  .feedback-box.red { color: #ff2a5f; }
+  .feedback-box.blue { color: #00e5ff; }
+
+  .rank-badge { font-size: 64px; font-weight: 900; color: #facc15; text-shadow: 0 0 20px rgba(250,204,21,0.6); margin-bottom: 8px; }
+</style>
+</head>
+<body>
+
+<div id="screen-join" class="screen active">
+  <div class="card-box">
+    <h1>⏱️ BẤM ĐÚNG NHỊP</h1>
+    <div class="subtitle">Nhập mã PIN Code trên TV để tham gia</div>
+    <input id="input-pin" type="tel" inputmode="numeric" maxlength="4" placeholder="PIN Code (4 số)">
+    <input id="input-nickname" type="text" maxlength="20" placeholder="Tên hiển thị của bạn">
+    <div class="error-text" id="join-error"></div>
+    <button class="primary" id="btn-join">Tham gia phòng</button>
+  </div>
+</div>
+
+<div id="screen-setup" class="screen">
+  <div class="card-box">
+    <h1>🎮 Thiết lập phòng</h1>
+    <div class="subtitle">Chọn tốc độ nhịp điệu cho trận đấu</div>
+    <div class="choice-row" id="speed-choices">
+      <button class="choice-btn" data-band="slow">Chậm</button>
+      <button class="choice-btn active" data-band="medium">Vừa</button>
+      <button class="choice-btn" data-band="fast">Nhanh</button>
+    </div>
+    <div class="choice-row" id="mode-choices">
+      <button class="choice-btn active" data-mode="1">Chế độ 1</button>
+      <button class="choice-btn" data-mode="2">Chế độ 2</button>
+    </div>
+    <button class="primary" id="btn-submit-setup">Xác nhận thiết lập</button>
+    <div class="subtitle" id="setup-status" style="margin-top:16px;">Chờ chủ phòng bắt đầu...</div>
+    <button class="secondary" id="btn-leave">Rời phòng</button>
+  </div>
+</div>
+
+<div id="screen-countdown" class="screen">
+  <div class="countdown-num" id="countdown-num">3</div>
+  <div class="subtitle">Chuẩn bị sẵn tay bấm!</div>
+</div>
+
+<div id="screen-play" class="screen">
+  <div class="play-header">
+    <span id="play-remaining">30s</span>
+    <span id="play-phase-label" style="color:#facc15;">CHƠI VÀO NHỊP</span>
+  </div>
+  <div class="tap-grid">
+    <button class="tap-btn red" id="btn-tap-red">
+      <span>⚡ ĐỎ</span>
+      <span style="font-size: 13px; opacity: 0.8;">NHANH</span>
+    </button>
+    <button class="tap-btn blue" id="btn-tap-blue">
+      <span>🐢 XANH</span>
+      <span style="font-size: 13px; opacity: 0.8;">CHẬM</span>
+    </button>
+  </div>
+  <div class="feedback-row">
+    <div class="feedback-box red" id="feedback-red">---</div>
+    <div class="feedback-box blue" id="feedback-blue">---</div>
+  </div>
+</div>
+
+<div id="screen-result" class="screen">
+  <div class="card-box">
+    <div class="rank-badge" id="result-rank">#-</div>
+    <h1 id="result-title">KẾT QUẢ</h1>
+    <div class="subtitle" id="result-detail"></div>
+    <button class="primary" id="btn-play-again">Chơi lại trận khác</button>
+  </div>
+</div>
+
+<script>
+(function () {
+  var socket = null;
+  var myPlayerId = null;
+  var speedBand = 'medium';
+  var mode = '1';
+  var playStartLocalTime = 0;
+
+  function activateScreen(id) {
+    Array.from(document.querySelectorAll('.screen')).forEach(function (el) {
+      el.classList.toggle('active', el.id === id);
+    });
+  }
+
+  function connect() {
+    var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
+    socket = new WebSocket(protocol + '://' + location.host + '/timing-game-ws');
+    socket.addEventListener('message', function (event) {
+      var msg = JSON.parse(event.data);
+      handleMessage(msg.type, msg.payload);
+    });
+  }
+
+  function send(type, payload) {
+    if (socket && socket.readyState === WebSocket.OPEN) {
+      socket.send(JSON.stringify({ type: type, payload: payload || {} }));
+    }
+  }
+
+  function handleMessage(type, payload) {
+    switch (type) {
+      case 'join_ack': onJoinAck(payload); break;
+      case 'phase_changed': onPhaseChanged(payload); break;
+      case 'race_progress': onRaceProgress(payload); break;
+      case 'race_over': onRaceOver(payload); break;
+      case 'tap_result': onTapResult(payload); break;
+      default: break;
+    }
+  }
+
+  function onJoinAck(payload) {
+    if (!payload.success) {
+      document.getElementById('join-error').textContent = ({
+        invalid_pin_or_started: 'PIN không đúng hoặc trận đã bắt đầu.',
+        room_full: 'Phòng đã đầy (tối đa 100 người).',
+        nickname_required: 'Vui lòng nhập tên hiển thị.',
+      })[payload.error] || 'Có lỗi xảy ra, vui lòng thử lại.';
+      return;
+    }
+    myPlayerId = payload.playerId;
+    speedBand = payload.speedBand || 'medium';
+    syncChoiceButtons();
+    activateScreen('screen-setup');
+  }
+
+  function syncChoiceButtons() {
+    Array.from(document.querySelectorAll('#speed-choices .choice-btn')).forEach(function (b) {
+      b.classList.toggle('active', b.getAttribute('data-band') === speedBand);
+    });
+    Array.from(document.querySelectorAll('#mode-choices .choice-btn')).forEach(function (b) {
+      b.classList.toggle('active', b.getAttribute('data-mode') === mode);
+    });
+  }
+
+  Array.from(document.querySelectorAll('#speed-choices .choice-btn')).forEach(function (btn) {
+    btn.addEventListener('click', function () { speedBand = btn.getAttribute('data-band'); syncChoiceButtons(); });
+  });
+  Array.from(document.querySelectorAll('#mode-choices .choice-btn')).forEach(function (btn) {
+    btn.addEventListener('click', function () { mode = btn.getAttribute('data-mode'); syncChoiceButtons(); });
+  });
+
+  document.getElementById('btn-submit-setup').addEventListener('click', function () {
+    send('submit_setup', { speedBand: speedBand, mode: mode });
+    document.getElementById('setup-status').textContent = 'Đã chọn — chờ chủ phòng bấm bắt đầu...';
+  });
+
+  document.getElementById('btn-leave').addEventListener('click', function () {
+    location.reload();
+  });
+
+  function onPhaseChanged(payload) {
+    if (payload.phase === 'lobby') { activateScreen('screen-setup'); return; }
+    if (payload.phase === 'explaining') {
+      if (payload.speedBand) { speedBand = payload.speedBand; syncChoiceButtons(); }
+      activateScreen('screen-setup');
+      document.getElementById('setup-status').textContent = 'Xem hướng dẫn trên TV — chọn thiết lập rồi xác nhận!';
+      return;
+    }
+    if (payload.phase === 'countdown') {
+      activateScreen('screen-countdown');
+      runCountdown(Math.ceil(payload.durationMs / 1000));
+      return;
+    }
+    if (payload.phase === 'approach') {
+      document.getElementById('countdown-num').textContent = '🏃';
+      return;
+    }
+    if (payload.phase === 'visiblePlay') {
+      playStartLocalTime = performance.now();
+      document.getElementById('play-phase-label').textContent = 'CHƠI VÀO NHỊP';
+      document.getElementById('feedback-red').textContent = '---';
+      document.getElementById('feedback-blue').textContent = '---';
+      activateScreen('screen-play');
+      return;
+    }
+    if (payload.phase === 'blackout') {
+      document.getElementById('play-phase-label').textContent = '🌑 BLACKOUT MODE';
+      return;
+    }
+  }
+
+  function runCountdown(n) {
+    document.getElementById('countdown-num').textContent = n;
+    if (n <= 0) return;
+    setTimeout(function () { runCountdown(n - 1); }, 1000);
+  }
+
+  function onRaceProgress(payload) {
+    document.getElementById('play-remaining').textContent = Math.ceil(payload.remainingMs / 1000) + 's';
+  }
+
+  function onTap(color) {
+    var elapsedMs = performance.now() - playStartLocalTime;
+    send('tap', { color: color, elapsedMs: elapsedMs });
+    if (navigator.vibrate) navigator.vibrate(25);
+  }
+
+  function onTapResult(payload) {
+    var el = document.getElementById('feedback-' + payload.color);
+    if (!el) return;
+    var err = payload.errorMs || 0;
+    var rating = '🌟 PERFECT';
+    if (err > 35 && err <= 85) rating = '⚡ GREAT';
+    else if (err > 85 && err <= 160) rating = '👍 GOOD';
+    else if (err > 160) rating = '❌ MISS';
+    
+    el.textContent = rating + ' (' + err + 'ms)';
+  }
+
+  document.getElementById('btn-tap-red').addEventListener('touchstart', function (e) { e.preventDefault(); onTap('red'); }, { passive: false });
+  document.getElementById('btn-tap-red').addEventListener('mousedown', function () { onTap('red'); });
+  document.getElementById('btn-tap-blue').addEventListener('touchstart', function (e) { e.preventDefault(); onTap('blue'); }, { passive: false });
+  document.getElementById('btn-tap-blue').addEventListener('mousedown', function () { onTap('blue'); });
+
+  function onRaceOver(payload) {
+    document.getElementById('result-rank').textContent = payload.rank ? ('#' + payload.rank) : '-';
+    document.getElementById('result-detail').textContent = 'Tổng sai số: ' + payload.totalErrorMs + 'ms / ' + payload.totalPlayers + ' người chơi';
+    activateScreen('screen-result');
+  }
+
+  document.getElementById('btn-play-again').addEventListener('click', function () {
+    location.reload();
+  });
+
+  document.getElementById('btn-join').addEventListener('click', function () {
+    var pin = document.getElementById('input-pin').value.trim();
+    var nickname = document.getElementById('input-nickname').value.trim();
+    document.getElementById('join-error').textContent = '';
+    if (!pin || !nickname) {
+      document.getElementById('join-error').textContent = 'Vui lòng nhập đủ PIN và tên hiển thị.';
+      return;
+    }
+    connect();
+    var checkInterval = setInterval(function () {
+      if (socket && socket.readyState === WebSocket.OPEN) {
+        clearInterval(checkInterval);
+        send('join_room', { pin: pin, nickname: nickname });
+      }
+    }, 100);
+  });
+
+  function prefillPinFromQrScan() {
+    var pinFromUrl = new URLSearchParams(location.search).get('pin');
+    if (pinFromUrl) {
+      document.getElementById('input-pin').value = pinFromUrl;
+      document.getElementById('input-nickname').focus();
+    }
+  }
+  prefillPinFromQrScan();
+}());
+</script>
+</body>
+</html>
+

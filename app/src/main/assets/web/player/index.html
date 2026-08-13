@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="/shared/fonts.css">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>Duck Tap Race</title>
+<style>
+
+  :root { color-scheme: light; }
+  * { 
+    box-sizing: border-box; 
+    -webkit-tap-highlight-color: transparent; 
+    -webkit-user-select: none; 
+    user-select: none; 
+  }
+  html, body {
+    margin: 0; padding: 0; height: 100%;
+    font-family: 'Fredoka', -apple-system, sans-serif;
+    background: radial-gradient(circle at 50% 30%, #bae6fd, #e0f2fe);
+    color: #4b5563; overflow: hidden;
+  }
+  .screen {
+    display: none;
+    height: 100vh; width: 100vw;
+    flex-direction: column; align-items: center; justify-content: center;
+    padding: 24px; text-align: center;
+  }
+  .screen.active { display: flex; }
+
+  .card {
+    width: 100%; max-width: 340px;
+    background: #fffdf0;
+    border: 5px solid #854d0e;
+    border-radius: 28px;
+    padding: 28px 24px;
+    box-shadow: 0 12px 0 #451a03, 0 20px 40px rgba(0,0,0,0.15);
+  }
+
+  .free-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: #dcfce7; color: #15803d;
+    border: 2px solid #16a34a;
+    font-size: 11px; font-weight: 700; letter-spacing: 0.02em;
+    padding: 4px 12px; border-radius: 999px; margin-bottom: 14px;
+    text-transform: uppercase;
+    box-shadow: 0 2px 0 #16a34a;
+  }
+  h1 { font-size: 32px; margin: 0 0 8px; font-weight: 800; color: #b45309; text-shadow: 0 2px 0 #fef08a; }
+  p.subtitle { color: #854d0e; opacity: 0.8; margin-top: 0; margin-bottom: 22px; font-size: 15px; font-weight: 700; }
+
+  input {
+    width: 100%; font-size: 18px; padding: 13px 16px;
+    border-radius: 16px; border: 3px solid #854d0e;
+    margin-bottom: 14px; text-align: center;
+    background: #fff; color: #854d0e;
+    font-weight: 700;
+    font-family: 'Fredoka', sans-serif;
+  }
+  input:focus { outline: none; border-color: #eab308; box-shadow: 0 0 0 4px #fef08a; }
+  
+  button.primary {
+    width: 100%; font-size: 18px; padding: 14px 16px;
+    border-radius: 999px; border: none;
+    background: linear-gradient(135deg, #facc15, #eab308); color: #854d0e;
+    font-weight: 800; cursor: pointer;
+    font-family: 'Fredoka', sans-serif;
+    border: 3px solid #b45309;
+    box-shadow: 0 5px 0 #b45309, 0 8px 15px rgba(0,0,0,0.1);
+    transition: transform 0.1s, box-shadow 0.1s;
+  }
+  button.primary:active { transform: scale(0.96) translateY(3px); box-shadow: none; }
+  button.primary:disabled { opacity: 0.5; box-shadow: none; transform: none; }
+  .error { color: #dc2626; min-height: 20px; margin-top: 10px; font-size: 14px; font-weight: 700; }
+
+  /* Màn hình đua — nút chạm chiếm toàn màn hình */
+  #screen-race { padding: 0; position: relative; }
+
+  /* Làn bơi riêng của mình với Safe Areas */
+  #own-lane-wrap { 
+    position: absolute; 
+    top: env(safe-area-inset-top, 0px); 
+    left: 0; 
+    right: 0; 
+    z-index: 3; 
+  }
+  #own-lane-grass {
+    height: 10px;
+    background: #15803d;
+  }
+  #own-lane {
+    height: 48px; position: relative; overflow: hidden;
+    border-bottom: 4px solid #15803d;
+    background: linear-gradient(180deg, #0284c7, #0369a1);
+  }
+  #own-lane-finish {
+    position: absolute; top: 0; bottom: 0; right: 40px; width: 12px;
+    background: 
+      repeating-conic-gradient(#1e293b 0% 25%, #ffffff 0% 50%) 
+      50% / 6px 6px;
+    border-left: 1.5px solid #64748b;
+    border-right: 1.5px solid #64748b;
+  }
+  #own-trail {
+    position: absolute; top: 0; bottom: 0; left: 2%;
+    background: rgba(255,255,255,0.15); width: 0%;
+    transition: width 0.1s linear;
+  }
+  #own-duck {
+    position: absolute; top: 50%; left: 2%;
+    transform: translate(-50%, -50%);
+    transition: left 0.1s linear;
+    z-index: 5;
+  }
+  .duck-svg {
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+  }
+  .swimming-waddle {
+    animation: playerWaddle 0.4s ease-in-out infinite alternate;
+    transform-origin: center bottom;
+  }
+  @keyframes playerWaddle {
+    0% { transform: rotate(-6deg); }
+    100% { transform: rotate(6deg); }
+  }
+
+  /* Safe Area Offsets for stats */
+  #race-timer {
+    position: absolute; 
+    top: calc(env(safe-area-inset-top, 0px) + 68px); 
+    right: 14px; 
+    z-index: 2;
+    font-size: 16px; font-weight: 800; color: #fff;
+    background: #ef4444; border: 2.5px solid #991b1b;
+    padding: 6px 14px; border-radius: 999px;
+    box-shadow: 0 3px 0 #991b1b, 0 4px 8px rgba(0,0,0,0.1);
+  }
+  #race-tap-count {
+    position: absolute; 
+    top: calc(env(safe-area-inset-top, 0px) + 68px); 
+    left: 14px; 
+    z-index: 2;
+    font-size: 16px; font-weight: 800; color: #854d0e;
+    background: #fffdf0; border: 2.5px solid #854d0e;
+    padding: 6px 14px; border-radius: 999px;
+    box-shadow: 0 3px 0 #854d0e, 0 4px 8px rgba(0,0,0,0.1);
+  }
+  #tap-button {
+    position: absolute; inset: 0; width: 100%; height: 100%;
+    border: none; color: #fff;
+    background: radial-gradient(circle at 50% 45%, #ff8c00, #e21b3c 70%);
+    font-size: 46px; font-weight: 900; letter-spacing: 0.05em; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Fredoka', sans-serif;
+    text-shadow: 0 4px 0 #991b1b;
+    padding-top: calc(env(safe-area-inset-top, 0px) + 120px);
+    box-shadow: inset 0 -12px 0 rgba(0,0,0,0.25);
+    transition: background 0.1s;
+  }
+  #tap-button.pressed { 
+    background: radial-gradient(circle at 50% 45%, #ffa500, #ff4500 70%); 
+    box-shadow: inset 0 -4px 0 rgba(0,0,0,0.2);
+    font-size: 42px;
+  }
+  #tap-button:disabled { background: #6b7280; text-shadow: none; box-shadow: none; }
+
+  /* Compact Floating Real-time Leaderboard Styles in Bottom-Right Corner */
+  #race-realtime-board {
+    position: absolute;
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 16px);
+    right: 14px;
+    width: 135px;
+    background: rgba(255, 253, 240, 0.88);
+    border: 2px.5 solid #854d0e;
+    border-radius: 12px;
+    padding: 6px 8px;
+    z-index: 2;
+    pointer-events: none; /* Taps pass through to the button beneath */
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    border: 2px solid #854d0e;
+  }
+  .rt-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 10px;
+    font-weight: 700;
+    color: #854d0e;
+    padding: 1.5px 2px;
+    line-height: 1.2;
+  }
+  .rt-row.me {
+    color: #c2410c;
+    background: rgba(250, 204, 21, 0.25);
+    border-radius: 4px;
+    font-weight: 800;
+    padding: 1px 4px;
+  }
+
+  .color-chip {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 64px; height: 64px; border-radius: 50%;
+    margin-bottom: 12px; 
+    border: 4px solid #854d0e;
+    box-shadow: 0 4px 0 #854d0e, 0 8px 16px rgba(0,0,0,0.1);
+  }
+  .result-icon { font-size: 64px; margin-bottom: 10px; animation: resultBounce 0.5s ease-in-out infinite alternate; }
+  @keyframes resultBounce {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(-8px); }
+  }
+  .score-line { font-size: 17px; font-weight: 700; color: #854d0e; margin: 4px 0; }
+</style>
+</head>
+<body>
+
+<div id="screen-join" class="screen active">
+  <div class="card">
+    <span class="free-badge">🦆 Free to Play</span>
+    <h1>Duck Tap Race</h1>
+    <p class="subtitle">Enter PIN displayed on TV to join</p>
+    <input id="input-pin" type="tel" inputmode="numeric" maxlength="4" placeholder="PIN Code (4 digits)">
+    <input id="input-nickname" type="text" maxlength="20" placeholder="Display Name">
+    <button class="primary" id="btn-join">Join Game</button>
+    <div class="error" id="join-error"></div>
+  </div>
+</div>
+
+<div id="screen-waiting" class="screen">
+  <div class="card">
+    <div class="color-chip" id="waiting-color-chip"></div>
+    <h1>Joined Room!</h1>
+    <p class="subtitle" id="waiting-nickname"></p>
+    <p class="score-line">Waiting for race to start on TV...</p>
+  </div>
+</div>
+
+<div id="screen-race" class="screen">
+  <div id="own-lane-wrap">
+    <div id="own-lane-grass"></div>
+    <div id="own-lane">
+      <div id="own-lane-finish"></div>
+      <div id="own-trail"></div>
+      <div id="own-duck"></div>
+    </div>
+  </div>
+  <div id="race-tap-count">0</div>
+  <div id="race-timer"></div>
+  
+  <!-- Floating Real-time Leaderboard Widget -->
+  <div id="race-realtime-board">
+    <div style="text-align:center; font-size:12px; opacity:0.6; font-weight:700;">Calculating ranks...</div>
+  </div>
+
+  <button id="tap-button">QUACK QUACK!</button>
+
+  <!-- Animated Synchronized Countdown/Loading Overlay -->
+  <div id="player-loading-overlay" style="position: absolute; inset: 0; background: rgba(0,0,0,0.85); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 10; color: #fff; padding: 24px;">
+    <div style="font-size: 54px; animation: playerWaddle 0.4s ease-in-out infinite alternate;">🦆</div>
+    <h2 style="font-size: 24px; font-weight: 800; color: #facc15; text-shadow: 0 2px 0 #b45309; margin: 12px 0 4px; text-transform: uppercase;">Setting up track</h2>
+    <p style="font-weight: 700; opacity: 0.8; margin: 0; font-size: 14px;">Preparing floating rings...</p>
+  </div>
+</div>
+
+<div id="screen-result" class="screen" style="overflow-y: auto;">
+  <div class="card" style="max-height: 92vh; overflow-y: auto; display: flex; flex-direction: column; align-items: center; padding: 20px 16px;">
+    <div class="color-chip" id="result-color-chip" style="margin-bottom: 8px;"></div>
+    <div class="result-icon" id="result-icon" style="margin-bottom: 4px; font-size: 48px;">🏁</div>
+    <h1 id="result-title" style="font-size: 26px; margin: 4px 0;"></h1>
+    <p class="score-line" id="result-taps" style="font-size: 15px; margin-bottom: 12px;"></p>
+    
+    <!-- Player's personal rank box -->
+    <div style="width: 100%; background: #fef9c3; border: 2.5px solid #ca8a04; border-radius: 16px; padding: 8px 12px; margin-bottom: 12px; font-weight: 800; color: #854d0e; font-size: 14px;">
+      Your Rank: <span id="player-my-rank" style="color: #a16207; font-size: 17px; display: block; margin-top: 2px;">-</span>
+    </div>
+
+    <!-- Top 10 Leaderboard container -->
+    <div style="width: 100%; text-align: left;">
+      <div style="font-size: 12px; font-weight: 800; color: #854d0e; margin-bottom: 4px; letter-spacing: 0.05em; text-transform: uppercase;">🏆 TOP 10 LEADERBOARD</div>
+      <div id="player-top10-list" style="background: rgba(133, 77, 14, 0.05); border-radius: 12px; padding: 6px; max-height: 140px; overflow-y: auto; border: 1.5px solid rgba(133, 77, 14, 0.1);">
+        <!-- Filled dynamically -->
+      </div>
+    </div>
+
+    <button class="primary" id="btn-play-again" style="margin-top: 14px; font-size: 16px; padding: 10px 16px;">Play Again</button>
+  </div>
+</div>
+
+<script>
+(function () {
+  var socket = null;
+  var myPlayerId = null;
+  var myNickname = '';
+  var myColor = '#e21b3c';
+  var raceEndTime = null;
+  var raceTimerInterval = null;
+  var reportInterval = null;
+  var cumulativeTaps = 0;
+  var targetTaps = 100;
+
+  // Web Audio Synth for Player Quack Sound
+  var audioCtx = null;
+  function playQuackSound() {
+    try {
+      var AudioContext = window.AudioContext || window.webkitAudioContext;
+      if (!AudioContext) return;
+      if (!audioCtx) audioCtx = new AudioContext();
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+      
+      var osc = audioCtx.createOscillator();
+      var gain = audioCtx.createGain();
+      
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(450, audioCtx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(950, audioCtx.currentTime + 0.08);
+      
+      gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.12);
+      
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      
+      osc.start();
+      osc.stop(audioCtx.currentTime + 0.14);
+      
+      if (navigator.vibrate) {
+        navigator.vibrate(40);
+      }
+    } catch (e) {
+      console.warn("Sound play failed", e);
+    }
+  }
+
+  function getDuckSvg(color) {
+    return '<svg class="duck-svg swimming-waddle" viewBox="0 0 64 64" style="width: 42px; height: 42px;">' +
+      '<path d="M48,22 C56,20 58,26 48,28 Z" fill="#ff9800" stroke="#e65100" stroke-width="1.5"></path>' +
+      '<path d="M16,42 C10,36 14,28 22,28 C28,28 32,24 38,24 C44,24 48,28 48,34 C48,42 42,48 32,48 C22,48 18,46 16,42 Z" fill="' + color + '"></path>' +
+      '<circle cx="38" cy="20" r="11" fill="' + color + '"></circle>' +
+      '<circle cx="41" cy="18" r="2.5" fill="#000000"></circle>' +
+      '<circle cx="42.5" cy="16.5" r="1" fill="#ffffff"></circle>' +
+      '<path d="M22,36 C26,32 34,32 36,36 C38,40 34,42 28,42 C24,42 20,40 22,36 Z" fill="rgba(0,0,0,0.15)"></path>' +
+      '</svg>';
+  }
+
+  function showScreen(id) {
+    document.querySelectorAll('.screen').forEach(function (el) {
+      el.classList.toggle('active', el.id === id);
+    });
+  }
+
+  function connect() {
+    var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
+    socket = new WebSocket(protocol + '://' + location.host);
+    socket.addEventListener('message', function (event) {
+      var message = JSON.parse(event.data);
+      handleMessage(message.type, message.payload);
+    });
+    socket.addEventListener('close', function () {
+      document.getElementById('join-error').textContent =
+        'Server disconnected. Please reload page.';
+      showScreen('screen-join');
+    });
+  }
+
+  function send(type, payload) {
+    socket.send(JSON.stringify({ type: type, payload: payload || {} }));
+  }
+
+  function handleMessage(type, payload) {
+    switch (type) {
+      case 'join_ack':
+        onJoinAck(payload);
+        break;
+      case 'race_start':
+        onRaceStart(payload);
+        break;
+      case 'race_progress':
+        onRaceProgress(payload);
+        break;
+      case 'race_over':
+        onRaceOver(payload);
+        break;
+      case 'room_closed':
+        document.getElementById('join-error').textContent = 'Host closed the room.';
+        showScreen('screen-join');
+        break;
+      default:
+        break;
+    }
+  }
+
+  function onJoinAck(payload) {
+    if (!payload.success) {
+      var errorMessages = {
+        nickname_required: 'Please enter your display name.',
+        room_full: 'Room is full (100 players max).',
+        invalid_pin_or_started: 'Invalid PIN or game has already started.',
+      };
+      document.getElementById('join-error').textContent =
+        errorMessages[payload.error] || 'Unable to join room, please try again.';
+      return;
+    }
+    myPlayerId = payload.playerId;
+    targetTaps = payload.targetTaps || targetTaps;
+    myColor = payload.color || myColor;
+    document.getElementById('waiting-nickname').textContent = 'Hello, ' + myNickname + '!';
+    document.getElementById('waiting-color-chip').style.background = myColor;
+    document.getElementById('waiting-color-chip').innerHTML = getDuckSvg('#ffffff');
+    showScreen('screen-waiting');
+  }
+
+  // Helper to play synthesized beep sounds during countdown
+  function playBeep(freq, duration, type) {
+    try {
+      var AudioContext = window.AudioContext || window.webkitAudioContext;
+      if (!AudioContext) return;
+      if (!audioCtx) audioCtx = new AudioContext();
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+      var osc = audioCtx.createOscillator();
+      var gain = audioCtx.createGain();
+      osc.type = type || 'sine';
+      osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+      gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start();
+      osc.stop(audioCtx.currentTime + duration);
+    } catch (e) {}
+  }
+
+  function onRaceStart(payload) {
+    targetTaps = payload.targetTaps || targetTaps;
+    cumulativeTaps = 0;
+    
+    // We delay the actual tap availability by the prep + countdown time (1600ms + 2200ms = 3800ms)
+    // to match the TV screen sequence perfectly!
+    var totalPrepMs = 3800;
+    raceEndTime = Date.now() + payload.durationMs + totalPrepMs;
+
+    var tapButton = document.getElementById('tap-button');
+    tapButton.disabled = true;
+    
+    document.getElementById('own-duck').innerHTML = getDuckSvg(myColor);
+    document.getElementById('own-trail').style.background = myColor + '44';
+    updateRaceUi();
+    showScreen('screen-race');
+
+    // Show loading overlay
+    var loader = document.getElementById('player-loading-overlay');
+    loader.style.display = 'flex';
+    loader.innerHTML = 
+      '<div style="font-size: 54px; animation: playerWaddle 0.4s ease-in-out infinite alternate;">🦆</div>' +
+      '<h2 style="font-size: 22px; font-weight: 800; color: #facc15; text-shadow: 0 2px 0 #b45309; margin: 12px 0 4px; text-transform: uppercase;">Setting up track</h2>' +
+      '<p style="font-weight: 700; opacity: 0.8; margin: 0; font-size: 14px;">Preparing floating rings...</p>';
+
+    // Clear real-time leaderboard
+    var board = document.getElementById('race-realtime-board');
+    if (board) {
+      board.innerHTML = '<div style="text-align:center; font-size:12px; opacity:0.6; font-weight:700;">Calculating ranks...</div>';
+    }
+
+    // Step 1: Transitions from loading to Countdown after 1.6s
+    setTimeout(function() {
+      var count = 3;
+      loader.innerHTML = 
+        '<div style="font-size: 72px; font-weight: 900; color: #facc15; text-shadow: 0 4px 0 #b45309;" id="countdown-num">3</div>' +
+        '<p style="font-weight: 700; font-size: 15px; opacity: 0.8; margin-top: 10px; text-transform: uppercase; letter-spacing:0.04em;">Are you ready?</p>';
+      
+      playBeep(600, 0.15, 'sine');
+
+      var countdownInterval = setInterval(function() {
+        count--;
+        var numEl = document.getElementById('countdown-num');
+        if (numEl) {
+          numEl.textContent = count > 0 ? count : 'SWIM!';
+        }
+        
+        if (count > 0) {
+          playBeep(600, 0.15, 'sine');
+        } else {
+          playBeep(900, 0.4, 'triangle');
+          clearInterval(countdownInterval);
+          
+          // Step 2: Clear overlay and unlock tap action
+          setTimeout(function() {
+            loader.style.display = 'none';
+            tapButton.disabled = false;
+          }, 450);
+        }
+      }, 730); // 2200ms lineup duration divided by 3 counts
+    }, 1600);
+
+    clearInterval(raceTimerInterval);
+    // Only run timer countdown after the preparation finishes
+    setTimeout(function() {
+      raceTimerInterval = setInterval(function () {
+        var remainingSec = Math.max(0, Math.ceil((raceEndTime - Date.now()) / 1000));
+        document.getElementById('race-timer').textContent = remainingSec + 's';
+        if (remainingSec <= 0) clearInterval(raceTimerInterval);
+      }, 200);
+    }, totalPrepMs);
+
+    clearInterval(reportInterval);
+    reportInterval = setInterval(function () {
+      send('report_taps', { cumulativeTaps: cumulativeTaps });
+    }, 150);
+  }
+
+  function onRaceProgress(payload) {
+    var positions = payload.positions || [];
+    var sorted = positions.slice().sort(function (a, b) { return b.taps - a.taps; });
+    
+    // Find my index
+    var myIndex = -1;
+    for (var i = 0; i < sorted.length; i++) {
+      if (sorted[i].playerId === myPlayerId) {
+        myIndex = i;
+        break;
+      }
+    }
+
+    var board = document.getElementById('race-realtime-board');
+    if (!board) return;
+
+    var header = '<div style="font-size: 8px; font-weight:800; color:#b45309; text-transform:uppercase; margin-bottom:3px; letter-spacing:0.02em; border-bottom: 1px solid rgba(133,77,14,0.15); padding-bottom:2px; text-align:center;">🏆 Real-time Board</div>';
+    
+    // Show Top 10
+    var limit = Math.min(10, sorted.length);
+    var html = '';
+    
+    for (var i = 0; i < limit; i++) {
+      var item = sorted[i];
+      var isMe = item.playerId === myPlayerId;
+      var styleClass = isMe ? 'rt-row me' : 'rt-row';
+      
+      // Truncate player name to fit inside 135px box width
+      var displayName = item.nickname;
+      if (displayName.length > 7) displayName = displayName.slice(0, 6) + '..';
+
+      html += 
+        '<div class="' + styleClass + '">' +
+          '<span>#' + (i + 1) + ' ' + displayName + (isMe ? ' (you)' : '') + '</span>' +
+          '<span style="color:' + item.color + '">' + item.taps + '</span>' +
+        '</div>';
+    }
+
+    // If I'm outside the Top 10, display my rank as a footer row
+    if (myIndex >= limit) {
+      var myItem = sorted[myIndex];
+      var displayName = myItem.nickname;
+      if (displayName.length > 7) displayName = displayName.slice(0, 6) + '..';
+      
+      html += 
+        '<div style="height: 1px; border-top: 1px dashed rgba(133, 77, 14, 0.2); margin: 3px 0; pointer-events: none;"></div>' +
+        '<div class="rt-row me">' +
+          '<span>#' + (myIndex + 1) + ' ' + displayName + ' (you)</span>' +
+          '<span style="color:' + myItem.color + '">' + myItem.taps + '</span>' +
+        '</div>';
+    }
+
+    board.innerHTML = header + html;
+  }
+
+  function onTapDown(e) {
+    if (e) {
+      if (e.type === 'touchstart' && typeof e.preventDefault === 'function') {
+        e.preventDefault();
+      }
+    }
+    
+    playQuackSound();
+    cumulativeTaps += 1;
+    updateRaceUi();
+    
+    var tapButton = document.getElementById('tap-button');
+    tapButton.classList.add('pressed');
+    setTimeout(function () { tapButton.classList.remove('pressed'); }, 80);
+  }
+
+  function updateRaceUi() {
+    document.getElementById('race-tap-count').textContent = cumulativeTaps;
+    var percent = Math.min(100, Math.floor((cumulativeTaps / targetTaps) * 100));
+    var maxTravel = 86;
+    var travel = (percent / 100) * maxTravel;
+    document.getElementById('own-trail').style.width = (travel + 2) + '%';
+    document.getElementById('own-duck').style.left = (2 + travel) + '%';
+  }
+
+  function onRaceOver(payload) {
+    clearInterval(raceTimerInterval);
+    clearInterval(reportInterval);
+    document.getElementById('tap-button').disabled = true;
+    send('report_taps', { cumulativeTaps: cumulativeTaps });
+
+    document.getElementById('result-color-chip').style.background = myColor;
+    document.getElementById('result-color-chip').innerHTML = getDuckSvg('#ffffff');
+    
+    var titleEl = document.getElementById('result-title');
+    var iconEl = document.getElementById('result-icon');
+    if (payload.rank === 1) {
+      iconEl.textContent = '🏆';
+      titleEl.innerHTML = '👑 VICTORY! 👑';
+    } else if (payload.rank <= 3) {
+      iconEl.textContent = '🥈';
+      titleEl.innerHTML = 'Rank #' + payload.rank + '! Awesome!';
+    } else {
+      iconEl.textContent = '🏁';
+      titleEl.innerHTML = 'Rank #' + payload.rank;
+    }
+    
+    document.getElementById('result-taps').textContent = payload.taps + ' taps';
+    
+    // Update personal rank summary
+    document.getElementById('player-my-rank').textContent = '#' + payload.rank + ' / ' + (payload.totalPlayers || 1);
+
+    // Update Top 10 Leaderboard
+    var listEl = document.getElementById('player-top10-list');
+    var html = '';
+    var top10 = payload.top10 || [];
+    top10.forEach(function(item) {
+      var isMe = item.nickname === myNickname;
+      var rowStyle = isMe ? 'background: rgba(250, 204, 21, 0.25); border-radius: 8px; font-weight: 800;' : 'font-weight: 700;';
+      html += 
+        '<div style="display: flex; justify-content: space-between; align-items: center; padding: 5px 8px; font-size: 13px; color: #854d0e; ' + rowStyle + '">' +
+          '<span>#' + item.rank + ' ' + item.nickname + (isMe ? ' (You)' : '') + '</span>' +
+          '<span style="color:' + item.color + '">' + item.taps + ' taps</span>' +
+        '</div>';
+    });
+    listEl.innerHTML = html || '<div style="text-align:center; padding:8px; font-size:12px; opacity:0.6;">No rankings</div>';
+
+    showScreen('screen-result');
+  }
+
+  document.getElementById('btn-join').addEventListener('click', function () {
+    var pin = document.getElementById('input-pin').value.trim();
+    var nickname = document.getElementById('input-nickname').value.trim();
+    document.getElementById('join-error').textContent = '';
+    if (!pin || !nickname) {
+      document.getElementById('join-error').textContent = 'Please enter both PIN and display name.';
+      return;
+    }
+    myNickname = nickname;
+    send('join_room', { pin: pin, nickname: nickname });
+  });
+
+  document.getElementById('btn-play-again').addEventListener('click', function () {
+    location.reload();
+  });
+
+  document.getElementById('tap-button').addEventListener('touchstart', onTapDown);
+  document.getElementById('tap-button').addEventListener('mousedown', onTapDown);
+
+  function prefillPinFromQrScan() {
+    var pinFromUrl = new URLSearchParams(location.search).get('pin');
+    if (pinFromUrl) {
+      document.getElementById('input-pin').value = pinFromUrl;
+      document.getElementById('input-nickname').focus();
+    }
+  }
+
+  prefillPinFromQrScan();
+  connect();
+}());
+</script>
+</body>
+</html>
