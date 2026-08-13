@@ -4,50 +4,50 @@
 <meta charset="UTF-8">
 <link rel="stylesheet" href="/shared/fonts.css">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<title>Bấm Đúng Nhịp — Controller</title>
+<title>Bấm Đúng Nhịp — Taiko Controller</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400..700&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400..700&family=Mochiy+Pop+One&display=swap');
   
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
   html, body {
     margin: 0; padding: 0; min-height: 100%; width: 100%;
-    font-family: 'Fredoka', -apple-system, sans-serif;
-    background: radial-gradient(circle at 50% 30%, #1e1b4b, #0f172a);
+    font-family: 'Fredoka', 'Mochiy Pop One', -apple-system, sans-serif;
+    background: radial-gradient(circle at 50% 30%, #7f1d1d, #450a0a);
     color: #f8fafc; overflow-x: hidden;
   }
   .screen { display: none; min-height: 100vh; padding: 24px 20px; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
   .screen.active { display: flex; }
   
   .card-box {
-    width: 100%; max-width: 360px; background: rgba(15, 23, 42, 0.8);
-    backdrop-filter: blur(16px); border: 2.5px solid rgba(250, 204, 21, 0.5);
+    width: 100%; max-width: 360px; background: rgba(24, 9, 9, 0.85);
+    backdrop-filter: blur(16px); border: 3.5px solid #fde047;
     border-radius: 28px; padding: 24px 20px;
-    box-shadow: 0 16px 40px rgba(0,0,0,0.5), inset 0 0 15px rgba(255,255,255,0.05);
+    box-shadow: 0 16px 40px rgba(0,0,0,0.6), inset 0 0 15px rgba(255,255,255,0.05);
   }
 
-  h1 { font-size: 28px; color: #facc15; margin: 0 0 4px; font-weight: 900; text-shadow: 0 0 12px rgba(250,204,21,0.5); }
-  .subtitle { color: #94a3b8; font-size: 14px; margin-bottom: 22px; font-weight: 700; }
+  h1 { font-family: 'Mochiy Pop One', cursive; font-size: 26px; color: #fde047; margin: 0 0 4px; font-weight: 900; text-shadow: 0 0 14px rgba(253,224,71,0.6); }
+  .subtitle { color: #fca5a5; font-size: 14px; margin-bottom: 22px; font-weight: 700; }
   
   input {
     width: 100%; max-width: 320px; padding: 14px 16px; margin-bottom: 14px;
-    border-radius: 16px; border: 2.5px solid rgba(250, 204, 21, 0.4); background: rgba(0,0,0,0.4); color: #fff;
+    border-radius: 16px; border: 2.5px solid #fde047; background: rgba(0,0,0,0.5); color: #fff;
     font-size: 17px; font-family: 'Fredoka', sans-serif; font-weight: 800; text-align: center;
     outline: none; transition: border-color 0.2s;
   }
-  input:focus { border-color: #facc15; box-shadow: 0 0 12px rgba(250, 204, 21, 0.4); }
-  input::placeholder { color: #64748b; font-weight: 600; }
+  input:focus { border-color: #fde047; box-shadow: 0 0 15px rgba(253, 224, 71, 0.5); }
+  input::placeholder { color: #94a3b8; font-weight: 600; }
 
   button.primary {
     width: 100%; max-width: 320px; padding: 16px; border-radius: 16px; border: none;
-    background: linear-gradient(135deg, #f59e0b, #d97706); color: #0f172a; font-weight: 900;
+    background: linear-gradient(135deg, #f59e0b, #d97706); color: #450a0a; font-weight: 900;
     font-size: 18px; font-family: 'Fredoka', sans-serif; cursor: pointer; margin-top: 8px;
-    box-shadow: 0 0 20px rgba(245, 158, 11, 0.4), 0 5px 0 #b45309;
+    box-shadow: 0 0 20px rgba(245, 158, 11, 0.5), 0 5px 0 #b45309;
     transition: transform 0.1s;
   }
   button.primary:active { transform: translateY(3px); box-shadow: 0 2px 0 #b45309; }
   
   button.secondary {
-    background: transparent; border: 2px solid rgba(255,255,255,0.2); color: #94a3b8;
+    background: transparent; border: 2px solid rgba(255,255,255,0.2); color: #fca5a5;
     width: 100%; max-width: 320px; padding: 12px; border-radius: 14px; margin-top: 14px;
     font-family: 'Fredoka', sans-serif; font-size: 14px; font-weight: 700; cursor: pointer;
   }
@@ -56,66 +56,66 @@
 
   .choice-row { display: flex; gap: 10px; margin-bottom: 14px; max-width: 320px; width: 100%; }
   .choice-btn {
-    flex: 1; padding: 12px; border-radius: 14px; border: 2px solid rgba(255,255,255,0.15); background: rgba(0,0,0,0.3);
+    flex: 1; padding: 12px; border-radius: 14px; border: 2px solid rgba(255,255,255,0.2); background: rgba(0,0,0,0.4);
     color: #cbd5e1; font-weight: 800; font-size: 14px; font-family: 'Fredoka', sans-serif; cursor: pointer;
     transition: all 0.2s;
   }
-  .choice-btn.active { border-color: #facc15; background: rgba(250, 204, 21, 0.2); color: #facc15; box-shadow: 0 0 12px rgba(250, 204, 21, 0.3); }
+  .choice-btn.active { border-color: #fde047; background: rgba(253, 224, 71, 0.2); color: #fde047; box-shadow: 0 0 12px rgba(253, 224, 71, 0.4); }
 
-  .countdown-num { font-size: 110px; font-weight: 900; color: #facc15; text-shadow: 0 0 30px rgba(250,204,21,0.6); }
+  .countdown-num { font-size: 110px; font-weight: 900; color: #fde047; text-shadow: 0 0 30px rgba(253,224,71,0.7); }
 
-  /* Play Screen - 3D Neon Arcade Push Buttons */
-  .play-header { display: flex; justify-content: space-between; width: 100%; max-width: 360px; margin-bottom: 20px; font-size: 14px; font-weight: 800; color: #94a3b8; }
+  /* Play Screen - Taiko Drum Buttons */
+  .play-header { display: flex; justify-content: space-between; width: 100%; max-width: 360px; margin-bottom: 20px; font-size: 14px; font-weight: 800; color: #fca5a5; }
   .tap-grid { display: flex; gap: 16px; width: 100%; max-width: 360px; }
   
   .tap-btn {
-    flex: 1; height: 180px; border-radius: 24px; border: 3px solid rgba(255,255,255,0.4); font-size: 22px; font-weight: 900;
-    color: #fff; font-family: 'Fredoka', sans-serif; cursor: pointer; user-select: none;
-    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px;
-    letter-spacing: 0.05em; text-shadow: 0 2px 4px rgba(0,0,0,0.4);
+    flex: 1; height: 190px; border-radius: 50%; border: 6px solid #fde047; font-size: 22px; font-weight: 900;
+    color: #fff; font-family: 'Mochiy Pop One', 'Fredoka', cursive; cursor: pointer; user-select: none;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;
+    letter-spacing: 0.05em; text-shadow: 0 2px 6px rgba(0,0,0,0.5);
     transition: transform 0.08s, box-shadow 0.08s;
   }
   .tap-btn.red {
-    background: linear-gradient(180deg, #ff2a5f, #b91c1c);
-    box-shadow: 0 10px 0 #881337, 0 12px 25px rgba(255, 42, 95, 0.4);
+    background: radial-gradient(circle at 35% 35%, #ff6b6b, #dc2626);
+    box-shadow: 0 10px 0 #991b1b, 0 12px 30px rgba(239, 68, 68, 0.5);
   }
   .tap-btn.blue {
-    background: linear-gradient(180deg, #00e5ff, #1d4ed8);
-    box-shadow: 0 10px 0 #1e3a8a, 0 12px 25px rgba(0, 229, 255, 0.4);
+    background: radial-gradient(circle at 35% 35%, #60a5fa, #1d4ed8);
+    box-shadow: 0 10px 0 #1e3a8a, 0 12px 30px rgba(59, 130, 246, 0.5);
   }
   .tap-btn:active {
-    transform: translateY(6px);
-    box-shadow: 0 3px 0 rgba(0,0,0,0.5);
+    transform: translateY(6px) scale(0.95);
+    box-shadow: 0 3px 0 rgba(0,0,0,0.6);
   }
 
-  .feedback-row { display: flex; gap: 16px; width: 100%; max-width: 360px; margin-top: 16px; }
+  .feedback-row { display: flex; gap: 16px; width: 100%; max-width: 360px; margin-top: 18px; }
   .feedback-box {
-    flex: 1; text-align: center; font-size: 15px; font-weight: 900; min-height: 28px;
-    background: rgba(0,0,0,0.3); border-radius: 12px; padding: 6px; border: 1.5px solid rgba(255,255,255,0.1);
+    flex: 1; text-align: center; font-size: 15px; font-weight: 900; min-height: 32px;
+    background: rgba(0,0,0,0.4); border-radius: 14px; padding: 6px; border: 2px solid rgba(253,224,71,0.3);
   }
-  .feedback-box.red { color: #ff2a5f; }
-  .feedback-box.blue { color: #00e5ff; }
+  .feedback-box.red { color: #ff6b6b; }
+  .feedback-box.blue { color: #60a5fa; }
 
-  .rank-badge { font-size: 64px; font-weight: 900; color: #facc15; text-shadow: 0 0 20px rgba(250,204,21,0.6); margin-bottom: 8px; }
+  .rank-badge { font-size: 64px; font-weight: 900; color: #fde047; text-shadow: 0 0 25px rgba(253,224,71,0.7); margin-bottom: 8px; }
 </style>
 </head>
 <body>
 
 <div id="screen-join" class="screen active">
   <div class="card-box">
-    <h1>⏱️ BẤM ĐÚNG NHỊP</h1>
+    <h1>🥁 TAIKO MATSURI</h1>
     <div class="subtitle">Nhập mã PIN Code trên TV để tham gia</div>
     <input id="input-pin" type="tel" inputmode="numeric" maxlength="4" placeholder="PIN Code (4 số)">
     <input id="input-nickname" type="text" maxlength="20" placeholder="Tên hiển thị của bạn">
     <div class="error-text" id="join-error"></div>
-    <button class="primary" id="btn-join">Tham gia phòng</button>
+    <button class="primary" id="btn-join">Tham gia Taiko</button>
   </div>
 </div>
 
 <div id="screen-setup" class="screen">
   <div class="card-box">
-    <h1>🎮 Thiết lập phòng</h1>
-    <div class="subtitle">Chọn tốc độ nhịp điệu cho trận đấu</div>
+    <h1>🥁 Thiết lập nhịp</h1>
+    <div class="subtitle">Chọn tốc độ nhịp Taiko cho trận đấu</div>
     <div class="choice-row" id="speed-choices">
       <button class="choice-btn" data-band="slow">Chậm</button>
       <button class="choice-btn active" data-band="medium">Vừa</button>
@@ -133,22 +133,22 @@
 
 <div id="screen-countdown" class="screen">
   <div class="countdown-num" id="countdown-num">3</div>
-  <div class="subtitle">Chuẩn bị sẵn tay bấm!</div>
+  <div class="subtitle">Chuẩn bị sẵn tay gõ trống!</div>
 </div>
 
 <div id="screen-play" class="screen">
   <div class="play-header">
     <span id="play-remaining">30s</span>
-    <span id="play-phase-label" style="color:#facc15;">CHƠI VÀO NHỊP</span>
+    <span id="play-phase-label" style="color:#fde047;">🥁 TAIKO MATSURI</span>
   </div>
   <div class="tap-grid">
     <button class="tap-btn red" id="btn-tap-red">
-      <span>⚡ ĐỎ</span>
-      <span style="font-size: 13px; opacity: 0.8;">NHANH</span>
+      <span>DON</span>
+      <span style="font-size: 12px; opacity: 0.9;">🔴 Mặt Trống</span>
     </button>
     <button class="tap-btn blue" id="btn-tap-blue">
-      <span>🐢 XANH</span>
-      <span style="font-size: 13px; opacity: 0.8;">CHẬM</span>
+      <span>KATSU</span>
+      <span style="font-size: 12px; opacity: 0.9;">🔵 Vành Trống</span>
     </button>
   </div>
   <div class="feedback-row">
@@ -160,7 +160,7 @@
 <div id="screen-result" class="screen">
   <div class="card-box">
     <div class="rank-badge" id="result-rank">#-</div>
-    <h1 id="result-title">KẾT QUẢ</h1>
+    <h1 id="result-title">KẾT QUẢ TAIKO</h1>
     <div class="subtitle" id="result-detail"></div>
     <button class="primary" id="btn-play-again">Chơi lại trận khác</button>
   </div>
@@ -173,6 +173,54 @@
   var speedBand = 'medium';
   var mode = '1';
   var playStartLocalTime = 0;
+  var audioCtx = null;
+
+  function getAudioCtx() {
+    if (!audioCtx) {
+      var AudioContext = window.AudioContext || window.webkitAudioContext;
+      if (AudioContext) audioCtx = new AudioContext();
+    }
+    if (audioCtx && audioCtx.state === 'suspended') {
+      audioCtx.resume();
+    }
+    return audioCtx;
+  }
+
+  function playDonSound() {
+    try {
+      var ctx = getAudioCtx();
+      if (!ctx) return;
+      var osc = ctx.createOscillator();
+      var gain = ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(120, ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(35, ctx.currentTime + 0.2);
+      gain.gain.setValueAtTime(1.0, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.25);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(ctx.currentTime);
+      osc.stop(ctx.currentTime + 0.25);
+    } catch (e) {}
+  }
+
+  function playKatsuSound() {
+    try {
+      var ctx = getAudioCtx();
+      if (!ctx) return;
+      var osc = ctx.createOscillator();
+      var gain = ctx.createGain();
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(700, ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(320, ctx.currentTime + 0.08);
+      gain.gain.setValueAtTime(0.7, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.1);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(ctx.currentTime);
+      osc.stop(ctx.currentTime + 0.1);
+    } catch (e) {}
+  }
 
   function activateScreen(id) {
     Array.from(document.querySelectorAll('.screen')).forEach(function (el) {
@@ -210,7 +258,7 @@
     if (!payload.success) {
       document.getElementById('join-error').textContent = ({
         invalid_pin_or_started: 'PIN không đúng hoặc trận đã bắt đầu.',
-        room_full: 'Phòng đã đầy (tối đa 100 người).',
+        room_full: 'Phòng đã đầy (tối đa 30 người).',
         nickname_required: 'Vui lòng nhập tên hiển thị.',
       })[payload.error] || 'Có lỗi xảy ra, vui lòng thử lại.';
       return;
@@ -260,25 +308,26 @@
       return;
     }
     if (payload.phase === 'approach') {
-      document.getElementById('countdown-num').textContent = '🏃';
+      document.getElementById('countdown-num').textContent = '🥁';
       return;
     }
     if (payload.phase === 'visiblePlay') {
       playStartLocalTime = performance.now();
-      document.getElementById('play-phase-label').textContent = 'CHƠI VÀO NHỊP';
+      document.getElementById('play-phase-label').textContent = '🥁 TAIKO MATSURI';
       document.getElementById('feedback-red').textContent = '---';
       document.getElementById('feedback-blue').textContent = '---';
       activateScreen('screen-play');
       return;
     }
     if (payload.phase === 'blackout') {
-      document.getElementById('play-phase-label').textContent = '🌑 BLACKOUT MODE';
+      document.getElementById('play-phase-label').textContent = '🌑 BLACKOUT MATSURI';
       return;
     }
   }
 
   function runCountdown(n) {
     document.getElementById('countdown-num').textContent = n;
+    playDonSound();
     if (n <= 0) return;
     setTimeout(function () { runCountdown(n - 1); }, 1000);
   }
@@ -289,6 +338,8 @@
 
   function onTap(color) {
     var elapsedMs = performance.now() - playStartLocalTime;
+    if (color === 'red') playDonSound();
+    else playKatsuSound();
     send('tap', { color: color, elapsedMs: elapsedMs });
     if (navigator.vibrate) navigator.vibrate(25);
   }
@@ -297,10 +348,10 @@
     var el = document.getElementById('feedback-' + payload.color);
     if (!el) return;
     var err = payload.errorMs || 0;
-    var rating = '🌟 PERFECT';
-    if (err > 35 && err <= 85) rating = '⚡ GREAT';
+    var rating = '🌟 良 (PERFECT)';
+    if (err > 35 && err <= 85) rating = '⚡ 可 (GREAT)';
     else if (err > 85 && err <= 160) rating = '👍 GOOD';
-    else if (err > 160) rating = '❌ MISS';
+    else if (err > 160) rating = '❌ 不可 (MISS)';
     
     el.textContent = rating + ' (' + err + 'ms)';
   }
@@ -321,6 +372,7 @@
   });
 
   document.getElementById('btn-join').addEventListener('click', function () {
+    getAudioCtx();
     var pin = document.getElementById('input-pin').value.trim();
     var nickname = document.getElementById('input-nickname').value.trim();
     document.getElementById('join-error').textContent = '';
